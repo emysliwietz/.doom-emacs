@@ -204,4 +204,35 @@
 
   )
 
+(setq elfeed-summary-settings
+      '(
+        (group (:title . "Blogs [Security]")
+               (:elements
+                (query . (and people security))))
+        (group (:title . "Blogs [People]")
+               (:elements
+                (query . (and people (not security)))
+                ))
+        (group (:title . "Religion")
+               (:elements
+                (query . religion)))
+        (group (:title . "Podcasts")
+               (:elements
+                (query . podcast)))
+        (group (:title . "Comics")
+               (:elements
+                (query . comic)))
+             ;; ...
+        (group (:title . "Miscellaneous")
+               (:elements
+                (group
+                 (:title . "Searches")
+                 (:elements
+                  (search
+                   (:filter . "@6-months-ago")
+                   (:title . "Unread"))))
+                (group
+                 (:title . "Ungrouped")
+                 (:elements :misc))))))
+
 (provide 'elfeed-tweaks)
