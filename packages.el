@@ -100,3 +100,4 @@
 (package! mu4e-alert)
 (package! outline-minor-faces)
 (package! mu4e-conversation)
+(package! elfeed-dashboard)
