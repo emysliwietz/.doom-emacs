@@ -82,7 +82,7 @@
     (let ((inhibit-read-only t)
           (inhibit-modification-hooks t))
       (visual-fill-column-mode)
-      (setq-local shr-current-font '(:family "Linux Libertine" :height 1.2))
+      (setq-local shr-current-font '(:family "Linux Libertine O" :height 1.2))
       (set-buffer-modified-p nil)))
 
   (defun +rss/elfeed-search-print-entry (entry)
@@ -203,12 +203,5 @@
             (funcall file-view-function file))))))
 
   )
-
-;;; Elfeed dashboard
-(use-package! elfeed-dashboard
-  :config
-  (setq elfeed-dashboard-file "~/elfeed-dashboard.org")
-  ;; update feed counts on elfeed-quit
-  (advice-add 'elfeed-search-quit-window :after #'elfeed-dashboard-update-links))
 
 (provide 'elfeed-tweaks)
