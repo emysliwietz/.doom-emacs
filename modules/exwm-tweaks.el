@@ -7,7 +7,10 @@
   (require 'exwm-config)
   (exwm-config-default)
   (require 'exwm-randr)
-  (setq exwm-randr-workspace-output-plist '(1 "DP-2-1" 2 "HDMI-2" 3 "DP-2-2" 4 "eDP-1"))
+
+(when (string= (system-name) "astaroth")
+  (setq exwm-randr-workspace-output-plist '(1 "DP-2-1" 2 "HDMI-2" 3 "DP-2-2" 4 "eDP-1")))
+
   (add-hook 'exwm-randr-screen-change-hook
 	    (lambda ()
 	      (start-process-shell-command
