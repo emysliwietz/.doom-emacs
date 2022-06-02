@@ -234,5 +234,5 @@
                 (group
                  (:title . "Ungrouped")
                  (:elements :misc))))))
-
+(global-set-key (kbd "s-e") 'elfeed-summary)
 (provide 'elfeed-tweaks)
