@@ -3,6 +3,7 @@
 * Blogs :elfeed:
 ** Luke Smith :people:
 **** https://lukesmith.xyz/rss.xml
+*** Not related :podcast:
 **** https://notrelated.xyz/rss
 ** XKCD :comic:
 **** https://xkcd.com/rss.xml
@@ -10,6 +11,8 @@
 *** Schneier :people:security:
 **** https://www.schneier.com/feed/atom
 ** Katholisch
-*** Fraternitas Sacerdotalis Sancti Pii X
-**** https://fsspx.de/de/rss
-**** https://fsspx.news/en/news/rss
+*** Fraternitas Sacerdotalis Sancti Pii X :religion:
+**** [[https://fsspx.de/de/rss][Petrusbruderschaft]]
+** Orthodox
+*** Roosh V :people:religion:
+**** [[https://www.rooshv.com/feed][Roosh V]]

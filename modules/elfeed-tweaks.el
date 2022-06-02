@@ -82,7 +82,7 @@
     (let ((inhibit-read-only t)
           (inhibit-modification-hooks t))
       (visual-fill-column-mode)
-      ;; (setq-local shr-current-font '(:family "Merriweather" :height 1.2))
+      (setq-local shr-current-font '(:family "Linux Libertine O" :height 1.2))
       (set-buffer-modified-p nil)))
 
   (defun +rss/elfeed-search-print-entry (entry)
@@ -203,4 +203,36 @@
             (funcall file-view-function file))))))
 
   )
+
+(setq elfeed-summary-settings
+      '(
+        (group (:title . "Blogs [Security]")
+               (:elements
+                (query . (and people security))))
+        (group (:title . "Blogs [People]")
+               (:elements
+                (query . (and people (not security)))
+                ))
+        (group (:title . "Religion")
+               (:elements
+                (query . religion)))
+        (group (:title . "Podcasts")
+               (:elements
+                (query . podcast)))
+        (group (:title . "Comics")
+               (:elements
+                (query . comic)))
+             ;; ...
+        (group (:title . "Miscellaneous")
+               (:elements
+                (group
+                 (:title . "Searches")
+                 (:elements
+                  (search
+                   (:filter . "@6-months-ago")
+                   (:title . "Unread"))))
+                (group
+                 (:title . "Ungrouped")
+                 (:elements :misc))))))
+(global-set-key (kbd "s-e") 'elfeed-summary)
 (provide 'elfeed-tweaks)

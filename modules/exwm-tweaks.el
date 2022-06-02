@@ -10,6 +10,8 @@
 
 (when (string= (system-name) "astaroth")
   (setq exwm-randr-workspace-output-plist '(1 "DP-2-1" 2 "HDMI-2" 3 "DP-2-2" 4 "eDP-1")))
+(when (string= (system-name) "jarvis")
+  (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "HDMI-0" 3 "DVI-0" 4 "eDP-1")))
 
   (add-hook 'exwm-randr-screen-change-hook
 	    (lambda ()
