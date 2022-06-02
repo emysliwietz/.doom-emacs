@@ -62,6 +62,16 @@
       )))
 
 
+;;; Sometimes exwm fails to sets a buffer, so set it to scratch
+;;; with a button press
+(defun go-to-scratch ()
+  (interactive)
+  (switch-to-buffer "*scratch*"))
+
+(defun go-to-scratch-other ()
+  (interactive)
+  (switch-to-buffer-other-frame "*scratch*"))
+
 
   (defun switchmonitor-next ()
     (interactive)
@@ -99,6 +109,8 @@
 	      (progn))
 	    (exwm-layout-hide-mode-line)))
 
+
+(global-set-key (kbd "s-<f4>") 'go-to-scratch)
 (require 'exwm-edit)
 (defun ag-exwm/on-exwm-edit-compose ()
   (funcall 'org-mode))
