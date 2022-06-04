@@ -227,7 +227,8 @@
 (defun elfeed-load-summary ()
   "Load database and go to summary"
   (interactive)
-  (elfeed-db-load)
+  (when (functionp 'elfeed-db-load)
+      (elfeed-db-load))
   (elfeed-summary))
 
 (defun elfeed-summary-save-update ()
