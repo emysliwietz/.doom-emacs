@@ -113,8 +113,8 @@
                                                   elfeed-goodies/feed-source-column-width)
                          :left)))
 
-      (insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
-      (insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
+      ;(insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
+      ;(insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
       (insert (propertize title 'face title-faces 'kbd-help title))
       (setq-local line-spacing 0.2)))
 
