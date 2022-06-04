@@ -1,6 +1,8 @@
 ;;; elfeed-tweaks.el -*- lexical-binding: t; -*-
 
-(setq rmh-elfeed-org-files (cons (expand-file-name "ext/elfeed/elfeed.org" doom-private-dir)()))
+(setq rmh-elfeed-org-files (cons (expand-file-name "ext/elfeed/elfeed.org" doom-private-dir)())
+      elfeed-db-directory (expand-file-name "ext/elfeed/db/" doom-private-dir)
+      )
 
 
 (map! :map elfeed-search-mode-map
@@ -8,7 +10,7 @@
       [remap kill-this-buffer] "q"
       [remap kill-buffer] "q"
       :n doom-leader-key nil
-      :n "q" #'elfeed-summary
+      :n "q" #'elfeed-save-summary
       :n "e" #'elfeed-update
       :n "r" #'elfeed-search-untag-all-unread
       :n "u" #'elfeed-search-tag-all-unread
@@ -25,7 +27,7 @@
       [remap kill-this-buffer] "q"
       [remap kill-buffer] "q"
       :n doom-leader-key nil
-      :nm "q" #'+rss/delete-pane
+      :nm "q" #'elfeed-save-close
       :nm "o" #'ace-link-elfeed
       :nm "RET" #'org-ref-elfeed-add
       :nm "n" #'elfeed-show-next
@@ -35,6 +37,9 @@
       :nm "-" #'elfeed-show-untag
       :nm "s" #'elfeed-show-new-live-search
       :nm "y" #'elfeed-show-yank)
+(map! :map elfeed-summary-mode-map
+      :after elfeed-summary
+      :n "R" #'elfeed-summary-save-update)
 
 (after! elfeed-search
   (set-evil-initial-state! 'elfeed-search-mode 'normal))
@@ -46,12 +51,10 @@
   (push 'elfeed-search-mode evil-snipe-disabled-modes))
 
 (after! elfeed
-
   (elfeed-org)
   (use-package! elfeed-link)
-
+  (elfeed-db-load)
   (setq elfeed-search-filter "@1-week-ago +unread"
-        elfeed-db-directory "/home/user/.doom.d/ext/elfeed/db/"
         elfeed-summary--only-unread t
         elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
         elfeed-search-title-min-width 80
@@ -206,6 +209,34 @@
 
   )
 
+(after! elfeed-summary
+  (elfeed-org))
+
+(defun elfeed-save-summary ()
+  "Save database and go to summary"
+  (interactive)
+  (elfeed-db-save-safe)
+  (elfeed-summary))
+
+(defun elfeed-save-close ()
+  "Save database and close rss"
+  (interactive)
+  (elfeed-db-save-safe)
+  (+rss/delete-pane))
+
+(defun elfeed-load-summary ()
+  "Load database and go to summary"
+  (interactive)
+  (elfeed-db-load)
+  (elfeed-summary))
+
+(defun elfeed-summary-save-update ()
+  "Loads the database again before updating"
+  (interactive)
+  (elfeed-db-load)
+  (message "Refreshing db...")
+  (elfeed-summary-update))
+
 (setq elfeed-summary-settings
       '(
         (group (:title . "Blogs [Security]")
@@ -236,5 +267,5 @@
                 (group
                  (:title . "Ungrouped")
                  (:elements :misc))))))
-(global-set-key (kbd "s-e") 'elfeed-summary)
+(global-set-key (kbd "s-e") 'elfeed-load-summary)
 (provide 'elfeed-tweaks)
