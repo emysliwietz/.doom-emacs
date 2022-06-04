@@ -8,7 +8,7 @@
       [remap kill-this-buffer] "q"
       [remap kill-buffer] "q"
       :n doom-leader-key nil
-      :n "q" #'+rss/quit
+      :n "q" #'elfeed-summary
       :n "e" #'elfeed-update
       :n "r" #'elfeed-search-untag-all-unread
       :n "u" #'elfeed-search-tag-all-unread
@@ -51,6 +51,8 @@
   (use-package! elfeed-link)
 
   (setq elfeed-search-filter "@1-week-ago +unread"
+        elfeed-db-directory "/home/user/.doom.d/ext/elfeed/db/"
+        elfeed-summary--only-unread t
         elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
         elfeed-search-title-min-width 80
         elfeed-show-entry-switch #'pop-to-buffer
