@@ -39,7 +39,7 @@
       :nm "y" #'elfeed-show-yank)
 (map! :map elfeed-summary-mode-map
       :after elfeed-summary
-      :n "R" #'elfeed-summary-save-update)
+      :n "R" #'elfeed-summary-load-update)
 
 (after! elfeed-search
   (set-evil-initial-state! 'elfeed-search-mode 'normal))
@@ -231,7 +231,7 @@
       (elfeed-db-load))
   (elfeed-summary))
 
-(defun elfeed-summary-save-update ()
+(defun elfeed-summary-load-update ()
   "Loads the database again before updating"
   (interactive)
   (elfeed-db-load)
@@ -259,12 +259,12 @@
              ;; ...
         (group (:title . "Miscellaneous")
                (:elements
-                (group
-                 (:title . "Searches")
-                 (:elements
-                  (search
-                   (:filter . "@6-months-ago")
-                   (:title . "Unread"))))
+                ;(group
+                ; (:title . "Searches")
+                ; (:elements
+                ;  (search
+                ;   (:filter . "@6-months-ago")
+                ;   (:title . "Unread"))))
                 (group
                  (:title . "Ungrouped")
                  (:elements :misc))))))

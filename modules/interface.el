@@ -141,4 +141,7 @@
 
 (run-with-idle-timer 0.1 nil (lambda () (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)))
 
+; Modern org mode
+(global-org-modern-mode t)
+
 (provide 'interface)
