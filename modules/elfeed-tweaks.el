@@ -236,6 +236,7 @@
   (interactive)
   (elfeed-db-load)
   (message "Refreshing db...")
+  (elfeed-update)
   (elfeed-summary-update))
 
 (setq elfeed-summary-settings
@@ -269,4 +270,13 @@
                  (:title . "Ungrouped")
                  (:elements :misc))))))
 (global-set-key (kbd "s-e") 'elfeed-load-summary)
+
+(defface elfeed-youtube
+  '((t :foreground "#f9f"))
+  "Marks YouTube videos in Elfeed."
+  :group 'elfeed)
+
+(push '(youtube elfeed-youtube)
+      elfeed-search-face-alist)
+
 (provide 'elfeed-tweaks)

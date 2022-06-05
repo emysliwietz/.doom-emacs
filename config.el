@@ -89,4 +89,5 @@
 (after-startup (require 'email))
 (after-startup (require 'email-config))
 (after-startup (require 'email-accounts))
+; Unsorted
 (setq TeX-command-extra-options "--shell-escape")
