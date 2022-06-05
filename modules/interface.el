@@ -4,7 +4,7 @@
 
 (setq-default
  x-stretch-cursor t)
-(pixel-scroll-mode 1)
+(good-scroll-mode 1)
 (setq-default word-wrap t)
 
 (setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
