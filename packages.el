@@ -102,3 +102,4 @@
 (package! mu4e-conversation)
 (package! elfeed-summary)
 (package! org-modern)
+(package! good-scroll)

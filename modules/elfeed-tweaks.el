@@ -323,12 +323,20 @@
 ; Faces
 
 (defface elfeed-youtube
-  '((t :foreground "#f9f"))
+  '((t :foreground "purple"))
+  "Marks YouTube videos in Elfeed."
+  :group 'elfeed)
+
+(defface elfeed-religion
+  '((t :foreground "gold"))
   "Marks YouTube videos in Elfeed."
   :group 'elfeed)
 
 (push '(youtube elfeed-youtube)
       elfeed-search-face-alist)
+(push '(religion elfeed-religion)
+      elfeed-search-face-alist)
+
 
 (defface elfeed-religion
   '((t :foreground "gold"))
