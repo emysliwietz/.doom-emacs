@@ -17,6 +17,8 @@
       :n "s" #'elfeed-search-live-filter
       :n "RET" #'elfeed-search-show-entry
       :n "p" #'elfeed-show-pdf
+      :n "v" #'elfeed-show-youtube-dl
+      :n "L" #'youtube-dl-list
       :n "+" #'elfeed-search-tag-all
       :n "-" #'elfeed-search-untag-all
       :n "S" #'elfeed-search-set-filter
@@ -33,6 +35,8 @@
       :nm "n" #'elfeed-show-next
       :nm "N" #'elfeed-show-prev
       :nm "p" #'elfeed-show-pdf
+      :nm "v" #'elfeed-search-youtube-dl
+      :nm "L" #'youtube-dl-list
       :nm "+" #'elfeed-show-tag
       :nm "-" #'elfeed-show-untag
       :nm "s" #'elfeed-show-new-live-search
@@ -216,6 +220,7 @@
   "Save database and go to summary"
   (interactive)
   (elfeed-db-save-safe)
+  (kill-this-buffer)
   (elfeed-summary))
 
 (defun elfeed-save-close ()
@@ -271,6 +276,52 @@
                  (:elements :misc))))))
 (global-set-key (kbd "s-e") 'elfeed-load-summary)
 
+; Elfeed Youtube
+
+; External youtube-dl library
+(add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
+(after-startup (require 'youtube-dl))
+(setq youtube-dl-directory "/tmp/elfeed-youtube"
+      youtube-dl-program "yt-dlp"
+      youtube-dl-arguments
+      (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
+               "--no-colors")
+             youtube-dl-arguments))
+
+(global-set-key (kbd "s-v") 'open-yt-dl-videos)
+
+(defun open-yt-dl-videos ()
+  (interactive)
+(find-file youtube-dl-directory))
+
+(defun elfeed-show-youtube-dl ()
+  "Download the current entry with youtube-dl."
+  (interactive)
+  (pop-to-buffer (youtube-dl (elfeed-entry-link elfed-show-entry))))
+
+(cl-defun elfeed-search-youtube-dl (&key slow)
+  "Download the current entry with youtube-dl."
+  (interactive)
+  (let ((entries (elfeed-search-selected)))
+    (dolist (entry entries)
+      (if (null (youtube-dl (elfeed-entry-link entry)
+                            :title (elfeed-entry-title entry)
+                            :slow slow))
+          (message "Entry is not a YouTube link!")
+        (message "Downloading %s" (elfeed-entry-title entry)))
+      (elfeed-untag entry 'unread)
+      (elfeed-search-update-entry entry)
+      (unless (use-region-p) (forward-line)))))
+
+(defun youtube-dl-list-url ()
+  "Return url of item under point."
+  (interactive)
+  (let* ((n (1- (line-number-at-pos)))
+         (item (nth n youtube-dl-items)))
+    (when item
+        (message (youtube-dl-item-destination item)))))
+; Faces
+
 (defface elfeed-youtube
   '((t :foreground "#f9f"))
   "Marks YouTube videos in Elfeed."
@@ -278,5 +329,24 @@
 
 (push '(youtube elfeed-youtube)
       elfeed-search-face-alist)
+
+(defface elfeed-religion
+  '((t :foreground "gold"))
+  "Marks Religion videos in Elfeed."
+  :group 'elfeed)
+
+(push '(religion elfeed-religion)
+      elfeed-search-face-alist)
+
+(defface elfeed-tech
+  '((t :foreground "LightSteelBlue4"))
+  "Marks Tech videos in Elfeed."
+  :group 'elfeed)
+
+(push '(tech elfeed-tech)
+      elfeed-search-face-alist)
+
+
+
 
 (provide 'elfeed-tweaks)
