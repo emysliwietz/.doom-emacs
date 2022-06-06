@@ -92,8 +92,7 @@
         exwm-layout-show-all-buffers t
         exwm-manage-force-tiling t)
   (setq exwm-input-global-keys
-      `(([?\s-r] . exwm-reset)
-	([?\s-f] . fullscreen)
+      `(([?\s-f] . fullscreen)
 	([?\s-F] . toggle-maximize-buffer)
         ([?\s-g] . toggle-float-buffer)
 	([?\s-q] . kill-curr-buffer)
