@@ -332,25 +332,16 @@
   "Marks YouTube videos in Elfeed."
   :group 'elfeed)
 
-(push '(youtube elfeed-youtube)
-      elfeed-search-face-alist)
-(push '(religion elfeed-religion)
-      elfeed-search-face-alist)
-
-
-(defface elfeed-religion
-  '((t :foreground "gold"))
-  "Marks Religion videos in Elfeed."
-  :group 'elfeed)
-
-(push '(religion elfeed-religion)
-      elfeed-search-face-alist)
-
 (defface elfeed-tech
   '((t :foreground "LightSteelBlue4"))
   "Marks Tech videos in Elfeed."
   :group 'elfeed)
 
+
+(push '(youtube elfeed-youtube)
+      elfeed-search-face-alist)
+(push '(religion elfeed-religion)
+      elfeed-search-face-alist)
 (push '(tech elfeed-tech)
       elfeed-search-face-alist)
 
