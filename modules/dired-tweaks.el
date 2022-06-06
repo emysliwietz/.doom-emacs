@@ -116,8 +116,8 @@
             ("\\.\\(mp4\\|mp3\\|webm\\|avi\\|flv\\|mov\\)$"
              "open" ("-a" "VLC" file))))
          ((string-equal system-type "gnu/linux")
-          '(("\\.\\(mp4\\|m4a\\|mp3\\|webm\\|avi\\|flv\\|mov\\|pdf\\)$"
+          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|pdf\\)$"
              "xdg-open" (file))))))
-  (openwith-mode +1))
+  (openwith-mode t))
 
 (provide 'dired-tweaks)
