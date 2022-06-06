@@ -17,7 +17,7 @@
       :n "s" #'elfeed-search-live-filter
       :n "RET" #'elfeed-search-show-entry
       :n "p" #'elfeed-show-pdf
-      :n "v" #'elfeed-show-youtube-dl
+      :n "v" #'elfeed-search-youtube-dl
       :n "L" #'youtube-dl-list
       :n "+" #'elfeed-search-tag-all
       :n "-" #'elfeed-search-untag-all
@@ -35,7 +35,7 @@
       :nm "n" #'elfeed-show-next
       :nm "N" #'elfeed-show-prev
       :nm "p" #'elfeed-show-pdf
-      :nm "v" #'elfeed-search-youtube-dl
+      :nm "v" #'elfeed-show-youtube-dl
       :nm "L" #'youtube-dl-list
       :nm "+" #'elfeed-show-tag
       :nm "-" #'elfeed-show-untag
@@ -259,9 +259,9 @@
         (group (:title . "Podcasts")
                (:elements
                 (query . podcast)))
-        (group (:title . "Comics")
+        (group (:title . "Pictures")
                (:elements
-                (query . comic)))
+                (query . picture)))
              ;; ...
         (group (:title . "Miscellaneous")
                (:elements
@@ -294,10 +294,15 @@
   (interactive)
 (find-file youtube-dl-directory))
 
-(defun elfeed-show-youtube-dl ()
+(cl-defun elfeed-show-youtube-dl (&key slow)
   "Download the current entry with youtube-dl."
   (interactive)
-  (pop-to-buffer (youtube-dl (elfeed-entry-link elfed-show-entry))))
+  (if (null (youtube-dl (elfeed-entry-link elfeed-show-entry)
+                            :title (elfeed-entry-title elfeed-show-entry)
+                            :slow slow))
+          (message "Entry is not a YouTube link!")
+        (message "Downloading %s" (elfeed-entry-title elfeed-show-entry))))
+
 
 (cl-defun elfeed-search-youtube-dl (&key slow)
   "Download the current entry with youtube-dl."
