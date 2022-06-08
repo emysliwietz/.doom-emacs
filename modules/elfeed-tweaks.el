@@ -43,6 +43,8 @@
       :nm "y" #'elfeed-show-yank)
 (map! :map elfeed-summary-mode-map
       :after elfeed-summary
+      :n "L" #'youtube-dl-list
+      :n "V" #'open-yt-dl-videos
       :n "R" #'elfeed-summary-load-update)
 
 (after! elfeed-search
@@ -285,8 +287,10 @@
       youtube-dl-program "yt-dlp"
       youtube-dl-arguments
       (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
+               "--sponsorblock-remove" "default"
                "--no-colors")
              youtube-dl-arguments))
+; (setq youtube-dl-arguments nil)
 
 (global-set-key (kbd "s-v") 'open-yt-dl-videos)
 
@@ -350,7 +354,24 @@
 (push '(tech elfeed-tech)
       elfeed-search-face-alist)
 
+(defun image-tooltip (window object position)
+  (save-excursion
+    (goto-char position)
+    ;(message "%s" "Hello")
+    (propertize "Look in minbuffer"
+                              'display (create-image (expand-file-name "/tmp/test.jpg")))))
 
+
+
+(defun elfeed-search-thumbnail ()
+  (interactive)
+(tooltip-mode t)
+(font-lock-add-keywords
+ nil
+ '(("\([^<]+\)" 0 '(face font-lock-keyword-face
+                                       help-echo image-tooltip)))))
+
+(add-hook! 'elfeed-search-mode-hook 'elfeed-search-thumbnail)
 
 
 (provide 'elfeed-tweaks)

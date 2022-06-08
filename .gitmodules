@@ -1,3 +1,0 @@
-[submodule "lisp/youtube-dl-emacs"]
-	path = lisp/youtube-dl-emacs
-	url = https://github.com/skeeto/youtube-dl-emacs

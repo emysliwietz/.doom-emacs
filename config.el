@@ -57,9 +57,9 @@
 ;; they are implemented.
 
 (add-to-list 'load-path "~/.doom.d/modules")
-
-(setq debug-my-config t)
+(setq debug-my-config 0)
 (setq use-package-verbose t)
+(async-bytecomp-package-mode 1)
 
 (defun after-startup (func)
   (unless debug-my-config (add-hook! after-startup-hook

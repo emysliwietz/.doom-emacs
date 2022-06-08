@@ -126,7 +126,7 @@
               (exwm-workspace-rename-buffer exwm-title))))
 
 (setq exwm-manage-configurations
-      '(((equal exwm-class-name "gui.SmartcardGUI")
+      '(((equal exwm-class-name "Nm-applet")
            floating t
            floating-mode-line nil
 ;           width 0.4
