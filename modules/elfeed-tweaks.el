@@ -7,8 +7,8 @@
 
 (map! :map elfeed-search-mode-map
       :after elfeed-search
-      [remap kill-this-buffer] "q"
-      [remap kill-buffer] "q"
+      ;[remap kill-this-buffer] "q"
+      ;[remap kill-buffer] "q"
       :n doom-leader-key nil
       :n "q" #'elfeed-save-summary
       :n "e" #'elfeed-update
@@ -26,8 +26,8 @@
       :n "y" #'elfeed-search-yank)
 (map! :map elfeed-show-mode-map
       :after elfeed-show
-      [remap kill-this-buffer] "q"
-      [remap kill-buffer] "q"
+      ;[remap kill-this-buffer] "q"
+      ;[remap kill-buffer] "q"
       :n doom-leader-key nil
       :nm "q" #'elfeed-save-close
       :nm "o" #'ace-link-elfeed
@@ -45,7 +45,8 @@
       :after elfeed-summary
       :n "L" #'youtube-dl-list
       :n "V" #'open-yt-dl-videos
-      :n "R" #'elfeed-summary-load-update)
+      :n "R" #'elfeed-summary-load-update
+      :n "RET" #'elfeed-summary-action-save-location)
 
 (after! elfeed-search
   (set-evil-initial-state! 'elfeed-search-mode 'normal))
@@ -223,7 +224,9 @@
   (interactive)
   (elfeed-db-save-safe)
   (kill-this-buffer)
-  (elfeed-summary))
+  (elfeed-summary)
+  (when (boundp 'elfeed-summary--current-pos)
+  (goto-char elfeed-summary--current-pos)))
 
 (defun elfeed-save-close ()
   "Save database and close rss"
@@ -346,13 +349,13 @@
   "Marks Tech videos in Elfeed."
   :group 'elfeed)
 
+(defun elfeed-summary-action-save-location (pos &optional event)
+  (interactive "@d")
+  (setq elfeed-summary--current-pos pos)
+  (elfeed-summary--action pos event)
+  )
 
-(push '(youtube elfeed-youtube)
-      elfeed-search-face-alist)
-(push '(religion elfeed-religion)
-      elfeed-search-face-alist)
-(push '(tech elfeed-tech)
-      elfeed-search-face-alist)
+
 
 (defun image-tooltip (window object position)
   (save-excursion
@@ -371,7 +374,17 @@
  '(("\([^<]+\)" 0 '(face font-lock-keyword-face
                                        help-echo image-tooltip)))))
 
+(defun elfeed-search-prepare ()
+  (interactive)
+  (push '(youtube elfeed-youtube)
+        elfeed-search-face-alist)
+  (push '(religion elfeed-religion)
+        elfeed-search-face-alist)
+  (push '(tech elfeed-tech)
+      elfeed-search-face-alist))
+
 (add-hook! 'elfeed-search-mode-hook 'elfeed-search-thumbnail)
+(add-hook! 'elfeed-search-mode-hook 'elfeed-search-prepare)
 
 
 (provide 'elfeed-tweaks)
