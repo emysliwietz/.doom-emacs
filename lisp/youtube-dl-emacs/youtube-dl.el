@@ -547,7 +547,7 @@ of reversed playlists.
                          (paused-p
                           (concat string-paused " "))
                          (""))
-                   (or title ""))))))))
+                   (or url ""))))))))
 
 ;;;###autoload
 (defun youtube-dl-list ()

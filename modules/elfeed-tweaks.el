@@ -7,8 +7,8 @@
 
 (map! :map elfeed-search-mode-map
       :after elfeed-search
-      ;[remap kill-this-buffer] "q"
-      ;[remap kill-buffer] "q"
+                                        ;[remap kill-this-buffer] "q"
+                                        ;[remap kill-buffer] "q"
       :n doom-leader-key nil
       :n "q" #'elfeed-save-summary
       :n "e" #'elfeed-update
@@ -26,8 +26,8 @@
       :n "y" #'elfeed-search-yank)
 (map! :map elfeed-show-mode-map
       :after elfeed-show
-      ;[remap kill-this-buffer] "q"
-      ;[remap kill-buffer] "q"
+                                        ;[remap kill-this-buffer] "q"
+                                        ;[remap kill-buffer] "q"
       :n doom-leader-key nil
       :nm "q" #'elfeed-save-close
       :nm "o" #'ace-link-elfeed
@@ -123,8 +123,8 @@
                                                   elfeed-goodies/feed-source-column-width)
                          :left)))
 
-      ;(insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
-      ;(insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
+                                        ;(insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
+                                        ;(insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
       (insert (propertize title 'face title-faces 'kbd-help title))
       (setq-local line-spacing 0.2)))
 
@@ -168,6 +168,29 @@
             (insert content))
         (insert (propertize "(empty)\n" 'face 'italic)))
       (goto-char (point-min))))
+
+  (defface elfeed-youtube
+    '((t :foreground "purple"))
+    "Marks YouTube videos in Elfeed."
+    :group 'elfeed)
+
+  (defface elfeed-religion
+    '((t :foreground "gold"))
+    "Marks YouTube videos in Elfeed."
+    :group 'elfeed)
+
+  (defface elfeed-tech
+    '((t :foreground "LightSteelBlue4"))
+    "Marks Tech videos in Elfeed."
+    :group 'elfeed)
+
+  (push '(youtube elfeed-youtube)
+        elfeed-search-face-alist)
+  (push '(religion elfeed-religion)
+        elfeed-search-face-alist)
+  (push '(tech elfeed-tech)
+        elfeed-search-face-alist)
+
 
   )
 
@@ -226,7 +249,7 @@
   (kill-this-buffer)
   (elfeed-summary)
   (when (boundp 'elfeed-summary--current-pos)
-  (goto-char elfeed-summary--current-pos)))
+    (goto-char elfeed-summary--current-pos)))
 
 (defun elfeed-save-close ()
   "Save database and close rss"
@@ -238,7 +261,7 @@
   "Load database and go to summary"
   (interactive)
   (when (functionp 'elfeed-db-load)
-      (elfeed-db-load))
+    (elfeed-db-load))
   (elfeed-summary))
 
 (defun elfeed-summary-load-update ()
@@ -261,29 +284,77 @@
         (group (:title . "Religion")
                (:elements
                 (query . religion)))
+        (group (:title . "Cooking")
+               (:elements
+                (query . cooking)))
+        (group (:title . "ASMR")
+               (:elements
+                (query . asmr)))
+        (group (:title . "Crafting")
+               (:elements
+                (query . crafting)))
+        (group (:title . "Entertainment")
+               (:elements
+                (query . entertainment)))
+        (group (:title . "Finances")
+               (:elements
+                (query . finances)))
+        (group (:title . "Foreign Places")
+               (:elements
+                (query . foreign_places)))
+        (group (:title . "Geography")
+               (:elements
+                (query . geography)))
+        (group (:title . "History")
+               (:elements
+                (query . history)))
+        (group (:title . "Language")
+               (:elements
+                (query . language)))
+        (group (:title . "Math")
+               (:elements
+                (query . music)))
+        (group (:title . "Nature")
+               (:elements
+                (query . nature)))
+        (group (:title . "Philosophy")
+               (:elements
+                (query . philosophy)))
+        (group (:title . "Politics")
+               (:elements
+                (query . politics)))
+        (group (:title . "Science")
+               (:elements
+                (query . science)))
+        (group (:title . "SCP")
+               (:elements
+                (query . scp)))
+        (group (:title . "Tech")
+               (:elements
+                (query . tech)))
         (group (:title . "Podcasts")
                (:elements
                 (query . podcast)))
         (group (:title . "Pictures")
                (:elements
                 (query . picture)))
-             ;; ...
+        ;; ...
         (group (:title . "Miscellaneous")
                (:elements
-                ;(group
-                ; (:title . "Searches")
-                ; (:elements
-                ;  (search
-                ;   (:filter . "@6-months-ago")
-                ;   (:title . "Unread"))))
+                                        ;(group
+                                        ; (:title . "Searches")
+                                        ; (:elements
+                                        ;  (search
+                                        ;   (:filter . "@6-months-ago")
+                                        ;   (:title . "Unread"))))
                 (group
                  (:title . "Ungrouped")
                  (:elements :misc))))))
 (global-set-key (kbd "s-e") 'elfeed-load-summary)
 
-; Elfeed Youtube
+                                        ; Elfeed Youtube
 
-; External youtube-dl library
+                                        ; External youtube-dl library
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
 (after-startup (require 'youtube-dl))
 (setq youtube-dl-directory "/tmp/elfeed-youtube"
@@ -291,24 +362,29 @@
       youtube-dl-arguments
       (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
                "--sponsorblock-remove" "default"
+               "-prefer-free-formats"
+               "-embed-subs"
+               "-embed-metadata"
+               "-embed-chapters"
+                                        ;"-ffmpeg-location" "path"
                "--no-colors")
              youtube-dl-arguments))
-; (setq youtube-dl-arguments nil)
+                                        ; (setq youtube-dl-arguments nil)
 
 (global-set-key (kbd "s-v") 'open-yt-dl-videos)
 
 (defun open-yt-dl-videos ()
   (interactive)
-(find-file youtube-dl-directory))
+  (find-file youtube-dl-directory))
 
 (cl-defun elfeed-show-youtube-dl (&key slow)
   "Download the current entry with youtube-dl."
   (interactive)
   (if (null (youtube-dl (elfeed-entry-link elfeed-show-entry)
-                            :title (elfeed-entry-title elfeed-show-entry)
-                            :slow slow))
-          (message "Entry is not a YouTube link!")
-        (message "Downloading %s" (elfeed-entry-title elfeed-show-entry))))
+                        :title (elfeed-entry-title elfeed-show-entry)
+                        :slow slow))
+      (message "Entry is not a YouTube link!")
+    (message "Downloading %s" (elfeed-entry-title elfeed-show-entry))))
 
 
 (cl-defun elfeed-search-youtube-dl (&key slow)
@@ -331,23 +407,8 @@
   (let* ((n (1- (line-number-at-pos)))
          (item (nth n youtube-dl-items)))
     (when item
-        (message (youtube-dl-item-destination item)))))
-; Faces
-
-(defface elfeed-youtube
-  '((t :foreground "purple"))
-  "Marks YouTube videos in Elfeed."
-  :group 'elfeed)
-
-(defface elfeed-religion
-  '((t :foreground "gold"))
-  "Marks YouTube videos in Elfeed."
-  :group 'elfeed)
-
-(defface elfeed-tech
-  '((t :foreground "LightSteelBlue4"))
-  "Marks Tech videos in Elfeed."
-  :group 'elfeed)
+      (message (youtube-dl-item-destination item)))))
+                                        ; Faces
 
 (defun elfeed-summary-action-save-location (pos &optional event)
   (interactive "@d")
@@ -360,19 +421,19 @@
 (defun image-tooltip (window object position)
   (save-excursion
     (goto-char position)
-    ;(message "%s" "Hello")
+                                        ;(message "%s" "Hello")
     (propertize "Look in minbuffer"
-                              'display (create-image (expand-file-name "/tmp/test.jpg")))))
+                'display (create-image (expand-file-name "/tmp/test.jpg")))))
 
 
 
 (defun elfeed-search-thumbnail ()
   (interactive)
-(tooltip-mode t)
-(font-lock-add-keywords
- nil
- '(("\([^<]+\)" 0 '(face font-lock-keyword-face
-                                       help-echo image-tooltip)))))
+  (tooltip-mode t)
+  (font-lock-add-keywords
+   nil
+   '(("\([^<]+\)" 0 '(face font-lock-keyword-face
+                           help-echo image-tooltip)))))
 
 (add-hook! 'elfeed-search-mode-hook 'elfeed-search-thumbnail)
 
