@@ -374,17 +374,7 @@
  '(("\([^<]+\)" 0 '(face font-lock-keyword-face
                                        help-echo image-tooltip)))))
 
-(defun elfeed-search-prepare ()
-  (interactive)
-  (push '(youtube elfeed-youtube)
-        elfeed-search-face-alist)
-  (push '(religion elfeed-religion)
-        elfeed-search-face-alist)
-  (push '(tech elfeed-tech)
-      elfeed-search-face-alist))
-
 (add-hook! 'elfeed-search-mode-hook 'elfeed-search-thumbnail)
-(add-hook! 'elfeed-search-mode-hook 'elfeed-search-prepare)
 
 
 (provide 'elfeed-tweaks)
