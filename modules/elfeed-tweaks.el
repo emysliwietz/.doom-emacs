@@ -260,8 +260,8 @@
 (defun elfeed-load-summary ()
   "Load database and go to summary"
   (interactive)
-  (when (functionp 'elfeed-db-load)
-    (elfeed-db-load))
+  (when (and (functionp 'elfeed-db-load) (not (get-buffer "*elfeed-summary*")))
+    (make-thread (elfeed-db-load)))
   (elfeed-summary))
 
 (defun elfeed-summary-load-update ()
@@ -362,11 +362,11 @@
       youtube-dl-arguments
       (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
                "--sponsorblock-remove" "default"
-               "-prefer-free-formats"
-               "-embed-subs"
-               "-embed-metadata"
-               "-embed-chapters"
-                                        ;"-ffmpeg-location" "path"
+               "--prefer-free-formats"
+               "--embed-subs"
+               "--embed-metadata"
+               "--embed-chapters"
+               "--ffmpeg-location" "/home/user/.doom.d/ext/bin"
                "--no-colors")
              youtube-dl-arguments))
                                         ; (setq youtube-dl-arguments nil)
