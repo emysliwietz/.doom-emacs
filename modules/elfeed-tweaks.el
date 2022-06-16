@@ -366,7 +366,7 @@
                "--embed-subs"
                "--embed-metadata"
                "--embed-chapters"
-               "--ffmpeg-location" "/home/user/.doom.d/ext/bin"
+               "--ffmpeg-location" "/home/user/.doom.d/ext/bin/"
                "--no-colors")
              youtube-dl-arguments))
                                         ; (setq youtube-dl-arguments nil)
