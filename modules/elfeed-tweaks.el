@@ -432,7 +432,7 @@
   (tooltip-mode t)
   (font-lock-add-keywords
    nil
-   '(("\([^<]+\)" 0 '(face font-lock-keyword-face
+   '(("\[^<]+" 0 '(face font-lock-keyword-face
                            help-echo image-tooltip)))))
 
 (add-hook! 'elfeed-search-mode-hook 'elfeed-search-thumbnail)
