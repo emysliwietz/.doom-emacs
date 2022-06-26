@@ -23,6 +23,7 @@
       :n "-" #'elfeed-search-untag-all
       :n "S" #'elfeed-search-set-filter
       :n "b" #'elfeed-search-browse-url
+      :n "t" #'elfeed-search-thumbnail
       :n "y" #'elfeed-search-yank)
 (map! :map elfeed-show-mode-map
       :after elfeed-show
@@ -418,24 +419,27 @@
 
 
 
-(defun image-tooltip (window object position)
-  (save-excursion
-    (goto-char position)
-                                        ;(message "%s" "Hello")
+(defun image-tooltip (img-path)
+  "Display image at img-path as tooltip"
+  (tooltip-mode 1)
+  (tooltip-show
     (propertize "Look in minbuffer"
-                'display (create-image (expand-file-name "/tmp/test.jpg")))))
-
-
+                'display (create-image (expand-file-name img-path)))))
 
 (defun elfeed-search-thumbnail ()
+  "Display the thumbnail of the currently selected video"
   (interactive)
-  (tooltip-mode t)
-  (font-lock-add-keywords
-   nil
-   '(("\([^<]+\)" 0 '(face font-lock-keyword-face
-                           help-echo image-tooltip)))))
-
-(add-hook! 'elfeed-search-mode-hook 'elfeed-search-thumbnail)
-
+  (let ((buffer (current-buffer))
+        (entries (elfeed-search-selected)))
+    (cl-loop for entry in entries
+             do (elfeed-untag entry 'unread)
+             when (elfeed-entry-link entry)
+             do (progn
+                  (message it))
+                  (message (elfeed-entry-title entry))
+             )
+    (with-current-buffer buffer
+      (mapc #'elfeed-search-update-entry entries)
+      (unless (or elfeed-search-remain-on-entry (use-region-p))))))
 
 (provide 'elfeed-tweaks)

@@ -556,6 +556,9 @@ of reversed playlists.
   (youtube-dl--fill-listing)
   (pop-to-buffer (youtube-dl--buffer)))
 
+;(youtube-dl-get-video-thumbnail "https://www.youtube.com/watch?v=1KLhzyPD7DI")
+(defun youtube-dl-get-video-thumbnail (url)
+  (async-start-process "yt-dlp thumbnailer" youtube-dl-program nil (concat " --skip-download" " --write-thumbnail" " --convert-thumbnail 'jpg'" " -o '/tmp/a' " url))
+  )
 (provide 'youtube-dl)
-
 ;;; youtube-dl.el ends here
