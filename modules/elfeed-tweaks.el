@@ -2,6 +2,7 @@
 
 (setq rmh-elfeed-org-files (cons (expand-file-name "ext/elfeed/elfeed.org" doom-private-dir)())
       elfeed-db-directory (expand-file-name "ext/elfeed/db/" doom-private-dir)
+      elfeed-thumbnail-dir "/tmp/elfeed-thumbnails/"
       )
 
 
@@ -422,24 +423,24 @@
 (defun image-tooltip (img-path)
   "Display image at img-path as tooltip"
   (tooltip-mode 1)
+  (message img-path)
   (tooltip-show
     (propertize "Look in minbuffer"
-                'display (create-image (expand-file-name img-path)))))
+                'display (create-image img-path))))
 
 (defun elfeed-search-thumbnail ()
   "Display the thumbnail of the currently selected video"
   (interactive)
+  (mkdir elfeed-thumbnail-dir t)
   (let ((buffer (current-buffer))
         (entries (elfeed-search-selected)))
     (cl-loop for entry in entries
-             do (elfeed-untag entry 'unread)
              when (elfeed-entry-link entry)
-             do (progn
-                  (message it))
-                  (message (elfeed-entry-title entry))
+             do (let ((title (secure-hash 'sha224 (elfeed-entry-title entry))))
+                      (youtube-dl-get-video-thumbnail it elfeed-thumbnail-dir title (lambda (a)
+                                                (image-tooltip (concat elfeed-thumbnail-dir title ".jpg"))))
              )
     (with-current-buffer buffer
       (mapc #'elfeed-search-update-entry entries)
-      (unless (or elfeed-search-remain-on-entry (use-region-p))))))
-
+      (unless (or elfeed-search-remain-on-entry (use-region-p)))))))
 (provide 'elfeed-tweaks)

@@ -556,16 +556,13 @@ of reversed playlists.
   (youtube-dl--fill-listing)
   (pop-to-buffer (youtube-dl--buffer)))
 
-(defun youtube-dl-thumbnail-display (a)
-  (message (format "%s" a)))
-
-;(youtube-dl-get-video-thumbnail "https://www.youtube.com/watch?v=1KLhzyPD7DI" "skisses" 'youtube-dl-thumbnail-display)
-
-(defun youtube-dl-get-video-thumbnail (url title callback)
+(defun youtube-dl-get-video-thumbnail (url dir title callback)
   (async-start-process "yt-dlp thumbnailer" youtube-dl-program callback "--newline"
                        "--skip-download"
                        "--write-thumbnail"
-                       (concat "-o/tmp/" title)
+                       "--convert-thumbnails"
+                       "jpg"
+                       (concat "-o" dir title)
                        url)
   )
 (provide 'youtube-dl)
