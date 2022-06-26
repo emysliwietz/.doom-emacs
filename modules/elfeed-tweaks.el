@@ -423,7 +423,6 @@
 (defun image-tooltip (img-path)
   "Display image at img-path as tooltip"
   (tooltip-mode 1)
-  (message img-path)
   (tooltip-show
     (propertize "Look in minbuffer"
                 'display (create-image img-path))))
@@ -436,10 +435,10 @@
         (entries (elfeed-search-selected)))
     (cl-loop for entry in entries
              when (elfeed-entry-link entry)
-             do (let ((title (secure-hash 'sha224 (elfeed-entry-title entry))))
-                      (youtube-dl-get-video-thumbnail it elfeed-thumbnail-dir title (lambda (a)
-                                                (image-tooltip (concat elfeed-thumbnail-dir title ".jpg"))))
-             )
+             do (let ((title (concat elfeed-thumbnail-dir (secure-hash 'sha224 (elfeed-entry-title entry)))))
+                  (if (file-exists-p (concat title ".jpg"))
+                      (image-tooltip (concat title ".jpg"))
+                    (youtube-dl-get-video-thumbnail it title (lambda (a) (image-tooltip (concat title ".jpg"))))))
     (with-current-buffer buffer
       (mapc #'elfeed-search-update-entry entries)
       (unless (or elfeed-search-remain-on-entry (use-region-p)))))))
