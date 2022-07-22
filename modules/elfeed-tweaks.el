@@ -33,6 +33,7 @@
       :n doom-leader-key nil
       :nm "q" #'elfeed-save-close
       :nm "o" #'ace-link-elfeed
+      :nm "A" #'elfeed-wget-url
       :nm "RET" #'org-ref-elfeed-add
       :nm "n" #'elfeed-show-next
       :nm "N" #'elfeed-show-prev
@@ -360,6 +361,7 @@
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
 (after-startup (require 'youtube-dl))
 (setq youtube-dl-directory "/tmp/elfeed-youtube"
+      youtube-dl-permanent-directory "~/elfeed-youtube"
       youtube-dl-program "yt-dlp"
       youtube-dl-arguments
       (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
@@ -374,10 +376,16 @@
                                         ; (setq youtube-dl-arguments nil)
 
 (global-set-key (kbd "s-v") 'open-yt-dl-videos)
+(global-set-key (kbd "s-V") 'open-yt-dl-permanent-videos)
 
 (defun open-yt-dl-videos ()
   (interactive)
   (find-file youtube-dl-directory))
+
+(defun open-yt-dl-permanent-videos ()
+  (interactive)
+  (find-file youtube-dl-permanent-directory))
+
 
 (cl-defun elfeed-show-youtube-dl (&key slow)
   "Download the current entry with youtube-dl."
@@ -442,4 +450,20 @@
     (with-current-buffer buffer
       (mapc #'elfeed-search-update-entry entries)
       (unless (or elfeed-search-remain-on-entry (use-region-p)))))))
+
+(defun elfeed-wget-url ()
+  "Wgets URL at point to elfeed video dir"
+  (interactive)
+  (let ((url (shr-url-at-point current-prefix-arg)))
+    (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
+    (async-shell-command (concat "wget -O " youtube-dl-directory "/\"" (elfeed-entry-title elfeed-show-entry) "\".mp3 " url))))
+
+(defun youtube-dl-move-permanent ()
+  "Moves content of elfeed video dir to permanent location"
+  (interactive)
+  (mkdir youtube-dl-permanent-directory t)
+  (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
+  (async-shell-command (concat "mv " youtube-dl-directory "/* " youtube-dl-permanent-directory "/")))
+
+
 (provide 'elfeed-tweaks)
