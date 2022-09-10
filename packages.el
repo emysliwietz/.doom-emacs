@@ -103,3 +103,5 @@
 (package! elfeed-summary)
 (package! org-modern)
 (package! good-scroll)
+(package! desktop-environment)
+(package! emms)

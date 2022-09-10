@@ -143,5 +143,4 @@
 
 ; Modern org mode
 (global-org-modern-mode t)
-
 (provide 'interface)

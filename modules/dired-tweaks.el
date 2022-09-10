@@ -116,7 +116,7 @@
             ("\\.\\(mp4\\|mp3\\|webm\\|avi\\|flv\\|mov\\)$"
              "open" ("-a" "VLC" file))))
          ((string-equal system-type "gnu/linux")
-          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|pdf\\)$"
+          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|pdf\\|part\\)$"
              "xdg-open" (file))))))
   (openwith-mode t)
   (setq large-file-warning-threshold 3000000000))
