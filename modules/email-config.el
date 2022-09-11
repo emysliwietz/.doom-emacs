@@ -36,9 +36,9 @@ mu4e-use-fancy-chars t)
 (when (fboundp 'imagemagick-register-types)
 (imagemagick-register-types))
 
-(require 'org-mu4e)
-(setq org-mu4e-convert-to-html t
-org-mu4e-link-query-in-headers-mode nil)
+;(require 'org-mu4e)
+;(setq org-mu4e-convert-to-html t
+;org-mu4e-link-query-in-headers-mode nil)
 
 (require 'org-mime)
 
