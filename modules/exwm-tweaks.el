@@ -116,6 +116,7 @@
 
 (setq exwm-input-prefix-keys 
 '(?\C-x ?\C-u ?\C-h ?\M-x ?\M-` ?\M-& ?\M-:))
+
  
 (global-set-key (kbd "s-<f4>") 'go-to-scratch)
 (require 'exwm-edit)
@@ -365,6 +366,10 @@
     (run-hooks 'exwm-floating-setup-hook))
   ;; Redraw the frame.
   (redisplay t))
+
+;; Additional commands that should also work in exwm
+(exwm-input-set-key (kbd "s-<return>") (lambda () (interactive) (+vterm/toggle nil)))
+(exwm-input--update-global-prefix-keys)
 
 
 (provide 'exwm-tweaks)
