@@ -10,4 +10,7 @@
 ;; Delete selection when pasting
 (delete-selection-mode 1)
 
+; Save the session
+(desktop-save-mode 1)
+
 (provide 'general)
