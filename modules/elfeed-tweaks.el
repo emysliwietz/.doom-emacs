@@ -34,7 +34,7 @@
       :nm "q" #'elfeed-save-close
       :nm "o" #'ace-link-elfeed
       :nm "A" #'elfeed-wget-url
-      :nm "RET" #'org-ref-elfeed-add
+      :nm "RET" #'elfeed-tube-mpv-open
       :nm "n" #'elfeed-show-next
       :nm "N" #'elfeed-show-prev
       :nm "p" #'elfeed-show-pdf
@@ -492,6 +492,12 @@
 (setq elfeed-tube-captions-languages '("en" "de" "la" "english (auto generated)" "german (auto generated)")
       elfeed-tube-captions-chunk-time 60
       elfeed-tube-thumbnail-size 'large)
+
+(defun elfeed-tube-mpv-open ()
+  "Opens selected elfeed tube feed in mpv and activates follow mode"
+  (interactive)
+  (elfeed-tube-mpv-follow-mode 1)
+  (elfeed-tube-mpv (point)))
 
 (add-hook! 'elfeed-show-mode-hook '(lambda () (elfeed-tube-mpv-follow-mode 1)))
 
