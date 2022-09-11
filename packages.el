@@ -49,6 +49,7 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
+(package! xelb)
 (package! exwm)
 (package! winum)
 (package! switch-window)
@@ -89,8 +90,8 @@
 (package! keycast :pin "04ba7519f34421c235bac458f0192c130f732f12")
 (package! page-break-lines :recipe (:host github :repo "purcell/page-break-lines"))
 (package! spray :pin "74d9dcfa2e8b38f96a43de9ab0eb13364300cb46")
-(package! authinfo-color-mode
-  :recipe (:local-repo "lisp/authinfo-color-mode"))
+;(package! authinfo-color-mode
+;  :recipe (:repo "lisp/authinfo-color-mode"))
 (package! systemd :pin "b6ae63a236605b1c5e1069f7d3afe06ae32a7bae")
 ; Ebooks
 (package! calibredb :pin "cb93563d0ec9e0c653210bc574f9546d1e7db437")
@@ -105,3 +106,7 @@
 (package! good-scroll)
 (package! desktop-environment)
 (package! emms)
+(package! elfeed-tube)
+(package! mpv)
+(package! elfeed-tube-mpv)
+(package! spell-fu)
