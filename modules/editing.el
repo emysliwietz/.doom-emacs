@@ -128,6 +128,6 @@
 (use-package! systemd
   :defer t)
 
-
+(setq evil-respect-visual-line-mode t)
 
 (provide 'editing)
