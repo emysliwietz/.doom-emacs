@@ -91,14 +91,15 @@
 (defun cleanup-after-init ()
   (switch-to-buffer "*scratch*")
   (delete-other-windows)
-  (kill-unwanted-buffers))
+  (kill-unwanted-buffers)
+  )
 
 (defun schedule-cleanup-after-init ()
     (run-at-time "1 sec" nil 'cleanup-after-init))
 
-(schedule-cleanup-after-init)
+;(schedule-cleanup-after-init)
 
-(add-hook 'after-init-hook 'schedule-cleanup-after-init)
+;(add-hook 'after-init-hook 'schedule-cleanup-after-init)
 
 (use-package! info-colors
   :commands (info-colors-fontify-node))
