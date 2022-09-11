@@ -14,7 +14,7 @@
 
 
 (defun psalm ()
-  (shell-command-to-string "~/.scripts/psalms.sh en"))
+  (shell-command-to-string "~/.scripts/psalms.sh de"))
 
 
 (setq fancy-splash-last-size nil)
