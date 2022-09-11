@@ -1,19 +1,31 @@
 ;;; shortcuts.el -*- lexical-binding: t; -*-
 
 ;;;; Copy-whole-line
-(fset 'copy-whole-line
-      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([1 67108896 5 134217847] 0 "%d")) arg)))
+(defun copy-whole-line ()
+  (interactive)
+  (save-excursion
+    (kill-ring-save (point-at-bol) (point-at-eol))))
 
 (global-set-key (kbd "C-c w l") 'copy-whole-line)
 
 ;;;; Copy-line-above and copy-line-below (and paste)
-(fset 'copy-line-above
-      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([1 16 1 67108896 5 134217847 14 25] 0 "%d")) arg)))
+(defun copy-line-above ()
+  (interactive)
+  (save-excursion
+    (evil-previous-visual-line)
+    (copy-whole-line)
+    (evil-next-visual-line)
+    (evil-paste-after 1)))
 
 (global-set-key (kbd "C-c l a") 'copy-line-above)
 
-(fset 'copy-line-below
-      (lambda (&optional arg) "Keyboard macro." (interactive "p") (kmacro-exec-ring-item (quote ([1 14 1 67108896 5 134217847 16 25] 0 "%d")) arg)))
+(defun copy-line-below ()
+  (interactive)
+  (save-excursion
+    (evil-next-visual-line)
+    (copy-whole-line)
+    (evil-previous-visual-line)
+    (evil-paste-after 1)))
 
 (global-set-key (kbd "C-c l b") 'copy-line-below)
 
@@ -241,4 +253,12 @@
 (use-package! sudo-edit
   :bind ("C-c s" . sudo-edit))
 
+(defun rededicate-window ()
+  "Toggles window dedication in the selected window."
+  (interactive)
+  (let ((dedication (not (window-dedicated-p (selected-window)))))
+    (message (format "%s" dedication))
+    (set-window-dedicated-p (selected-window) dedication)))
+
+(global-set-key (kbd "s-<return>") (lambda () (interactive) (+vterm/toggle nil)))
 (provide 'shortcuts)
