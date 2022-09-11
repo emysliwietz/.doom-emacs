@@ -98,6 +98,7 @@
 	([?\s-q] . kill-curr-buffer)
 	([?\s-n] . switchmonitor-next)
 	([?\s-p] . switchmonitor-prev)
+        ;((kbd "s-<return>") . switchmonitor-prev)
         ,@(mapcar (lambda (i)
                     `(,(kbd (format "s-%d" i)) .
                       (lambda ()
@@ -113,7 +114,9 @@
 	      (progn))
 	    (exwm-layout-hide-mode-line)))
 
-
+(setq exwm-input-prefix-keys 
+'(?\C-x ?\C-u ?\C-h ?\M-x ?\M-` ?\M-& ?\M-:))
+ 
 (global-set-key (kbd "s-<f4>") 'go-to-scratch)
 (require 'exwm-edit)
 (defun ag-exwm/on-exwm-edit-compose ()
