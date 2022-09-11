@@ -64,7 +64,9 @@
   (elfeed-org)
   (use-package! elfeed-link)
   (elfeed-db-load)
-  (setq elfeed-search-filter "@1-week-ago +unread"
+  (setq ;elfeed-search-filter "@1-week-ago +unread"
+        elfeed-search-filter "@3-days-ago unread"
+        flycheck-global-modes '(not . (elfeed-search-mode))
         elfeed-summary--only-unread t
         elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
         elfeed-search-title-min-width 80
@@ -265,7 +267,9 @@
   (interactive)
   (when (and (functionp 'elfeed-db-load) (not (get-buffer "*elfeed-summary*")))
     (make-thread (elfeed-db-load)))
-  (elfeed-summary))
+  (elfeed-summary)
+  (when (boundp 'elfeed-summary--current-pos)
+    (goto-char elfeed-summary--current-pos)))
 
 (defun elfeed-summary-load-update ()
   "Loads the database again before updating"
@@ -465,5 +469,30 @@
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
   (async-shell-command (concat "mv " youtube-dl-directory "/* " youtube-dl-permanent-directory "/")))
 
+(use-package! elfeed-tube
+  :after elfeed
+  :demand t
+  :config
+  ;; (setq elfeed-tube-auto-save-p nil) ; default value
+  ;; (setq elfeed-tube-auto-fetch-p t)  ; default value
+  (elfeed-tube-setup)
+
+  :bind (:map elfeed-show-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)
+         :map elfeed-search-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)))
+
+(use-package! elfeed-tube-mpv
+  :bind
+  ("C-c C-f" . elfeed-tube-mpv-follow-mode)
+  ("C-c C-w" . elfeed-tube-mpv-where))
+
+(setq elfeed-tube-captions-languages '("en" "de" "la" "english (auto generated)" "german (auto generated)")
+      elfeed-tube-captions-chunk-time 60
+      elfeed-tube-thumbnail-size 'large)
+
+(add-hook! 'elfeed-show-mode-hook '(lambda () (elfeed-tube-mpv-follow-mode 1)))
 
 (provide 'elfeed-tweaks)
