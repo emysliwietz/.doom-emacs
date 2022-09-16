@@ -24,7 +24,7 @@
   :init (all-the-icons-ibuffer-mode 1))
 
 (use-package! all-the-icons-ivy
-;(all-the-icons-ivy-setup)
+(all-the-icons-ivy-setup)
 :config
 (setq all-the-icons-ivy-file-commands
       '(counsel-find-file counsel-file-jump counsel-recentf counsel-projectile-find-file counsel-projectile-find-dir)))
