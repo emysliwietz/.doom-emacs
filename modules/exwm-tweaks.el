@@ -135,7 +135,11 @@
            floating-mode-line nil
 ;           width 0.4
 ;           height 0.4
-	   )))
+	   )
+        ((equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
+         floating t
+         floating-mode-line nil)
+        ))
 
 (defun exwm-floating--set-floating (id)
   "Make window ID floating."
@@ -369,7 +373,13 @@
 
 ;; Additional commands that should also work in exwm
 (exwm-input-set-key (kbd "s-<return>") (lambda () (interactive) (+vterm/toggle nil)))
+(exwm-input-set-key (kbd "s-e") (lambda () (interactive) (elfeed-load-summary)))
+(exwm-input-set-key (kbd "s-<f4>") (lambda () (interactive) (go-to-scratch)))
+(exwm-input-set-key (kbd "s-<left>") (lambda () (interactive) (winner-undo)))
+(exwm-input-set-key (kbd "s-<right>") (lambda () (interactive) (winner-undo)))
+(exwm-input-set-key (kbd "s-a") (lambda () (interactive) (org-agenda-list)))
 (exwm-input--update-global-prefix-keys)
+
 
 
 (provide 'exwm-tweaks)
