@@ -121,5 +121,6 @@
   (openwith-mode t)
   (setq large-file-warning-threshold 3000000000))
 
+(define-key dired-mode-map (kbd "<backspace>") 'dired-up-directory)
 
 (provide 'dired-tweaks)
