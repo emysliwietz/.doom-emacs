@@ -269,7 +269,9 @@
     (make-thread (elfeed-db-load)))
   (elfeed-summary)
   (when (boundp 'elfeed-summary--current-pos)
-    (goto-char elfeed-summary--current-pos)))
+    (progn
+      (goto-char elfeed-summary--current-pos)
+      (recenter-top-bottom))))
 
 (defun elfeed-summary-load-update ()
   "Loads the database again before updating"
