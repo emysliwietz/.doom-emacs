@@ -88,6 +88,7 @@
 (after-startup (require 'ebook-tweaks))
 (after-startup (require 'elfeed-tweaks))
 (after-startup (require 'email))
+(after-startup (require 'org-tweaks))
 (after-startup (require 'email-config))
 (after-startup (require 'email-accounts))
 ; Unsorted
