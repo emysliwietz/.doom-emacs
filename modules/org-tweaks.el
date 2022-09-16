@@ -2,7 +2,7 @@
 
 (after! org
   (setq org-directory "~/sync/org/"
-        org-agenda-files "~/sync/agenda/"
+        org-agenda-files (directory-files "~/sync/agenda/" t directory-files-no-dot-files-regexp)
         org-todo-keywords '((sequence "TODO(t)" "LECT(l)" "MEET(m)" "PROJ(p)" "LOOP(r)" "STRT(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)")
                             (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")
                             (sequence "|" "OKAY(o)" "YES(y)" "NO(n)"))
