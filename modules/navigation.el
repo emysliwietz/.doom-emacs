@@ -56,8 +56,9 @@ This function is intended for use with `ivy-ignore-buffers'."
   "Return non-nil if STR names a Dired buffer.
 This function is intended for use with `ivy-ignore-buffers'."
   (or
-   (string-equal "elfeed.org" str))
-  )
+   (string-equal "elfeed.org" str)
+   (member str (map 'list 'file-name-nondirectory org-agenda-files))
+   ))
 
 (with-eval-after-load 'ivy
   (progn
@@ -118,11 +119,11 @@ This function is intended for use with `ivy-ignore-buffers'."
   (mapc 'kill-buffer (buffer-list)))
 (global-set-key (kbd "C-x C-k k") 'close-all-buffers)
 
-(setq org-agenda-files ())
 ;; Kill unwanted buffers
 (defun kill-if-unwanted (buffer)
   (let ((b (buffer-name buffer))
 	(bfn (buffer-file-name buffer))
+        (bmm (buffer-local-value 'major-mode buffer))
 	(unwanted-buffers '(
 			    "*Messages*"
 			    "*Backtrace*"
@@ -141,19 +142,20 @@ This function is intended for use with `ivy-ignore-buffers'."
 			    "*elfeed-search*"
 			    "elfeed.org"
 			    )))
-    (cond ((member b unwanted-buffers) (kill-buffer buffer))
-	  ((member bfn (mapcar 'expand-file-name org-agenda-files)) (kill-buffer buffer))
-	  ((string-match "^\*tramp.*\*$" b) (kill-buffer buffer))
-	  ((string-match "\.png$" b) (kill-buffer buffer))
-	  ((string-match "\.jpg$" b) (kill-buffer buffer))
-	  ((string-match "\.jpeg$" b) (kill-buffer buffer))
-	  ((string-match "\.gif$" b) (kill-buffer buffer))
-	  ((string-match "\.log$" b) (kill-buffer buffer))
-	  ((string-match "^_region_.tex$" b) (kill-buffer buffer))
-	  ((string-match "^\*helpful .*\*" b) (kill-buffer buffer))
-	  ((string-match "^magit" b) (kill-buffer buffer))
-	  ((string-match "^\*.*\*$" b) (kill-buffer buffer))
-	  )))
+    (when (or (member b unwanted-buffers)
+	  (member bfn (mapcar 'expand-file-name org-agenda-files))
+          (eq 'dired-mode bmm)
+	  (string-match "^\*tramp.*\*$" b)
+	  (string-match "\.png$" b)
+	  (string-match "\.jpg$" b)
+	  (string-match "\.jpeg$" b)
+	  (string-match "\.gif$" b)
+	  (string-match "\.log$" b)
+	  (string-match "^_region_.tex$" b)
+	  (string-match "^\*helpful .*\*" b)
+	  (string-match "^magit" b)
+	  (string-match "^\*.*\*$" b))
+      (kill-buffer b))))
 
 (defun kill-unwanted-buffers ()
   (interactive)

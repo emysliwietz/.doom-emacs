@@ -15,8 +15,8 @@
 
 (display-time-mode 1)                             ; Enable time in the mode-line
 
-;(unless (string-match-p "^Power N/A" (battery))   ; On laptops...
-;  (display-battery-mode 1))                       ; it's nice to know how much power you have
+                                        ;(unless (string-match-p "^Power N/A" (battery))   ; On laptops...
+                                        ;  (display-battery-mode 1))                       ; it's nice to know how much power you have
 
 (global-subword-mode 1)                           ; Iterate through CamelCase words
 
@@ -24,9 +24,9 @@
 ;;; Unicode emojis
 (if (>= emacs-major-version 27)
     (set-fontset-font t '(#x1f000 . #x1faff)
-              (font-spec :family "Noto Color Emoji")))
+                      (font-spec :family "Noto Color Emoji")))
 (set-face-attribute
-  'default nil :stipple nil :height 120 :width 'normal :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'normal :foundry "outline" :family "Source Code Pro for Powerline")
+ 'default nil :stipple nil :height 120 :width 'normal :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'normal :foundry "outline" :family "Source Code Pro for Powerline")
 ;;;; setting up composition functions for emoji modifiers
 (dolist (items `(((?🇦 . ?🇿) [".[🇦-🇿]+" 0 font-shape-gstring])
                  ((?🏳 . ?🏴) [".[️‍🌈⚧☠󠀠-󠁿]*" 0 font-shape-gstring])
@@ -95,11 +95,11 @@
   )
 
 (defun schedule-cleanup-after-init ()
-    (run-at-time "1 sec" nil 'cleanup-after-init))
+  (run-at-time "1 sec" nil 'cleanup-after-init))
 
-(schedule-cleanup-after-init)
+                                        ;(schedule-cleanup-after-init)
 
-(add-hook 'after-init-hook 'schedule-cleanup-after-init)
+                                        ;(add-hook 'after-init-hook 'schedule-cleanup-after-init)
 
 (use-package! info-colors
   :commands (info-colors-fontify-node))
@@ -142,6 +142,30 @@
 
 (run-with-idle-timer 0.1 nil (lambda () (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)))
 
-; Modern org mode
+                                        ; Modern org mode
 (global-org-modern-mode t)
+
+;; Transparent scratch buffer
+(defun buffer-empty-p (&optional buffer)
+  (= (buffer-size buffer) 0))
+
+(defun frame-trans-on ()
+  (interactive)
+  (set-frame-parameter (selected-frame) 'alpha '(0 0)))
+
+(defun frame-trans-off ()
+  (interactive)
+  (set-frame-parameter (selected-frame) 'alpha '(100 100)))
+
+(defun scratch-trans ()
+  (setq my-buffer (get-buffer "*scratch*"))
+  (cond ((eq my-buffer (window-buffer (selected-window)))
+         (if (= (length (window-list)) 1) (frame-trans-on) (frame-trans-off)))
+        ((get-buffer-window my-buffer)
+         (frame-trans-off))
+        (t
+         (frame-trans-off))))
+
+(add-hook 'window-configuration-change-hook 'scratch-trans)
+
 (provide 'interface)
