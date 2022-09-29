@@ -11,7 +11,7 @@
 
 (use-package! ivy
   :diminish (ivy-mode)
-  :bind (("C-x C-b" . ivy-switch-buffer))
+  :bind (("C-x C-b" . ivy-icon-switch-buffer))
   :config
   (ivy-mode 1)
   (setq ivy-use-virtual-buffers t
@@ -23,11 +23,34 @@
 (use-package! all-the-icons-ibuffer
   :init (all-the-icons-ibuffer-mode 1))
 
-(use-package! all-the-icons-ivy
-(all-the-icons-ivy-setup)
-:config
-(setq all-the-icons-ivy-file-commands
-      '(counsel-find-file counsel-file-jump counsel-recentf counsel-projectile-find-file counsel-projectile-find-dir)))
+(defun ivy-icon-switch-buffer ()
+  "ivy-switch-buffer with icons"
+  (interactive)
+  (condition-case nil
+      (all-the-icons-ivy-setup))
+
+(defun all-the-icons-ivy--buffer-transformer (b s)
+  "Return a candidate string for buffer B named S preceded by an icon.
+Try to find the icon for the buffer's B `major-mode'.
+If that fails look for an icon for the mode that the `major-mode' is derived from."
+  (let ((mode (buffer-local-value 'major-mode b))
+	(buffname (replace-regexp-in-string "<.*>$" "" s)))
+    (format (concat "%s" all-the-icons-spacer "%s")
+            (propertize "\t" 'display (or
+                                       (all-the-icons-ivy--icon-for-mode mode)
+                                       (all-the-icons-ivy--icon-for-mode (get mode 'derived-mode-parent))
+				       (all-the-icons-ivy--icon-for-firefox mode buffname)
+				       (all-the-icons-ivy--icon-for-tor mode buffname)
+				       (all-the-icons-ivy--icon-for-exwm mode buffname)
+                                       (funcall
+                                        all-the-icons-ivy-family-fallback-for-buffer
+                                        all-the-icons-ivy-name-fallback-for-buffer)))
+            (all-the-icons-ivy--buffer-propertize b s))))
+
+
+  (ivy-switch-buffer))
+
+(setq all-the-icons-ivy-file-commands '(counsel-find-file counsel-file-jump counsel-recentf counsel-projectile-find-file counsel-projectile-find-dir))
 
 ;; Overwrite some stuff for exwm and icons in Firefox
 (defun all-the-icons-ivy--icon-for-firefox (mode buffname)
@@ -38,7 +61,7 @@ Assuming that url is in title like in Keepass Helper extension."
 	    (fnl (split-string buffname " — ")))
 	    (let ((browser (format "%s" (last fnl))))
       (if (or (string-equal browser "(Mozilla Firefox)") (string-equal browser "(Mozilla Firefox (Private Browsing))"))
-	  (all-the-icons-icon-for-url (first bnl) :face 'all-the-icons-blue)
+	  (all-the-icons-faicon "firefox" :face 'all-the-icons-red)
 	)))))
 
 ;; Overwrite some stuff for exwm and icons in Tor Browser
@@ -77,25 +100,6 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 	     (all-the-icons-faicon "terminal" :face 'all-the-icons-green))
 	    )))
 
-
-
-(defun all-the-icons-ivy--buffer-transformer (b s)
-  "Return a candidate string for buffer B named S preceded by an icon.
-Try to find the icon for the buffer's B `major-mode'.
-If that fails look for an icon for the mode that the `major-mode' is derived from."
-  (let ((mode (buffer-local-value 'major-mode b))
-	(buffname (replace-regexp-in-string "<.*>$" "" s)))
-    (format (concat "%s" all-the-icons-spacer "%s")
-            (propertize "\t" 'display (or
-                                       (all-the-icons-ivy--icon-for-mode mode)
-                                       (all-the-icons-ivy--icon-for-mode (get mode 'derived-mode-parent))
-				       (all-the-icons-ivy--icon-for-firefox mode buffname)
-				       (all-the-icons-ivy--icon-for-tor mode buffname)
-				       (all-the-icons-ivy--icon-for-exwm mode buffname)
-                                       (funcall
-                                        all-the-icons-ivy-family-fallback-for-buffer
-                                        all-the-icons-ivy-name-fallback-for-buffer)))
-            (all-the-icons-ivy--buffer-propertize b s))))
 
 (use-package! swiper
   :bind (("C-s" . swiper)
