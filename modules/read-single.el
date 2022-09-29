@@ -3,7 +3,7 @@
 (use-package! spray
   :commands spray-mode
   :config
-  (setq spray-wpm 600
+  (setq spray-wpm 400
         spray-height 800)
   (defun spray-mode-hide-cursor ()
     "Hide or unhide the cursor as is appropriate."
