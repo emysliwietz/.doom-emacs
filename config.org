@@ -83,6 +83,7 @@
 (after-startup (require 'pamparam))
 (after-startup (require 'beancount-tweaks))
 (after-startup (require 'popes))
+(after-startup (require 'bible))
 (after-startup (require 'keycast-tweaks))
 (after-startup (require 'wttrin))
 (after-startup (require 'ebook-tweaks))
