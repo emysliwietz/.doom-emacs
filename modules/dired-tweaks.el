@@ -123,4 +123,33 @@
 
 (define-key dired-mode-map (kbd "<backspace>") 'dired-up-directory)
 
+;; Docview j and k go forward a line which is weird behaviour in a pdf
+;; Paging is prefered to scrolling
+(after! doc-view-mode
+(define-key doc-view-mode-map (kbd "j") 'doc-view-next-page)
+(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-page)
+  )
+
+;; Convert files automatically
+(defun dired-convert-file ()
+  "Converts pptx or docx files to pdf"
+  (interactive)
+  (cl-map 'nil '(lambda (file)
+                   (let ((ext (file-name-extension file))
+                         (base-name-sans-ext (file-name-sans-extension (file-name-nondirectory file))))
+                     (cond
+                      ((or (string-equal ext "pptx") (string-equal ext "ppt"))
+                       (async-shell-command (format "libreoffice --headless --invisible --convert-to pdf \"%s\"" file)))
+                      ((or (string-equal ext "docx") (string-equal ext "doc") (string-equal ext "org") (string-equal ext "txt"))
+                       (async-shell-command (format "pandoc -i \"%s\" -o \"%s.pdf\"" file base-name-sans-ext)))
+                      ((or (string-equal ext "jpg") (string-equal ext "jpeg") (string-equal ext "png"))
+                       (async-shell-command (format "convert \"%s\" -rotate 90 \"%s\"" file file)))
+                      ))) (dired-get-marked-files)))
+
+(map! :map dired-mode-map
+      :after dired-mode
+      :n doom-leader-key nil
+      :n "c" #'dired-convert-file
+)
+
 (provide 'dired-tweaks)
