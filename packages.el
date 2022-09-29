@@ -110,3 +110,4 @@
 (package! mpv)
 (package! elfeed-tube-mpv)
 (package! spell-fu)
+(package! wallpaper)

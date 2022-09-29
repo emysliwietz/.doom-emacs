@@ -71,6 +71,7 @@
 ;;; with a button press
 (defun go-to-scratch ()
   (interactive)
+  (message "%s" (selected-window))
   (switch-to-buffer "*scratch*"))
 
 (defun go-to-scratch-other ()
@@ -380,6 +381,8 @@
 (exwm-input-set-key (kbd "s-a") (lambda () (interactive) (org-agenda-list)))
 (exwm-input--update-global-prefix-keys)
 
-
+;; Wallpaper
+(setq wallpaper-cycle-directory "/home/user/dox/wallpapers")
+(wallpaper-set-wallpaper)
 
 (provide 'exwm-tweaks)
