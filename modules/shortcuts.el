@@ -57,7 +57,7 @@
   (when (outline-invisible-p)
     (save-excursion
       (outline-previous-visible-heading 1)
-      (org-show-subtree))))
+      (org-fold-show-subtree))))
 
 
 (defun agenda-today ()
@@ -126,35 +126,39 @@
 ;; University
 (defun uni ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni"))
 
 (defun uni6 ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni/6"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6"))
 
 (defun orthodox-liturgy-1 ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni/6/Orthodox Liturgy I"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox Liturgy I"))
 
 (defun orthodox-history-1 ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni/6/Orthodox History I"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox History I"))
 
 (defun orthodox-history-2 ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni/6/Orthodox History II"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox History II"))
 
 (defun orthodox-scripture ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni/6/Orthodox Scripture"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox Scripture"))
 
 (defun war-and-statesbuilding ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni/6/War and Statesbuilding in Afghanistan"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/War and Statesbuilding in Afghanistan"))
 
 (defun exegesis ()
   (interactive)
-  (find-file "/ssh:sermak.xyz:/mnt/backup/backups/pre_master/Uni/6/Exegesis of the Old and New Testament"))
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Exegesis of the Old and New Testament"))
+
+(defun monte-carlo ()
+  (interactive)
+  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Monte Carlo Techniques"))
 
 ;;; Set Uni keys
 (global-set-key (kbd "C-c u u") 'uni)
@@ -165,6 +169,7 @@
 (global-set-key (kbd "C-c u s") 'orthodox-scripture)
 (global-set-key (kbd "C-c u e") 'exegesis)
 (global-set-key (kbd "C-c u w") 'war-and-statesbuilding)
+(global-set-key (kbd "C-c u m") 'monte-carlo)
 
 ;; Tones
 (global-set-key (kbd "C-c -") (lambda () (interactive) (insert "̄")))
@@ -208,5 +213,12 @@
 (global-set-key (kbd "C-c a u") 'agenda-uni)
 (global-set-key (kbd "C-c a p") 'agenda-personal)
 
+; Books
+
+(defun books ()
+  (interactive)
+  (find-file "/home/user/dox/books/"))
+
+(global-set-key (kbd "C-c b") 'books)
 
 (provide 'shortcuts)
