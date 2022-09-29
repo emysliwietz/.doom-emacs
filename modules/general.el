@@ -10,7 +10,11 @@
 ;; Delete selection when pasting
 (delete-selection-mode 1)
 
-; Save the session
+;; Save the session
 (desktop-save-mode 1)
+(setq desktop-restore-eager 10)
+;; Save last visited place in files
+(setq-default save-place t)
+(setq save-place-file "~/.emacs.d/etc/saveplace")
 
 (provide 'general)
