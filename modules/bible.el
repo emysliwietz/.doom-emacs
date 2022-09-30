@@ -10,10 +10,9 @@
 
 (defun bible-text (binary book-chapter-and-verse)
   "Return text of Bible binary at specified book, chapter and verse"
-  (shell-command-to-string (format "%s %s | sed 's/\r//g'" binary book-chapter-and-verse)))
-
-(bible-books-long "kjv")
-(bible-text "kjv" "Exo 1:1")
+  (let* ((bcv1 (string-replace "." "" book-chapter-and-verse))
+        (bcv (string-replace "," ":" bcv1)))
+  (shell-command-to-string (format "%s %s | sed 's/\r//g'" binary bcv))))
 
 (defun bible-select (binary)
   "Ask user to select bible verse using kjv-like binary"
@@ -88,8 +87,9 @@
          (end
           (save-excursion
             (goto-char start)
-            (re-search-forward "[^[:alnum:]:-]" nil t 2)))
+            (re-search-forward "[^[:alnum:]\\:\\,\\-]" nil t 2)))
          (verse (substring-no-properties (buffer-string) (1- start) (- end 2))))
+    (message verse)
     (unless (and (boundp 'bible-minor-mode--last-verse) (string-equal bible-minor-mode--last-verse verse))
       (setq bible-minor-mode--last-verse verse)
       ;(run-with-idle-timer 10 nil (lambda () (setq bible-minor-mode--last-verse nil)))
@@ -97,21 +97,6 @@
         (if (> (length bible-verse) 2000)
             (substring bible-verse 0 2000)
           bible-verse)))))
-
- ; (let* ((category (get-char-code-property (char-after pos) 'general-category))
-     ;    (region (substring (buffer-string) (1- start)))
-     ;    (verse-start (string-match (bible-verse-regex) region))
-     ;    (verse-end (save-excursion
-                  ;(goto-char verse-start)
-                  ;(search-forward " " nil t 2))))
-
-         ;(verse (substring (buffer-string (1- verse-start) (verse-end)))))
- ;        (backward-num (cond category
- ;                            ((eq category 'Lu) 0)
- ;                            ((eq category 'Ll) 1)
- ;                            ((eq))
- ;                            ))
- ;       (message (format "%s" category))
 
 (defun bible-minor-mode-highlight ()
   "Highlight bible verses"
@@ -148,7 +133,7 @@
   (when (not (boundp 'bible-minor-mode--bible-verse-regex))
     (setq bible-minor-mode--bible-verse-regex
           (format
-           "\\(%s\\) \\([[:digit:]]+\\(\\:[[:digit:]]+\\)?\\)\\(-[[:digit:]]+\\(\\:[[:digit:]]+\\)?\\)?"
+           "\\(%s\\) \\([[:digit:]]+\\(\\(\\:\\|\\,\\)[[:digit:]]+\\)?\\)\\(-[[:digit:]]+\\(\\(\\:\\|\\,\\)[[:digit:]]+\\)?\\)?"
            (bible-books-regex))))
   bible-minor-mode--bible-verse-regex)
 
