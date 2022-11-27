@@ -12,7 +12,8 @@
         initial-major-mode 'org-mode
         org-export-async-init-file "/home/user/.doom.d/ext/export/org-export-init.el"
         org-latex-src-block-backend 'engraved
-        org-latex-compiler "xelatex")
+        org-latex-compiler "xelatex"
+        TeX-command-extra-options "--shell-escape")
 
   ;;; Add org mode to txt and archive files
   (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
@@ -37,4 +38,16 @@
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 )
+
+(defun org-agenda-export-to-ics ()
+  "Exports current org agenda buffer to ics, treating DEADLINES as dates"
+  (interactive)
+  (with-temp-buffer
+    (cl-map 'nil #'insert-file-contents org-agenda-files)
+    (replace-regexp-entire-buffer "<.*> \\(<.*>\\)" "\\1")
+    (replace-regexp-entire-buffer "\\(<.*>\\) <.*>" "\\1")
+    (replace-regexp-entire-buffer "SCHEDULED: \\(<.*>\\)" "\\1")
+    (replace-regexp-entire-buffer "DEADLINE: \\(<.*>\\)" "\\1")
+    (message (org-icalendar-export-to-ics))))
+
 (provide 'org-tweaks)

@@ -4,7 +4,7 @@
   :commands spray-mode
   :config
   (setq spray-wpm 400
-        spray-height 800)
+        spray-height 300)
   (defun spray-mode-hide-cursor ()
     "Hide or unhide the cursor as is appropriate."
     (if spray-mode
@@ -13,15 +13,15 @@
       (setq-local evil-normal-state-cursor spray--last-evil-cursor-state)))
   (add-hook 'spray-mode-hook #'spray-mode-hide-cursor)
   (map! :map spray-mode-map
-        "<return>" #'spray-start/stop
-        "<space>" #'spray-start/stop
-        "f" #'spray-faster
-        "s" #'spray-slower
-        "t" #'spray-time
-        "<right>" #'spray-forward-word
-        "h" #'spray-forward-word
-        "<left>" #'spray-backward-word
-        "l" #'spray-backward-word
-        "q" #'spray-quit))
+        :n "<return>" #'spray-start/stop
+        :n "SPC" #'spray-start/stop
+        :n "f" #'spray-faster
+        :n "s" #'spray-slower
+        :n "t" #'spray-time
+        :n "<right>" #'spray-forward-word
+        :n "h" #'spray-forward-word
+        :n "<left>" #'spray-backward-word
+        :n "l" #'spray-backward-word
+        :n "q" #'spray-quit))
 
 (provide 'read-single)

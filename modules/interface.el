@@ -168,4 +168,17 @@
 
 (add-hook 'window-configuration-change-hook 'scratch-trans)
 
+;; Async shell commands without popup buffer
+(defun async-shell-command-no-window
+    (command)
+  "Execute async shell command without popup buffer."
+  (interactive)
+  (let
+      ((display-buffer-alist
+        (list
+         (cons
+          "\\*Async Shell Command\\*.*"
+          (cons #'display-buffer-no-window nil)))))
+    (async-shell-command
+     command)))
 (provide 'interface)

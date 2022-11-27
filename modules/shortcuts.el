@@ -124,41 +124,49 @@
 (global-set-key (kbd "C-c z s r") 'ceres-root)
 
 ;; University
+(setq uni-base-folder "/mnt/server-de/mnt/backup/backups/pre_master/Uni")
+
+(defun open-uni-folder (folder)
+  "Mount/Open university folder specified as FOLDER."
+  (when (not (file-exists-p uni-base-folder))
+    (shell-command "sshfs sermak.xyz:/ /mnt/server-de"))
+  (find-file (f-join uni-base-folder folder)))
+
 (defun uni ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni"))
+  (open-uni-folder ""))
 
 (defun uni6 ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6"))
+  (open-uni-folder "6"))
 
 (defun orthodox-liturgy-1 ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox Liturgy I"))
+  (open-uni-folder "6/Orthodox Liturgy I"))
 
 (defun orthodox-history-1 ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox History I"))
+  (open-uni-folder "6/Orthodox History I"))
 
 (defun orthodox-history-2 ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox History II"))
+  (open-uni-folder "6/Orthodox History II"))
 
 (defun orthodox-scripture ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Orthodox Scripture"))
+  (open-uni-folder "6/Orthodox Scripture"))
 
 (defun war-and-statesbuilding ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/War and Statesbuilding in Afghanistan"))
+  (open-uni-folder "6/War and Statesbuilding in Afghanistan"))
 
 (defun exegesis ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Exegesis of the Old and New Testament"))
+  (open-uni-folder "6/Exegesis of the Old and New Testament"))
 
 (defun monte-carlo ()
   (interactive)
-  (find-file "/mnt/server-de/mnt/backup/backups/pre_master/Uni/6/Monte Carlo Techniques"))
+  (open-uni-folder "6/Monte Carlo Techniques"))
 
 ;;; Set Uni keys
 (global-set-key (kbd "C-c u u") 'uni)

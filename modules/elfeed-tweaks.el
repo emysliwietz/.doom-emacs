@@ -2,8 +2,7 @@
 
 (setq rmh-elfeed-org-files (cons (expand-file-name "ext/elfeed/elfeed.org" doom-private-dir)())
       elfeed-db-directory (expand-file-name "ext/elfeed/db/" doom-private-dir)
-      elfeed-thumbnail-dir "/tmp/elfeed-thumbnails/"
-      )
+      elfeed-thumbnail-dir "/tmp/elfeed-thumbnails/")
 
 
 (map! :map elfeed-search-mode-map
@@ -49,6 +48,7 @@
       :n "L" #'youtube-dl-list
       :n "V" #'open-yt-dl-videos
       :n "R" #'elfeed-summary-load-update
+      :n "C-x C-s" #'elfeed-summary-save
       :n "RET" #'elfeed-summary-action-save-location)
 
 (after! elfeed-search
@@ -98,7 +98,7 @@
                 default-text-properties '(line-height 1.1))
     (let ((inhibit-read-only t)
           (inhibit-modification-hooks t))
-      (visual-fill-column-mode)
+      (visual-fill-column-mode nil)
       (setq-local shr-current-font '(:family "Linux Libertine O" :height 1.2))
       (set-buffer-modified-p nil)))
 
@@ -247,6 +247,11 @@
 (after! elfeed-summary
   (elfeed-org))
 
+(defun elfeed-summary-save ()
+  "Save database"
+  (interactive)
+  (elfeed-db-save-safe))
+
 (defun elfeed-save-summary ()
   "Save database and go to summary"
   (interactive)
@@ -366,8 +371,8 @@
                                         ; External youtube-dl library
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
 (after-startup (require 'youtube-dl))
-(setq youtube-dl-directory "/tmp/elfeed-youtube"
-      youtube-dl-permanent-directory "~/elfeed-youtube"
+(setq youtube-dl-directory "~/elfeed-youtube"
+      youtube-dl-temp-directory "/tmp/elfeed-youtube"
       youtube-dl-program "yt-dlp"
       youtube-dl-arguments
       (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
@@ -382,15 +387,15 @@
                                         ; (setq youtube-dl-arguments nil)
 
 (global-set-key (kbd "s-v") 'open-yt-dl-videos)
-(global-set-key (kbd "s-V") 'open-yt-dl-permanent-videos)
+(global-set-key (kbd "s-V") 'open-yt-dl-temp-videos)
 
 (defun open-yt-dl-videos ()
   (interactive)
   (find-file youtube-dl-directory))
 
-(defun open-yt-dl-permanent-videos ()
+(defun open-yt-dl-temp-videos ()
   (interactive)
-  (find-file youtube-dl-permanent-directory))
+  (find-file youtube-dl-temp-directory))
 
 
 (cl-defun elfeed-show-youtube-dl (&key slow)
@@ -464,12 +469,12 @@
     (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
     (async-shell-command (concat "wget -O " youtube-dl-directory "/\"" (elfeed-entry-title elfeed-show-entry) "\".mp3 " url))))
 
-(defun youtube-dl-move-permanent ()
-  "Moves content of elfeed video dir to permanent location"
+(defun youtube-dl-move-temp ()
+  "Moves content of elfeed video dir to temporary location"
   (interactive)
-  (mkdir youtube-dl-permanent-directory t)
+  (mkdir youtube-dl-temp-directory t)
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
-  (async-shell-command (concat "mv " youtube-dl-directory "/* " youtube-dl-permanent-directory "/")))
+  (async-shell-command (concat "mv " youtube-dl-directory "/* " youtube-dl-temp-directory "/")))
 
 (use-package! elfeed-tube
   :after elfeed

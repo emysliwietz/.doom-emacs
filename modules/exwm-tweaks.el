@@ -375,10 +375,16 @@
 ;; Additional commands that should also work in exwm
 (exwm-input-set-key (kbd "s-<return>") (lambda () (interactive) (+vterm/toggle nil)))
 (exwm-input-set-key (kbd "s-e") (lambda () (interactive) (elfeed-load-summary)))
+(exwm-input-set-key (kbd "s-v") (lambda () (interactive) (open-yt-dl-videos)))
+(exwm-input-set-key (kbd "s-r") (lambda () (interactive) (progn
+  (+vterm/here t)
+  (vterm-send-string "cd /home/user/dox/install/rosarium && cargo run\n")
+)))
 (exwm-input-set-key (kbd "s-<f4>") (lambda () (interactive) (go-to-scratch)))
 (exwm-input-set-key (kbd "s-<left>") (lambda () (interactive) (winner-undo)))
 (exwm-input-set-key (kbd "s-<right>") (lambda () (interactive) (winner-undo)))
 (exwm-input-set-key (kbd "s-a") (lambda () (interactive) (org-agenda-list)))
+(exwm-input-set-key (kbd "s-m") (lambda () (interactive) (mu4e--goto-inbox)))
 (exwm-input--update-global-prefix-keys)
 
 ;; Wallpaper

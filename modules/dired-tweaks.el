@@ -140,16 +140,27 @@
                      (cond
                       ((or (string-equal ext "pptx") (string-equal ext "ppt"))
                        (async-shell-command (format "libreoffice --headless --invisible --convert-to pdf \"%s\"" file)))
-                      ((or (string-equal ext "docx") (string-equal ext "doc") (string-equal ext "org") (string-equal ext "txt"))
+                      ((or (string-equal ext "docx") (string-equal ext "doc") (string-equal ext "epub") (string-equal ext "tex") (string-equal "html") (string-equal ext "org") (string-equal ext "txt"))
                        (async-shell-command (format "pandoc -i \"%s\" -o \"%s.pdf\"" file base-name-sans-ext)))
                       ((or (string-equal ext "jpg") (string-equal ext "jpeg") (string-equal ext "png"))
                        (async-shell-command (format "convert \"%s\" -rotate 90 \"%s\"" file file)))
                       ))) (dired-get-marked-files)))
 
+;; Toggle youtube-dl-list if in elfeed-youtube buffer, else perform regular load
+(defun dired-load-or-youtube-toggle ()
+  (interactive)
+  (cond ((string-equal (buffer-name) "elfeed-youtube")
+         (youtube-dl-list))
+        ((eq major-mode 'youtube-dl-list-mode) (kill-buffer))
+        (t (dired-do-load))))
+
 (map! :map dired-mode-map
-      :after dired-mode
-      :n doom-leader-key nil
+      ;:after dired-mode
+      ;:n doom-leader-key nil
       :n "c" #'dired-convert-file
-)
+      :n "L" #'dired-load-or-youtube-toggle)
+
+(map! :map youtube-dl-list-mode-map
+      :n "L" #'dired-load-or-youtube-toggle)
 
 (provide 'dired-tweaks)

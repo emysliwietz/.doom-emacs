@@ -2,39 +2,53 @@
 
 (require 'mu4e)
 (require 'smtpmail)
-
-(setq
-message-send-mail-function 'smtpmail-send-it
-starttls-use-gnutls t
-mu4e-sent-messages-behavior 'sent)
-
 (define-key mu4e-view-mode-map (kbd "f") 'mu4e-view-go-to-url)
 
 (setq mu4e-root-maildir "~/mail"
-mu4e-get-mail-command "offlineimap -q -f INBOX"
-mu4e-update-interval 60 ;; second
-mu4e-compose-signature-auto-include nil
-mu4e-view-show-images t
-mu4e-view-prefer-html nil
-;      mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
-mu4e-headers-auto-update t
-mu4e-compose-format-flowed t
-smtpmail-stream-type 'starttls
-mu4e-view-show-addresses t
-mu4e-split-view 'single-window ;; horizontal (default), vertical
-mu4e-attachment-dir "~/Downloads"
-smtpmail-queue-mail nil
-smtpmail-queue-dir "~/mail/queue/cur"
-mu4e-compose-in-new-frame t
-mu4e-compose-dont-reply-to-self t
-mu4e-headers-date-format "%Y-%m-%d %H:%M"
-message-kill-buffer-on-exit t
-mu4e-confirm-quit nil
-mu4e-headers-results-limit 500
-mu4e-use-fancy-chars t)
+      ;mu4e-get-mail-command "offlineimap -q -f INBOX"
+      mu4e-get-mail-command "mbsync -a || true"
+      mu4e-update-interval 300 ;; second
+      mu4e-compose-signature-auto-include nil
+      mu4e-view-show-images t
+      mu4e-view-prefer-html t
+      mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
+      mu4e-headers-auto-update t
+      mu4e-compose-format-flowed t
+      smtpmail-stream-type 'starttls
+      mu4e-view-show-addresses t
+      mu4e-split-view 'single-window ;; horizontal (default), vertical
+      mu4e-attachment-dir "~/Downloads"
+      smtpmail-queue-mail nil
+      smtpmail-queue-dir "~/mail/queue/cur"
+      mu4e-compose-in-new-frame nil
+      mu4e-compose-dont-reply-to-self t
+      mu4e-headers-date-format "%Y-%m-%d %H:%M"
+      message-kill-buffer-on-exit nil
+      mu4e-confirm-quit nil
+      mu4e-context-policy 'ask-if-none
+      mu4e-compose-context-policy 'always-ask
+      mu4e-headers-results-limit 500
+      mu4e-use-fancy-chars t)
+
+(defun mu4e--view-quit-and-back ()
+  "Quit mu4e view buffer and go back to mu4e"
+  (interactive)
+  (mu4e~view-quit-buffer)
+  (=mu4e))
+
+(defun mu4e--goto-inbox ()
+  "Goto mu4e inbox"
+  (interactive)
+  (mu4e~headers-jump-to-maildir "/gmail/INBOX"))
+
+(map! :map mu4e-view-mode-map
+      :after mu4e-view
+      :n "<backspace>" 'mu4e--view-quit-and-back)
+
+(global-set-key (kbd "s-m") 'mu4e--goto-inbox)
 
 (when (fboundp 'imagemagick-register-types)
-(imagemagick-register-types))
+  (imagemagick-register-types))
 
 ;(require 'org-mu4e)
 ;(setq org-mu4e-convert-to-html t

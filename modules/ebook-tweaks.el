@@ -7,7 +7,7 @@
         calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
         sql-sqlite-program "sqlite3")
 
-(setq calibredb-id-width 6)
+(setq calibredb-id-width 12)
 (setq calibredb-format-all-the-icons t)
 (setq calibredb-format-icons-in-terminal t)
 (setq calibredb-format-character-icons t)
@@ -101,14 +101,14 @@
                              :family "Merriweather"
                              :height 1.4
                              :width 'semi-expanded)
-    (face-remap-add-relative 'default :height 1.3)
-    (setq-local line-spacing 0.2
+    (face-remap-add-relative 'default :height 0.7)
+    (setq-local line-spacing 0.1
                 next-screen-context-lines 4
                 shr-use-colors nil)
     (require 'visual-fill-column nil t)
     (setq-local visual-fill-column-center-text t
                 visual-fill-column-width 81
-                nov-text-width 80)
+                nov-text-width 120)
     (visual-fill-column-mode 1)
     (hl-line-mode -1)
 
