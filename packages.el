@@ -98,6 +98,7 @@
 (package! nov :pin "b3c7cc28e95fe25ce7b443e5f49e2e45360944a3")
 ; Email
 (package! org-mime)
+(package! org-auto-tangle)
 (package! mu4e-alert)
 (package! outline-minor-faces)
 (package! mu4e-conversation)
