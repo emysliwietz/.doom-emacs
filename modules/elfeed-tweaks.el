@@ -25,6 +25,7 @@
       :n "b" #'elfeed-search-browse-url
       :n "t" #'elfeed-search-thumbnail
       :n "y" #'elfeed-search-yank)
+
 (map! :map elfeed-show-mode-map
       :after elfeed-show
                                         ;[remap kill-this-buffer] "q"
@@ -38,6 +39,8 @@
       :nm "N" #'elfeed-show-prev
       :nm "p" #'elfeed-show-pdf
       :nm "v" #'elfeed-show-youtube-dl
+      :nm "d" #'elfeed-show-download-enclosure
+      :nm "D" #'elfeed-show-download-enclosure
       :nm "L" #'youtube-dl-list
       :nm "+" #'elfeed-show-tag
       :nm "-" #'elfeed-show-untag
@@ -76,6 +79,10 @@
         shr-max-image-proportion 0.6)
 
   (add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+(defun elfeed-eb-garamond ()
+  (buffer-face-set '(:family "EB Garamond" :height 120)))
+
+(add-hook! 'elfeed-show-mode-hook 'elfeed-eb-garamond)
   (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
 
   (defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.5)))
@@ -201,6 +208,15 @@
 
 (after! elfeed-show
   (require 'url)
+
+  (defun elfeed-show-download-enclosure ()
+    "Download the enclosure to yt-dlp directory"
+    (interactive)
+    (let*
+         ((url-enclosure (car (elt (elfeed-entry-enclosures elfeed-show-entry) 0)))
+          (filename (concat elfeed-enclosure-default-dir "/" (elfeed-entry-title elfeed-show-entry) ".mp3")))
+      (elfeed--download-enclosure url-enclosure filename)
+      (message (format "Downloading %s" filename))))
 
   (defvar elfeed-pdf-dir
     (expand-file-name "pdfs/"
@@ -372,6 +388,7 @@
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
 (after-startup (require 'youtube-dl))
 (setq youtube-dl-directory "~/elfeed-youtube"
+      elfeed-enclosure-default-dir youtube-dl-directory
       youtube-dl-temp-directory "/tmp/elfeed-youtube"
       youtube-dl-program "yt-dlp"
       youtube-dl-arguments

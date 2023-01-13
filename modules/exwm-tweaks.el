@@ -78,6 +78,18 @@
   (interactive)
   (switch-to-buffer-other-frame "*scratch*"))
 
+(setq save-temp-location "~/dox/temp-save/")
+(defun save-buffer-temp ()
+  (interactive)
+  (let* ((s (buffer-string))
+         (ss (split-string s " "))
+         (nl (butlast ss (- (length ss) 5)))
+
+         )
+    (set-visited-file-name (concat save-temp-location (mapconcat '(lambda (x)  (format "%s" x))  nl " ") ".org"))
+    (save-buffer)
+    )
+  )
 
   (defun switchmonitor-next ()
     (interactive)
@@ -120,6 +132,7 @@
 
  
 (global-set-key (kbd "s-<f4>") 'go-to-scratch)
+(global-set-key (kbd "s-S-<f4>") 'save-buffer-temp)
 (require 'exwm-edit)
 (defun ag-exwm/on-exwm-edit-compose ()
   (funcall 'org-mode))
@@ -131,7 +144,10 @@
               (exwm-workspace-rename-buffer exwm-title))))
 
 (setq exwm-manage-configurations
-      '(((equal exwm-class-name "Nm-applet")
+      '(((or (string-equal exwm-class-name "Nm-applet")
+             (string-equal exwm-class-name "Surf")
+             (string-equal exwm-class-name "Steam")
+             (not (message exwm-class-name)))
            floating t
            floating-mode-line nil
 ;           width 0.4
