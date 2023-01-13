@@ -83,23 +83,16 @@
 (after-startup (require 'pamparam))
 (after-startup (require 'beancount-tweaks))
 (after-startup (require 'popes))
-;(after-startup (require 'bible))
+(after-startup (require 'bible))
 (after-startup (require 'keycast-tweaks))
 (after-startup (require 'wttrin))
 (after-startup (require 'ebook-tweaks))
 (after-startup (require 'elfeed-tweaks))
 (after-startup (require 'org-tweaks))
 (after-startup (require 'languages))
-;(after-startup (require 'email))
-;(after-startup (require 'email-config))
-;(after-startup (require 'email-accounts))
+(after-startup (require 'email))
+(after-startup (require 'email-config))
+(after-startup (require 'email-accounts))
+(after-startup (require 'latex-tweaks))
 ; Unsorted
-(setq TeX-command-extra-options "--shell-escape")
-(setq TeX-engine 'luatex)
-(setq org-latex-compiler "lualatex")
-(setq-default TeX-master nil)
-(add-to-list 'org-latex-packages-alist
-                          '("AUTO" "polyglossia" t ("xelatex" "lualatex")))
-(global-set-key [f6] (lambda () (interactive) (org-latex-export-to-pdf t)))
-
 #+end_src
