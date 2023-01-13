@@ -89,8 +89,14 @@
 (after-startup (require 'elfeed-tweaks))
 (after-startup (require 'org-tweaks))
 (after-startup (require 'languages))
-(after-startup (require 'email))
-(after-startup (require 'email-config))
-(after-startup (require 'email-accounts))
+;(after-startup (require 'email))
+;(after-startup (require 'email-config))
+;(after-startup (require 'email-accounts))
 ; Unsorted
 (setq TeX-command-extra-options "--shell-escape")
+(setq TeX-engine 'luatex)
+(setq org-latex-compiler "lualatex")
+(setq-default TeX-master nil)
+(add-to-list 'org-latex-packages-alist
+                          '("AUTO" "polyglossia" t ("xelatex" "lualatex")))
+(global-set-key [f6] (lambda () (interactive) (org-latex-export-to-pdf t)))

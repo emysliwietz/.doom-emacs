@@ -404,7 +404,7 @@
 (exwm-input--update-global-prefix-keys)
 
 ;; Wallpaper
-(setq wallpaper-cycle-directory "/home/user/dox/wallpapers")
-(wallpaper-set-wallpaper)
+;(setq wallpaper-cycle-directory "/home/user/dox/wallpapers")
+;(wallpaper-set-wallpaper)
 
 (provide 'exwm-tweaks)

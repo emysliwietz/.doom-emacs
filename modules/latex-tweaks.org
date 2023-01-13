@@ -1,0 +1,9 @@
+#+title: Latex Tweaks for Emacs
+#+property: header-args :tangle latex-tweaks.el
+
+#+begin_src emacs-lisp :tangle yes
+;;; latex.el -*- lexical-binding: t; -*-
+
+(setq TeX-command-extra-options "--shell-escape")
+(setq TeX-engine 'luatex)
+#+end_src
