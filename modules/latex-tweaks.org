@@ -28,12 +28,32 @@ This forces a complete recompilation of the document, even if the source
       (force-compile))
     )
   )
+
+(defun org-after-save-cmd ()
+  (interactive)
+  (when (eq major-mode 'org-mode)
+  (let ((cmd (cdr (car (org-collect-keywords '("on_save_cmd"))))))
+        (when cmd
+  (async-shell-command (pop cmd))))))
+
 (add-hook! 'after-save-hook 'auto-async-export)
+(add-hook! 'after-save-hook 'org-after-save-cmd)
                                         ;(global-set-key [f6] (lambda () (interactive) (org-latex-export-to-pdf t)))
 (setq org-latex-compiler "lualatex")
 (setq-default TeX-master nil)
 (add-to-list 'org-latex-packages-alist
              '("AUTO" "polyglossia" t ("xelatex" "lualatex")))
+
+(defun latex-word-count ()
+  "Return latex word count using texlive"
+  (interactive)
+  (let ((file-name (if (eq major-mode 'latex-mode)
+                       (buffer-file-name)
+                     (if (eq major-mode 'org-mode)
+                         (file-name-with-extension (buffer-file-name) "tex")
+                       (buffer-file-name)))))
+  (message (shell-command-to-string (format "texcount -1 -merge -template={1} %s" file-name)))))
+
 
 (provide 'latex-tweaks)
 #+end_src
