@@ -52,7 +52,7 @@
 
 
 ;;; Code:
-(require 'mu4e)
+;(require 'mu4e)
 
 (defvar mu4e-thread-folding-mode nil)
 (defvar mu4e-headers--folded-items nil)

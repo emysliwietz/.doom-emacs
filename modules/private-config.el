@@ -38,4 +38,4 @@
 (global-set-key (kbd "C-c e m") 'module-visit)
 (global-set-key (kbd "C-c r") 'config-reload)
 
-(provide 'config)
+(provide 'private-config)
