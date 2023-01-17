@@ -30,7 +30,7 @@ This forces a complete recompilation of the document, even if the source
   (when (eq major-mode 'org-mode)
   (let ((cmd (cdr (car (org-collect-keywords '("on_save_cmd"))))))
         (when cmd
-  (async-shell-command (pop cmd))))))
+  (async-shell-command-no-window (pop cmd))))))
 
 (add-hook! 'after-save-hook 'auto-async-export)
 (add-hook! 'after-save-hook 'org-after-save-cmd)

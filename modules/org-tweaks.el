@@ -1,9 +1,11 @@
 ;;; org-tweaks.el -*- lexical-binding: t; -*-
 
 (after! org
-  (setq org-directory "~/sync/org/"
-        org-agenda-files (directory-files "~/sync/agenda/" t (rx ".org" eos))
-        org-todo-keywords '((sequence "TODO(t)" "LECT(l)" "EXAM(e)" "MEET(m)" "PROJ(p)" "LOOP(r)" "STRT(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)")
+  (ifdirexists "~/sync/org/"
+               (setq org-directory dir))
+  (ifdirexists "~/sync/agenda"
+               (setq org-agenda-files (directory-files "~/sync/agenda/" t (rx ".org" eos))))
+  (setq org-todo-keywords '((sequence "TODO(t)" "LECT(l)" "EXAM(e)" "MEET(m)" "PROJ(p)" "LOOP(r)" "STRT(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)")
                             (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")
                             (sequence "|" "OKAY(o)" "YES(y)" "NO(n)"))
         org-startup-folded t
