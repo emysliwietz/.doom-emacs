@@ -40,13 +40,13 @@
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-                            ("artikel" "\\documentclass[paper=a4, fancy, modern, twocolumn]{artikel}"
+                            ("artikel" "\\documentclass[fancy, modern, twocolumn, paper=a4, 12pt]{artikel}"
                              ("\\part{%s}" . "\\part*{%s}")
                              ("\\chapter{%s}" . "\\chapter*{%s}")
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-                            ("thesis" "\\documentclass[thesis,paper=a4,12pt,twocolum]{headers/artikel}"
+                            ("thesis" "\\documentclass[fancy, modern, twocolumn, thesis, paper=a4, 12pt]{artikel}"
                              ("\\part{%s}" . "\\part*{%s}")
                              ("\\chapter{%s}" . "\\chapter*{%s}")
                              ("\\section{%s}" . "\\section*{%s}")

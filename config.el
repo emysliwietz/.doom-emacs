@@ -67,7 +67,7 @@
                              (load-module func)))))
 
 (defun load-module (func)
-  (make-thread 
+  (make-thread
    (let ((func-name (substring (format "%s" func) 22 -2))
          (time (current-time)))
      ;(message (format "Loading %s." func-name))
@@ -101,6 +101,6 @@
 (when (require 'mu4e nil 'noerror)
   (load-module '(lambda () (require 'email)))
   (load-module '(lambda () (require 'email-config)))
-  (load-module '(lambda () (require 'email-accounts)))
-  (load-module '(lambda () (require 'latex-tweaks))))
+  (load-module '(lambda () (require 'email-accounts))))
+(load-module '(lambda () (require 'latex-tweaks)))
 ; Unsorted

@@ -19,6 +19,7 @@ This forces a complete recompilation of the document, even if the source
 (defun auto-async-export ()
   (when (and (eq major-mode 'org-mode)
              (string-equal "t" (pop (cdr (car (org-collect-keywords '("auto_async_export")))))))
+    (message "Exporting to pdf...")
     (org-latex-export-to-pdf t)
     (when (eq major-mode 'latex-mode)
       (force-compile))
@@ -31,6 +32,8 @@ This forces a complete recompilation of the document, even if the source
   (let ((cmd (cdr (car (org-collect-keywords '("on_save_cmd"))))))
         (when cmd
   (async-shell-command-no-window (pop cmd))))))
+(setq password-cache t ; enable password caching
+      password-cache-expiry 36000) ; for ten hours (time in secs)
 
 (add-hook! 'after-save-hook 'auto-async-export)
 (add-hook! 'after-save-hook 'org-after-save-cmd)
