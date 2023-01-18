@@ -40,7 +40,7 @@
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-                            ("artikel" "\\documentclass[compact,paper=a4,12pt,overfullrule,twocolumn]{headers/artikel}"
+                            ("artikel" "\\documentclass[paper=a4, fancy, modern, twocolumn]{artikel}"
                              ("\\part{%s}" . "\\part*{%s}")
                              ("\\chapter{%s}" . "\\chapter*{%s}")
                              ("\\section{%s}" . "\\section*{%s}")
@@ -58,7 +58,7 @@
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
-)
+)ge
 
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"
