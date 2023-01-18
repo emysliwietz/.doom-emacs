@@ -41,24 +41,24 @@
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
                             ("artikel" "\\documentclass[fancy, modern, twocolumn, paper=a4, 12pt]{artikel}"
-                             ("\\part{%s}" . "\\part*{%s}")
-                             ("\\chapter{%s}" . "\\chapter*{%s}")
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
-                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
                             ("thesis" "\\documentclass[fancy, modern, twocolumn, thesis, paper=a4, 12pt]{artikel}"
-                             ("\\part{%s}" . "\\part*{%s}")
-                             ("\\chapter{%s}" . "\\chapter*{%s}")
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
-                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
                             ("book" "\\documentclass[11pt]{book}"
                              ("\\part{%s}" . "\\part*{%s}")
                              ("\\chapter{%s}" . "\\chapter*{%s}")
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
-)ge
+)
 
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"
