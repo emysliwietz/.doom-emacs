@@ -19,6 +19,7 @@ This forces a complete recompilation of the document, even if the source
 (defun auto-async-export ()
   (when (and (eq major-mode 'org-mode)
              (string-equal "t" (pop (cdr (car (org-collect-keywords '("auto_async_export")))))))
+    (message "Exporting to pdf...")
     (org-latex-export-to-pdf t)
     (when (eq major-mode 'latex-mode)
       (force-compile))
