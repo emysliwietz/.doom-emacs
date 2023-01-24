@@ -14,13 +14,13 @@
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-                            ("artikel" "\\documentclass[paper=a4, 12pt, fancy, modern, compact, twocolum, titlepage=page]{headers/artikel}"
+                            ("artikel" "\\documentclass[paper=a4, 12pt, fancy, modern, compact, twocolum, titlepage=page]{artikel}"
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                              ("\\paragraph{%s}" . "\\paragraph*{%s}")
                              ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-                            ("thesis" "\\documentclass[thesis,paper=a4,12pt,twocolum]{headers/artikel}"
+                            ("thesis" "\\documentclass[thesis,paper=a4,12pt,twocolum]{artikel}"
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
