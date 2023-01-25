@@ -14,19 +14,19 @@
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-                            ("artikel" "\\documentclass[paper=a4, 12pt, fancy, modern, compact, twocolum, titlepage=page]{artikel}"
+                            ("artikel" "\\documentclass[fancy, modern, twocolumn, titlepage=head, paper=a4, 12pt]{artikel}"
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                              ("\\paragraph{%s}" . "\\paragraph*{%s}")
                              ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-                            ("thesis" "\\documentclass[thesis,paper=a4,12pt,twocolum]{artikel}"
+                            ("thesis" "\\documentclass[fancy, modern, twocolumn, titlepage=thesis, paper=a4, 12pt]{artikel}"
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
                              ("\\paragraph{%s}" . "\\paragraph*{%s}")
                              ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-                           ("book" "\\documentclass[11pt]{book}"
+                            ("book" "\\documentclass[11pt]{book}"
                              ("\\part{%s}" . "\\part*{%s}")
                              ("\\chapter{%s}" . "\\chapter*{%s}")
                              ("\\section{%s}" . "\\section*{%s}")
