@@ -1,5 +1,5 @@
 ;;; org-tweaks.el -*- lexical-binding: t; -*-
-
+;;; Code:
 (after! org
   (ifdirexists "~/sync/org/"
                (setq org-directory dir))
@@ -28,6 +28,8 @@
   (add-hook 'org-mode-hook 'org-auto-tangle-mode)
 
   ;; Latex classes
+  (setq org-latex-subtitle-separate t
+        org-latex-subtitle-format "\\subtitle{%s}")
   (setq org-latex-classes '(("article" "\\documentclass[a4wide,10pt]{article}"
                              ("\\section{%s}" . "\\section*{%s}")
                              ("\\subsection{%s}" . "\\subsection*{%s}")

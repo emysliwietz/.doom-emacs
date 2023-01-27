@@ -39,8 +39,8 @@ This forces a complete recompilation of the document, even if the source
 (setq password-cache t ; enable password caching
       password-cache-expiry 36000) ; for ten hours (time in secs)
 
-(add-hook! 'after-save-hook 'auto-async-export)
-(add-hook! 'after-save-hook 'org-after-save-cmd)
+(add-hook 'after-save-hook 'auto-async-export)
+(add-hook 'after-save-hook 'org-after-save-cmd)
                                         ;(global-set-key [f6] (lambda () (interactive) (org-latex-export-to-pdf t)))
 (setq org-latex-compiler "lualatex")
 (setq-default TeX-master nil)
