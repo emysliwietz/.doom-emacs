@@ -1,0 +1,3 @@
+[submodule "lisp/org-cite-csl-activate"]
+	path = lisp/org-cite-csl-activate
+	url = https://github.com/andras-simonyi/org-cite-csl-activate/
