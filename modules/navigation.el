@@ -153,6 +153,7 @@ This function is intended for use with `ivy-ignore-buffers'."
 	  (string-match "\.log$" b)
 	  (string-match "^_region_.tex$" b)
 	  (string-match "^\*helpful .*\*" b)
+          (string-match "- Thunar" b)
 	  (string-match "^magit" b)
 	  (string-match "^\*.*\*$" b))
       (kill-buffer b))))
