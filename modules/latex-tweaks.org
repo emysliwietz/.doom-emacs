@@ -57,6 +57,9 @@ This forces a complete recompilation of the document, even if the source
                        (buffer-file-name)))))
   (message (shell-command-to-string (format "texcount -1 -merge -template={1} %s" file-name)))))
 
+(setq org-export-headline-levels 5)
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
 
 (provide 'latex-tweaks)
 #+end_src
