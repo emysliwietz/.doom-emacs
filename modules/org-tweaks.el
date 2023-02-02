@@ -62,6 +62,9 @@
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 )
 
+;; Capture
+(setq org-default-notes-file "~/dox/notes/notes.org")
+
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"
   (interactive)

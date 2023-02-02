@@ -72,6 +72,9 @@ This forces a complete recompilation of the document, even if the source
         citar-notes-paths `(,notes-dir)
         org-cite-global-bibliography `(,bibfile)))
 
+(setq org-export-with-sub-superscripts "{}"
+      org-export-with-smart-quotes nil)
+
 (setq org-preview-latex-process-alist
    '((dvipng :programs
       ("dvilualatex" "dvipng")
