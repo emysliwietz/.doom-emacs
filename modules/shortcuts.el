@@ -149,6 +149,7 @@
 (uni-folder-shortcut "t 1" "6/Orthodox Theology I" orthodox-theology-1)
 (uni-folder-shortcut "t 2" "6/Orthodox Theology II" orthodox-theology-2)
 (uni-folder-shortcut "s" "6/Orthodox Scripture" orthodox-scripture)
+(uni-folder-shortcut "a" "6/Orthodox Anthropology" orthodox-anthropology)
 (uni-folder-shortcut "w" "6/War and Statesbuilding in Afghanistan" war-and-statesbuilding)
 (uni-folder-shortcut "e" "6/Exegesis of the Old and New Testament" exegesis)
 (uni-folder-shortcut "m" "6/Monte Carlo Techniques" monte-carlo)
