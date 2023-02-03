@@ -53,5 +53,39 @@ This forces a complete recompilation of the document, even if the source
                        (buffer-file-name)))))
   (message (shell-command-to-string (format "texcount -1 -merge -template={1} %s" file-name)))))
 
+  ;; Latex classes
+  (setq org-latex-subtitle-separate t
+        org-latex-subtitle-format "\\subtitle{%s}")
+  (setq org-latex-classes '(("article" "\\documentclass[a4wide,10pt]{article}"
+                             ("\\section{%s}" . "\\section*{%s}")
+                             ("\\subsection{%s}" . "\\subsection*{%s}")
+                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+                            ("report" "\\documentclass[11pt]{report}"
+                             ("\\part{%s}" . "\\part*{%s}")
+                             ("\\chapter{%s}" . "\\chapter*{%s}")
+                             ("\\section{%s}" . "\\section*{%s}")
+                             ("\\subsection{%s}" . "\\subsection*{%s}")
+                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
+                            ("artikel" "\\documentclass[fancy, modern, twocolumn, titlepage=head, paper=a4, 12pt]{artikel}"
+                             ("\\section{%s}" . "\\section*{%s}")
+                             ("\\subsection{%s}" . "\\subsection*{%s}")
+                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+                            ("thesis" "\\documentclass[fancy, modern, twocolumn, titlepage=thesis, paper=a4, 12pt]{artikel}"
+                             ("\\section{%s}" . "\\section*{%s}")
+                             ("\\subsection{%s}" . "\\subsection*{%s}")
+                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
+                            ("book" "\\documentclass[11pt]{book}"
+                             ("\\part{%s}" . "\\part*{%s}")
+                             ("\\chapter{%s}" . "\\chapter*{%s}")
+                             ("\\section{%s}" . "\\section*{%s}")
+                             ("\\subsection{%s}" . "\\subsection*{%s}")
+                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+
 
 (provide 'latex-tweaks)

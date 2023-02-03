@@ -404,13 +404,19 @@
 (exwm-input--update-global-prefix-keys)
 
 ;; Wallpaper
-(defmacro ifdirexists (dir action)
-  "Execute function taking dir as an argument if dir exists"
-  `(when (file-exists-p ,dir) (lambda (dir) ,action) ,dir))
+(defmacro ifdirexists (dir &rest actions)
+  "Execute functions taking dir as an argument if dir exists"
+  `(when (file-exists-p ,dir)
+     ((lambda (dir)
+       ,@actions) ,dir)))
 
-(ifdirexists "/home/user/dox/wallpapers"
-             (progn
-             (setq wallpaper-cycle-directory dir)
-             (wallpaper-set-wallpaper)))
+(when
+    (file-exists-p "/home/user/dox/wallpapers")
+  ((lambda
+     (dir)
+     (setq wallpaper-cycle-directory dir)
+     (wallpaper-set-wallpaper))
+   "/home/user/dox/wallpapers"))
+
 
 (provide 'exwm-tweaks)
