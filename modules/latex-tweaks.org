@@ -91,6 +91,56 @@ This forces a complete recompilation of the document, even if the source
                              ("\\subsection{%s}" . "\\subsection*{%s}")
                              ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 
+(setq org-export-headline-levels 5)
+
+; Allow headlines, but not content, to not be exported (used for structuring org files)
+(require 'ox-extra)
+(ox-extras-activate '(ignore-headlines))
+
+
+(let* ((base-dir "/home/user/dox/bib/")
+        (bibfile (concat base-dir "bib.bib"))
+      (notes-dir (concat base-dir "notes/"))
+      (lib-dir (concat base-dir "papers/")))
+  (setq bibtex-completion-bibliography bibfile
+        citar-bibliography `(,bibfile)
+        bibtex-completion-library-path `(,lib-dir)
+        bibtex-completion-notes-path notes-dir
+        citar-library-paths `(,lib-dir)
+        citar-notes-paths `(,notes-dir)
+        org-cite-global-bibliography `(,bibfile)))
+
+(setq org-export-with-sub-superscripts "{}"
+      org-export-with-smart-quotes nil)
+
+(setq org-preview-latex-process-alist
+   '((dvipng :programs
+      ("dvilualatex" "dvipng")
+      :description "dvi > png" :message "you need to install the programs: dvilualatex and dvipng." :image-input-type "dvi" :image-output-type "png" :image-size-adjust
+      (1.0 . 1.0
+)
+      :latex-compiler
+      ("dvilualatex -interaction nonstopmode -output-directory %o %f")
+      :image-converter
+      ("dvipng -D %D -T tight -o %O %f")
+      :transparent-image-converter
+      ("dvipng -D %D -T tight -bg Transparent -o %O %f"))
+     (dvisvgm :programs
+      ("lualatex" "dvisvgm")
+      :description "dvi > svg" :message "you need to install the programs: lualatex and dvisvgm." :image-input-type "dvi" :image-output-type "svg" :image-size-adjust
+      (1.7 . 1.5)
+      :latex-compiler
+      ("lualatex -interaction nonstopmode -output-directory %o %f")
+      :image-converter
+      ("dvisvgm %f -n -b min -c %S -o %O"))
+     (imagemagick :programs
+      ("lualatex" "convert")
+      :description "pdf > png" :message "you need to install the programs: lualatex and imagemagick." :image-input-type "pdf" :image-output-type "png" :image-size-adjust
+      (1.0 . 1.0)
+      :latex-compiler
+      ("lualatex -interaction nonstopmode -output-directory %o %f")
+      :image-converter
+      ("convert -density %D -trim -antialias %f -quality 100 %O"))))
 
 (provide 'latex-tweaks)
 #+end_src
