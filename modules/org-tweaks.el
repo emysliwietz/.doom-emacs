@@ -27,8 +27,14 @@
   (add-hook 'org-mode-hook 'org-auto-tangle-mode)
 )
 
+(setq beancount-main-file "/media/user/keychain/finances/wallet.beancount")
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
+(setq org-capture-templates
+      '(("b" "Beancount Entry" plain
+         (file org-default-notes-file)
+         ;"%(progn (yas-expand-snippet (yas-lookup-snippet \"beancount\" 'org-mode)) nil)")))
+         "bc")))
 
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"
