@@ -132,52 +132,27 @@
     (shell-command "sshfs sermak.xyz:/ /mnt/server-de"))
   (find-file (f-join uni-base-folder folder)))
 
-(defun uni ()
-  (interactive)
-  (open-uni-folder ""))
+(defmacro uni-folder-shortcut (shortcut folder funcname)
+  `(progn
+  (defun ,funcname ()
+    ,(format "Open Uni/%s" folder)
+     (interactive)
+     (open-uni-folder ,folder))
+  (global-set-key (kbd (concat "C-c u " ,shortcut)) ',funcname)))
 
-(defun uni6 ()
-  (interactive)
-  (open-uni-folder "6"))
-
-(defun orthodox-liturgy-1 ()
-  (interactive)
-  (open-uni-folder "6/Orthodox Liturgy I"))
-
-(defun orthodox-history-1 ()
-  (interactive)
-  (open-uni-folder "6/Orthodox History I"))
-
-(defun orthodox-history-2 ()
-  (interactive)
-  (open-uni-folder "6/Orthodox History II"))
-
-(defun orthodox-scripture ()
-  (interactive)
-  (open-uni-folder "6/Orthodox Scripture"))
-
-(defun war-and-statesbuilding ()
-  (interactive)
-  (open-uni-folder "6/War and Statesbuilding in Afghanistan"))
-
-(defun exegesis ()
-  (interactive)
-  (open-uni-folder "6/Exegesis of the Old and New Testament"))
-
-(defun monte-carlo ()
-  (interactive)
-  (open-uni-folder "6/Monte Carlo Techniques"))
-
-;;; Set Uni keys
-(global-set-key (kbd "C-c u u") 'uni)
-(global-set-key (kbd "C-c u 6") 'uni6)
-(global-set-key (kbd "C-c u l") 'orthodox-liturgy-1)
-(global-set-key (kbd "C-c u h 1") 'orthodox-history-1)
-(global-set-key (kbd "C-c u h 2") 'orthodox-history-2)
-(global-set-key (kbd "C-c u s") 'orthodox-scripture)
-(global-set-key (kbd "C-c u e") 'exegesis)
-(global-set-key (kbd "C-c u w") 'war-and-statesbuilding)
-(global-set-key (kbd "C-c u m") 'monte-carlo)
+(uni-folder-shortcut "u" "" uni)
+(uni-folder-shortcut "6" "6" uni6)
+(uni-folder-shortcut "l 1" "6/Orthodox Liturgy I" orthodox-liturgy-1)
+(uni-folder-shortcut "l 2" "6/Orthodox Liturgy II" orthodox-liturgy-2)
+(uni-folder-shortcut "h 1" "6/Orthodox History I" orthodox-history-1)
+(uni-folder-shortcut "h 2" "6/Orthodox History II" orthodox-history-2)
+(uni-folder-shortcut "t 1" "6/Orthodox Theology I" orthodox-theology-1)
+(uni-folder-shortcut "t 2" "6/Orthodox Theology II" orthodox-theology-2)
+(uni-folder-shortcut "s" "6/Orthodox Scripture" orthodox-scripture)
+(uni-folder-shortcut "a" "6/Orthodox Anthropology" orthodox-anthropology)
+(uni-folder-shortcut "w" "6/War and Statesbuilding in Afghanistan" war-and-statesbuilding)
+(uni-folder-shortcut "e" "6/Exegesis of the Old and New Testament" exegesis)
+(uni-folder-shortcut "m" "6/Monte Carlo Techniques" monte-carlo)
 
 ;; Tones
 (global-set-key (kbd "C-c -") (lambda () (interactive) (insert "̄")))

@@ -5,16 +5,15 @@
                (setq org-directory dir))
   (ifdirexists "~/sync/agenda"
                (setq org-agenda-files (directory-files "~/sync/agenda/" t (rx ".org" eos))))
-  (setq org-todo-keywords '((sequence "TODO(t)" "LECT(l)" "EXAM(e)" "MEET(m)" "PROJ(p)" "LOOP(r)" "STRT(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "|" "DONE(d)" "KILL(k)")
+  (setq org-todo-keywords '((sequence "TODO(t)" "LECT(l)" "EXAM(e)" "MEET(m)" "PROJ(p)" "LOOP(L)" "START(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "INPRO(n)" "OPT(o)" "READ(r)" "|" "DONE(d)" "KILL(k)")
                             (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")
-                            (sequence "|" "OKAY(o)" "YES(y)" "NO(n)"))
+                            (sequence "|" "OKAY(O)" "YES(Y)" "NO(N)"))
         org-startup-folded t
         org-log-done 'time
         org-log-reschedule 'time
         initial-major-mode 'org-mode
         org-export-async-init-file "/home/user/.doom.d/ext/export/org-export-init.el"
-        org-latex-src-block-backend 'engraved
-        TeX-command-extra-options "--shell-escape")
+        org-latex-src-block-backend 'engraved)
 
   ;;; Add org mode to txt and archive files
   (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
@@ -26,44 +25,16 @@
         org-auto-tangle-default t)
   ;; Auto tangle
   (add-hook 'org-mode-hook 'org-auto-tangle-mode)
-
-  ;; Latex classes
-  (setq org-latex-subtitle-separate t
-        org-latex-subtitle-format "\\subtitle{%s}")
-  (setq org-latex-classes '(("article" "\\documentclass[a4wide,10pt]{article}"
-                             ("\\section{%s}" . "\\section*{%s}")
-                             ("\\subsection{%s}" . "\\subsection*{%s}")
-                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-                            ("report" "\\documentclass[11pt]{report}"
-                             ("\\part{%s}" . "\\part*{%s}")
-                             ("\\chapter{%s}" . "\\chapter*{%s}")
-                             ("\\section{%s}" . "\\section*{%s}")
-                             ("\\subsection{%s}" . "\\subsection*{%s}")
-                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))
-                            ("artikel" "\\documentclass[fancy, modern, twocolumn, titlepage=head, paper=a4, 12pt]{artikel}"
-                             ("\\section{%s}" . "\\section*{%s}")
-                             ("\\subsection{%s}" . "\\subsection*{%s}")
-                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-                            ("thesis" "\\documentclass[fancy, modern, twocolumn, titlepage=thesis, paper=a4, 12pt]{artikel}"
-                             ("\\section{%s}" . "\\section*{%s}")
-                             ("\\subsection{%s}" . "\\subsection*{%s}")
-                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                             ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                             ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))
-                            ("book" "\\documentclass[11pt]{book}"
-                             ("\\part{%s}" . "\\part*{%s}")
-                             ("\\chapter{%s}" . "\\chapter*{%s}")
-                             ("\\section{%s}" . "\\section*{%s}")
-                             ("\\subsection{%s}" . "\\subsection*{%s}")
-                             ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
 )
 
+(setq beancount-main-file "/media/user/keychain/finances/wallet.beancount")
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
+(setq org-capture-templates
+      '(("b" "Beancount Entry" plain
+         (file org-default-notes-file)
+         ;"%(progn (yas-expand-snippet (yas-lookup-snippet \"beancount\" 'org-mode)) nil)")))
+         "bc")))
 
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"
