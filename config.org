@@ -115,6 +115,14 @@
 ; Unsorted
 #+end_src
 
+* Secrets :crypt:
+-----BEGIN PGP MESSAGE-----
+
+jA0ECQMCpaa2IHWz/qX/0ncB5MHYMuE7woX9lpKqkvubmgY7wy3/6LCoYMn6XYRY
+sY2v9BQxlfFkz+rwgWnsdRYeGLR8Yd8mpHGeGg4jrvC8v5eiOhaqCKpyNiAcMpOv
+age95IpQjrQoIy0CPDtiouDWKNrXrTSQctareltEAkkB+p48HdVkKg==
+=z0qj
+-----END PGP MESSAGE-----
 * Modules
 ** Autocorrect
 #+begin_src emacs-lisp :tangle modules/auto-correct.el

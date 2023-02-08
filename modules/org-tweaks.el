@@ -47,5 +47,4 @@
     (replace-regexp-entire-buffer "DEADLINE: \\(<.*>\\)" "\\1")
     (message (org-icalendar-export-to-ics))))
 
-
 (provide 'org-tweaks)
