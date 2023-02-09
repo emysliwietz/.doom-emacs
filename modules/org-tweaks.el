@@ -27,12 +27,13 @@
   (add-hook 'org-mode-hook 'org-auto-tangle-mode)
 )
 
-(setq beancount-main-file "/media/user/keychain/finances/wallet.beancount")
+(setq beancount-main-file "/media/user/keychain/finances/wallet.beancount"
+      beancount-local-file "~/dox/notes/wallet.org")
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (setq org-capture-templates
       '(("b" "Beancount Entry" plain
-         (file org-default-notes-file)
+         (file beancount-local-file)
          ;"%(progn (yas-expand-snippet (yas-lookup-snippet \"beancount\" 'org-mode)) nil)")))
          "bc")))
 

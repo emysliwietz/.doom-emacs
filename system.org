@@ -1,0 +1,41 @@
+#+title: System
+* Org Protocol
+** System
+Set up emacsclient as org-protocol scheme-handler
+#+begin_src desktop :tangle ~/.local/share/applications/org-protocol.desktop
+[Desktop Entry]
+Name=org-protocol
+Comment=Intercept calls from emacsclient to trigger custom actions
+Categories=Other;
+Keywords=org-protocol;
+Icon=emacs
+Type=Application
+Exec=emacsclient -- %u
+Terminal=false
+StartupWMClass=Emacs
+MimeType=x-scheme-handler/org-protocol;
+#+end_src
+Update MIME cache
+#+begin_src bash
+update-desktop-database ~/.local/share/applications/
+#+end_src
+#+RESULTS:
+
+
+** youtube-dl handler
+#+begin_src emacs-lisp
+(add-to-list 'org-protocol-protocol-alist
+             '("Download like with youtube-dl"
+               :protocol "youtube-dl"
+               :function youtube-dl-protocol-handler))
+
+(defun youtube-dl-protocol-handler (data)
+  "Add url to youtube-dl download queue."
+  (let ((url (plist-get data :url))
+        (title (plist-get data :title)))
+    (unless (string= title "about:blank")
+      (youtube-dl
+       (plist-get data :url)
+       :title (plist-get data :title))))
+  nil)
+#+end_src
