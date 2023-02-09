@@ -61,7 +61,18 @@
 ;; they are implemented.
 
 (add-to-list 'load-path "~/.doom.d/modules")
-(setq debug-my-config 0)
+
+(defmacro dec (var)
+  `(when ,var
+    (setq ,var (- ,var 1))))
+
+(defmacro inc (var)
+  `(when ,var
+    (setq ,var (+ ,var 1))))
+
+
+(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (message "a"))
+
 (setq use-package-verbose t)
 (async-bytecomp-package-mode 1)
 
@@ -70,41 +81,57 @@
                             (make-thread
                              (load-module func)))))
 
-(defun load-module (func)
-  (make-thread
-   (let ((func-name (substring (format "%s" func) 22 -2))
-         (time (current-time)))
+;; Variable to determine how many modules are loaded, for debugging
+;; Any number is number of modules
+;; -1 means all
+(setq debug-my-config nil)
+(defmacro load-module (module)
+   `(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (make-thread
+   (let ((time (current-time)))
      ;(message (format "Loading %s." func-name))
-     (funcall func)
-     (message (format "Loaded %s in %.06f." func-name (float-time (time-since time)))))))
+     (require ,module)
+     (message (format "Loaded %s in %.06f." ,module (float-time (time-since time))))))))
 
-(load-module '(lambda () (require 'cl))) ; Still a requirement for ivy
-(load-module '(lambda () (require 'exwm-tweaks)))
-(load-module '(lambda () (require 'general)))
-(load-module '(lambda () (require 'interface)))
-(load-module '(lambda () (require 'navigation)))
-(load-module '(lambda () (require 'shortcuts)))
-(load-module '(lambda () (require 'private-config)))
-(load-module '(lambda () (require 'search)))
-(load-module '(lambda () (require 'auto-correct)))
-(load-module '(lambda () (require 'read-aloud)))
-(load-module '(lambda () (require 'read-single)))
-(load-module '(lambda () (require 'dired-tweaks)))
-(load-module '(lambda () (require 'dired-inline-images)))
-(load-module '(lambda () (require 'editing)))
-(load-module '(lambda () (require 'pamparam)))
-(load-module '(lambda () (require 'beancount-tweaks)))
-(load-module '(lambda () (require 'popes)))
+(load-module 'cl) ; Still a requirement for ivy
+(load-module 'exwm-tweaks)
+(load-module 'general)
+(load-module 'interface)
+(load-module 'navigation)
+(load-module 'shortcuts)
+(load-module 'private-config)
+(load-module 'search)
+(load-module 'read-aloud)
+(load-module 'read-single)
+(load-module 'pamparam)
+(load-module 'beancount-tweaks)
+(load-module 'popes)
 ;(load-module '(require 'bible))
-(load-module '(lambda () (require 'keycast-tweaks)))
-(load-module '(lambda () (require 'wttrin)))
-(load-module '(lambda () (require 'ebook-tweaks)))
-(load-module '(lambda () (require 'elfeed-tweaks)))
-(load-module '(lambda () (require 'org-tweaks)))
-(load-module '(lambda () (require 'languages)))
+(load-module 'keycast-tweaks)
+(load-module 'wttrin)
+(load-module 'org-tweaks)
+(load-module 'languages)
 (when (require 'mu4e nil 'noerror)
-  (load-module '(lambda () (require 'email)))
-  (load-module '(lambda () (require 'email-config)))
-  (load-module '(lambda () (require 'email-accounts))))
-(load-module '(lambda () (require 'latex-tweaks)))
+  (load-module 'email)
+  (load-module 'email-config)
+  (load-module 'email-accounts))
+(load-module 'latex-tweaks)
 ; Unsorted
+(setq doom-modeline-enable-word-count t)
+
+(load-module 'utility-functions)
+
+(load-module 'auto-correct)
+
+(load-module 'beancount-tweaks)
+
+(load-module 'dired-inline-images)
+
+(load-module 'dired-tweaks)
+
+(load-module 'ebook-tweaks)
+
+(load-module 'org-roam-tweaks)
+
+(load-module 'editing)
+
+(load-module 'elfeed-tweaks)

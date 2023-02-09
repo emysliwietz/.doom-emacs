@@ -1,4 +1,8 @@
-#+begin_src elisp
+#+title: Emacs config
+#+property: header-args :tangle config.el
+
+* Config
+#+begin_src elisp :tangle config.el
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
@@ -62,7 +66,18 @@
 ;; they are implemented.
 
 (add-to-list 'load-path "~/.doom.d/modules")
-(setq debug-my-config 0)
+
+(defmacro dec (var)
+  `(when ,var
+    (setq ,var (- ,var 1))))
+
+(defmacro inc (var)
+  `(when ,var
+    (setq ,var (+ ,var 1))))
+
+
+(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (message "a"))
+
 (setq use-package-verbose t)
 (async-bytecomp-package-mode 1)
 
@@ -71,42 +86,1394 @@
                             (make-thread
                              (load-module func)))))
 
-(defun load-module (func)
-  (make-thread
-   (let ((func-name (substring (format "%s" func) 22 -2))
-         (time (current-time)))
+;; Variable to determine how many modules are loaded, for debugging
+;; Any number is number of modules
+;; -1 means all
+(setq debug-my-config nil)
+(defmacro load-module (module)
+   `(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (make-thread
+   (let ((time (current-time)))
      ;(message (format "Loading %s." func-name))
-     (funcall func)
-     (message (format "Loaded %s in %.06f." func-name (float-time (time-since time)))))))
+     (require ,module)
+     (message (format "Loaded %s in %.06f." ,module (float-time (time-since time))))))))
 
-(load-module '(lambda () (require 'cl))) ; Still a requirement for ivy
-(load-module '(lambda () (require 'exwm-tweaks)))
-(load-module '(lambda () (require 'general)))
-(load-module '(lambda () (require 'interface)))
-(load-module '(lambda () (require 'navigation)))
-(load-module '(lambda () (require 'shortcuts)))
-(load-module '(lambda () (require 'private-config)))
-(load-module '(lambda () (require 'search)))
-(load-module '(lambda () (require 'auto-correct)))
-(load-module '(lambda () (require 'read-aloud)))
-(load-module '(lambda () (require 'read-single)))
-(load-module '(lambda () (require 'dired-tweaks)))
-(load-module '(lambda () (require 'dired-inline-images)))
-(load-module '(lambda () (require 'editing)))
-(load-module '(lambda () (require 'pamparam)))
-(load-module '(lambda () (require 'beancount-tweaks)))
-(load-module '(lambda () (require 'popes)))
+(load-module 'cl) ; Still a requirement for ivy
+(load-module 'exwm-tweaks)
+(load-module 'general)
+(load-module 'interface)
+(load-module 'navigation)
+(load-module 'shortcuts)
+(load-module 'private-config)
+(load-module 'search)
+(load-module 'read-aloud)
+(load-module 'read-single)
+(load-module 'pamparam)
+(load-module 'beancount-tweaks)
+(load-module 'popes)
 ;(load-module '(require 'bible))
-(load-module '(lambda () (require 'keycast-tweaks)))
-(load-module '(lambda () (require 'wttrin)))
-(load-module '(lambda () (require 'ebook-tweaks)))
-(load-module '(lambda () (require 'elfeed-tweaks)))
-(load-module '(lambda () (require 'org-tweaks)))
-(load-module '(lambda () (require 'languages)))
+(load-module 'keycast-tweaks)
+(load-module 'wttrin)
+(load-module 'org-tweaks)
+(load-module 'languages)
 (when (require 'mu4e nil 'noerror)
-  (load-module '(lambda () (require 'email)))
-  (load-module '(lambda () (require 'email-config)))
-  (load-module '(lambda () (require 'email-accounts))))
-(load-module '(lambda () (require 'latex-tweaks)))
+  (load-module 'email)
+  (load-module 'email-config)
+  (load-module 'email-accounts))
+(load-module 'latex-tweaks)
 ; Unsorted
+(setq doom-modeline-enable-word-count t)
+#+end_src
+
+* Packages
+#+begin_src emacs-lisp :tangle packages.el
+;; -*- no-byte-compile: t; -*-
+;;; $DOOMDIR/packages.el
+
+;; To install a package with Doom you must declare them here and run 'doom sync'
+;; on the command line, then restart Emacs for the changes to take effect -- or
+;; use 'M-x doom/reload'.
+
+
+;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
+;(package! some-package)
+
+;; To install a package directly from a remote git repo, you must specify a
+;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
+;; https://github.com/raxod502/straight.el#the-recipe-format
+;(package! another-package
+;  :recipe (:host github :repo "username/repo"))
+
+;; If the package you are trying to install does not contain a PACKAGENAME.el
+;; file, or is located in a subdirectory of the repo, you'll need to specify
+;; `:files' in the `:recipe':
+;(package! this-package
+;  :recipe (:host github :repo "username/repo"
+;           :files ("some-file.el" "src/lisp/*.el")))
+
+;; If you'd like to disable a package included with Doom, you can do so here
+;; with the `:disable' property:
+;(package! builtin-package :disable t)
+
+;; You can override the recipe of a built in package without having to specify
+;; all the properties for `:recipe'. These will inherit the rest of its recipe
+;; from Doom or MELPA/ELPA/Emacsmirror:
+;(package! builtin-package :recipe (:nonrecursive t))
+;(package! builtin-package-2 :recipe (:repo "myfork/package"))
+
+;; Specify a `:branch' to install a package from a particular branch or tag.
+;; This is required for some packages whose default branch isn't 'master' (which
+;; our package manager can't deal with; see raxod502/straight.el#279)
+;(package! builtin-package :recipe (:branch "develop"))
+
+;; Use `:pin' to specify a particular commit to install.
+;(package! builtin-package :pin "1a2b3c4d5e")
+
+
+;; Doom's packages are pinned to a specific commit and updated from release to
+;; release. The `unpin!' macro allows you to unpin single packages...
+;(unpin! pinned-package)
+;; ...or multiple packages
+;(unpin! pinned-package another-pinned-package)
+;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
+;(unpin! t)
+
+(package! xelb)
+(package! exwm)
+(package! winum)
+(package! switch-window)
+(package! try)
+(package! counsel)
+(package! ivy)
+(package! all-the-icons-ibuffer)
+(package! all-the-icons-ivy)
+(package! swiper)
+(package! ido-vertical-mode)
+(package! amx)
+(package! diredfl)
+(package! all-the-icons-dired)
+(package! diredful)
+(package! dired-git-info)
+(package! async)
+(package! dired-quick-sort)
+(package! openwith)
+(package! lispy)
+(package! hydra)
+(package! ace-link)
+(package! sudo-edit)
+(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
+  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
+(package! rotate)
+(package! vlf)
+(package! evil-escape :disable t)
+
+; Auto Activating Snippets
+(package! aas :recipe (:host github :repo "ymarco/auto-activating-snippets")
+  :pin "1699bec4d244a1f62af29fe4eb8b79b6d2fccf7d")
+
+(package! string-inflection :pin "fd7926ac17293e9124b31f706a4e8f38f6a9b855")
+
+(package! info-colors :pin "47ee73cc19b1049eef32c9f3e264ea7ef2aaf8a5")
+(package! modus-themes :pin "392ebb115b07f8052d512ec847619387d109edd6")
+(package! theme-magic :pin "844c4311bd26ebafd4b6a1d72ddcc65d87f074e3")
+(package! keycast :pin "04ba7519f34421c235bac458f0192c130f732f12")
+(package! page-break-lines :recipe (:host github :repo "purcell/page-break-lines"))
+(package! spray :pin "74d9dcfa2e8b38f96a43de9ab0eb13364300cb46")
+;(package! authinfo-color-mode
+;  :recipe (:repo "lisp/authinfo-color-mode"))
+(package! systemd :pin "b6ae63a236605b1c5e1069f7d3afe06ae32a7bae")
+; Ebooks
+(package! calibredb :pin "cb93563d0ec9e0c653210bc574f9546d1e7db437")
+(package! nov :pin "b3c7cc28e95fe25ce7b443e5f49e2e45360944a3")
+; Email
+(package! org-mime)
+(package! org-auto-tangle)
+(package! mu4e-alert)
+(package! outline-minor-faces)
+(package! mu4e-conversation)
+(package! elfeed-summary)
+(package! org-modern)
+(package! good-scroll)
+(package! desktop-environment)
+(package! emms)
+(package! elfeed-tube)
+(package! mpv)
+(package! elfeed-tube-mpv)
+(package! spell-fu)
+(package! wallpaper)
+#+end_src
+* Secrets :crypt:
+-----BEGIN PGP MESSAGE-----
+
+jA0ECQMCpaa2IHWz/qX/0ncB5MHYMuE7woX9lpKqkvubmgY7wy3/6LCoYMn6XYRY
+sY2v9BQxlfFkz+rwgWnsdRYeGLR8Yd8mpHGeGg4jrvC8v5eiOhaqCKpyNiAcMpOv
+age95IpQjrQoIy0CPDtiouDWKNrXrTSQctareltEAkkB+p48HdVkKg==
+=z0qj
+-----END PGP MESSAGE-----
+* Modules
+** Utility functions
+#+begin_src emacs-lisp
+(load-module 'utility-functions)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/utility-functions.el
+(defun string-inflection-title-to-lisp-case-function (title-str)
+  "Title String for Something => title-string-for-something"
+  (string-inflection-kebab-case-function (s-replace-all '((" " . "-")) title-str)))
+(provide 'utility-functions)
+#+end_src
+** Autocorrect
+#+begin_src emacs-lisp
+(load-module 'auto-correct)
+#+end_src
+
+#+begin_src emacs-lisp :tangle modules/auto-correct.el
+;;; auto-correct.el -*- lexical-binding: t; -*-
+
+(define-key ctl-x-map "\C-i"
+  #'endless/ispell-word-then-abbrev)
+
+(defun endless/simple-get-word ()
+  (car-safe (save-excursion (ispell-get-word nil))))
+
+(defun endless/ispell-word-then-abbrev (p)
+  "Call `ispell-word', then create an abbrev for it.
+With prefix P, create local abbrev. Otherwise it will
+be global.
+If there's nothing wrong with the word at point, keep
+looking for a typo until the beginning of buffer. You can
+skip typos you don't want to fix with `SPC', and you can
+abort completely with `C-g'."
+  (interactive "P")
+  (let (bef aft)
+    (save-excursion
+      (while (if (setq bef (endless/simple-get-word))
+                 ;; Word was corrected or used quit.
+                 (if (ispell-word nil 'quiet)
+                     nil ; End the loop.
+                   ;; Also end if we reach `bob'.
+                   (not (bobp)))
+               ;; If there's no word at point, keep looking
+               ;; until `bob'.
+               (not (bobp)))
+        (backward-word)
+        (backward-char))
+      (setq aft (endless/simple-get-word)))
+    (if (and aft bef (not (equal aft bef)))
+        (let ((aft (downcase aft))
+              (bef (downcase bef)))
+          (define-abbrev
+            (if p local-abbrev-table global-abbrev-table)
+            bef aft)
+          (message "\"%s\" now expands to \"%s\" %sally"
+                   bef aft (if p "loc" "glob")))
+      (user-error "No typo at or before point"))))
+
+(setq save-abbrevs 'silently)
+(setq-default abbrev-mode t)
+
+(provide 'auto-correct)
+#+end_src
+
+** Beancount
+#+begin_src emacs-lisp
+(load-module 'beancount-tweaks)
+#+end_src
+#+begin_src emacs-lisp :tangle modules/beancount-tweaks.el
+;;; beancount.el -*- lexical-binding: t; -*-
+
+(use-package! beancount
+  :mode ("\\.beancount\\'" . beancount-mode)
+  :init
+  (after! all-the-icons
+    (add-to-list 'all-the-icons-icon-alist
+                 '("\\.beancount\\'" all-the-icons-material "attach_money" :face all-the-icons-lblue))
+    (add-to-list 'all-the-icons-mode-icon-alist
+                 '(beancount-mode all-the-icons-material "attach_money" :face all-the-icons-lblue)))
+  :config
+  (setq beancount-electric-currency t)
+  (defun beancount-bal ()
+    "Run bean-report bal."
+    (interactive)
+    (let ((compilation-read-command nil))
+      (beancount--run "bean-report"
+                      (file-relative-name buffer-file-name) "bal")))
+  (map! :map beancount-mode-map
+        :n "TAB" #'beancount-align-to-previous-number
+        :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
+
+(provide 'beancount-tweaks)
+
+#+end_src
+** Dired
+*** Dired Inline images
+#+begin_src emacs-lisp
+(load-module 'dired-inline-images)
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/dired-inline-images.el
+;;; dired-inline-images.el -*- lexical-binding: t; -*-
+
+(defun dired-preview--dired-line-is-previewable ()
+  "Return non-nil if line under point is previewable"
+  (let* ((fname (dired-get-filename nil))
+         (ext (upcase (file-name-extension fname)))
+         (allowed-extensions '("PBM" "XBM" "XPM" "GIF" "JPEG" "JPG" "TIFF" "TIF" "PNG" "SVG"))
+         (search-fun (apply-partially (lambda (a b) (string= a b)) ext))
+         (is-ext-allowed (seq-find search-fun allowed-extensions nil)))
+    is-ext-allowed))
+
+(defun dired-preview--readin (filename)
+  "Read in the file.
+
+Return a string suitable for insertion in `dired' buffer."
+    (let ((preview-image (create-image filename 'imagemagick nil :height 200)))
+      (with-temp-buffer
+        (insert-image preview-image)
+        (insert "\n")
+        (buffer-string))))
+
+(defun dired-preview-insert ()          ;; Copied more or less directly from dired-subtree
+  "Insert preview under this file."
+  (interactive)
+  (when (and (dired-preview--dired-line-is-previewable)
+             (not (dired-subtree--is-expanded-p)))
+    (let* ((filename (dired-get-filename nil))
+           (listing (dired-preview--readin filename))
+           beg end)
+      (read-only-mode -1)
+      (move-end-of-line 1)
+      ;; this is pretty ugly, I'm sure it can be done better
+      (save-excursion
+        (insert listing)
+        (setq end (+ (point) 2)))
+      (newline)
+      (setq beg (point))
+      (let ((inhibit-read-only t))
+        (remove-text-properties (1- beg) beg '(dired-filename)))
+      (let* ((ov (make-overlay beg end))
+             (parent (dired-subtree--get-ov (1- beg)))
+             (depth (or (and parent (+ 2 (overlay-get parent 'dired-subtree-depth)))
+                        2))
+             (face (intern (format "dired-subtree-depth-%d-face" depth))))
+        (when dired-subtree-use-backgrounds
+          (overlay-put ov 'face face))
+        ;; refactor this to some function
+        (overlay-put ov 'line-prefix
+                     (if (stringp dired-subtree-line-prefix)
+                         (if (not dired-subtree-use-backgrounds)
+                             (apply 'concat (-repeat depth dired-subtree-line-prefix))
+                           (cond
+                            ((eq nil dired-subtree-line-prefix-face)
+                             (apply 'concat
+                                    (-repeat depth dired-subtree-line-prefix)))
+                            ((eq 'subtree dired-subtree-line-prefix-face)
+                             (concat
+                              dired-subtree-line-prefix
+                              (propertize
+                               (apply 'concat
+                                      (-repeat (1- depth) dired-subtree-line-prefix))
+                               'face face)))
+                            ((eq 'parents dired-subtree-line-prefix-face)
+                             (concat
+                              dired-subtree-line-prefix
+                              (apply 'concat
+                                     (--map
+                                      (propertize dired-subtree-line-prefix
+                                                  'face
+                                                  (intern (format "dired-subtree-depth-%d-face" it)))
+                                      (number-sequence 1 (1- depth))))))))
+                       (funcall dired-subtree-line-prefix depth)))
+        (overlay-put ov 'dired-subtree-name filename)
+        (overlay-put ov 'dired-subtree-parent parent)
+        (overlay-put ov 'dired-subtree-depth depth)
+        (overlay-put ov 'evaporate t)
+        (push ov dired-subtree-overlays))
+      (goto-char (- beg 1))
+      (dired-move-to-filename)
+      (read-only-mode 1)
+      (run-hooks 'dired-subtree-after-insert-hook))))
+
+(defun dired-preview-insert-preview-or-subtree (orig-fun)
+  "Call the right insert function for a preview or a subtree"
+  (interactive)
+  (cond ((dired-subtree--dired-line-is-directory-or-link-p) (apply orig-fun nil))
+        ((dired-preview--dired-line-is-previewable) (dired-preview-insert))))
+
+(advice-add 'dired-subtree-insert :around #'dired-preview-insert-preview-or-subtree)
+
+(provide 'dired-inline-images)
+
+#+end_src
+
+*** Dired Tweaks
+#+begin_src emacs-lisp
+(load-module 'dired-tweaks)
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/dired-tweaks.el
+;;; dired-tweaks.el -*- lexical-binding: t; -*-
+
+;; Dired
+;;; Colourful dired
+(use-package! diredfl
+  :init (diredfl-global-mode 1))
+
+(use-package! all-the-icons-dired
+  :config
+  ;(all-the-icons-dired-mode 1)
+  (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+
+(defun dired-open-file ()
+  "In dired, open the file named on this line."
+  (interactive)
+  (let* ((file (dired-get-filename nil t)))
+    (message "Opening %s..." file)
+    (call-process "xdg-open" nil 0 nil file)))
+
+
+(define-minor-mode dired-follow-mode
+  "Diplay file at point in dired after a move."
+  :lighter " dired-f"
+  :global t
+  (if dired-follow-mode
+      (advice-add 'dired-next-line :after (lambda (arg) (dired-display-file)))
+    (advice-remove 'dired-next-line (lambda (arg) (dired-display-file)))))
+
+(setq vc-follow-symlinks t
+      dired-listing-switches "-ahlt"
+      diredp-toggle-find-file-reuse-dir 1
+      image-dired-thumb-size 100
+      diredp-image-preview-in-tooltip 100
+      dired-auto-revert-buffer t
+      diredp-hide-details-initially-flag nil
+      dired-hide-details-mode 0)
+
+(defmacro image-view (direction)
+  `(lambda ()
+     (interactive)
+     (quit-window)
+     (let ((pt (point))
+           filename)
+       (or (ignore-errors
+             (catch 'filename
+               (while (dired-next-line ,direction)
+                 (when (image-type-from-file-name
+                        (setq filename (dired-get-filename)))
+                   (throw 'filename filename)))))
+           (goto-char pt))
+       (dired-view-file))))
+
+(eval-after-load "image-mode"
+  '(progn
+    (define-key image-mode-map "n" (image-view 1))
+    (define-key image-mode-map "p" (image-view -1))))
+
+;(use-package dired-k
+;  ;; use dired-k as alternative to revert buffer. This will refresh git status
+;  :hook (dired-mode . dired-k)
+;  :bind (:map dired-mode-map
+;              ("g" . dired-k)))
+
+(use-package! diredful
+  :config (diredful-mode 1))
+
+; I don't like colors that much, icons already do everything
+;(use-package dired-rainbow
+;
+;  :defer t
+;  :config
+;  (progn
+;    (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
+;    (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
+;    (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
+;    (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
+;    (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
+;    (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
+;    (dired-rainbow-define media "#de751f" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
+;    (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
+;    (dired-rainbow-define log "#c17d11" ("log"))
+;    (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
+;    (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
+;    (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
+;    (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
+;    (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
+;    (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
+;    (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
+;    (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
+;    (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
+;    (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
+;    (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
+;    ))
+
+(use-package! dired-git-info
+  :config
+  (setq dgi-auto-hide-details-p nil)
+  (add-hook 'dired-after-readin-hook 'dired-git-info-auto-enable))
+
+
+(use-package! async
+  :init (dired-async-mode 1))
+
+(use-package! dired-quick-sort
+  :config
+  (dired-quick-sort-setup)
+  (setq dired-quick-sort-suppress-setup-warning t))
+
+(use-package! openwith
+  :config
+  (setq openwith-associations
+        (cond
+         ((string-equal system-type "darwin")
+          '(("\\.\\(dmg\\|doc\\|docs\\|xls\\|xlsx\\)$"
+             "open" (file))
+            ("\\.\\(mp4\\|mp3\\|webm\\|avi\\|flv\\|mov\\)$"
+             "open" ("-a" "VLC" file))))
+         ((string-equal system-type "gnu/linux")
+          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|pdf\\|part\\)$"
+             "xdg-open" (file))))))
+  (openwith-mode t)
+  (setq large-file-warning-threshold 3000000000))
+
+(define-key dired-mode-map (kbd "<backspace>") 'dired-up-directory)
+
+;; Docview j and k go forward a line which is weird behaviour in a pdf
+;; Paging is prefered to scrolling
+(after! doc-view-mode
+(define-key doc-view-mode-map (kbd "j") 'doc-view-next-page)
+(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-page)
+  )
+
+;; Convert files automatically
+(defun dired-convert-file ()
+  "Converts pptx or docx files to pdf"
+  (interactive)
+  (cl-map 'nil '(lambda (file)
+                   (let ((ext (file-name-extension file))
+                         (base-name-sans-ext (file-name-sans-extension (file-name-nondirectory file))))
+                     (cond
+                      ((or (string-equal ext "pptx") (string-equal ext "ppt"))
+                       (async-shell-command (format "libreoffice --headless --invisible --convert-to pdf \"%s\"" file)))
+                      ((or (string-equal ext "docx") (string-equal ext "doc") (string-equal ext "epub") (string-equal ext "tex") (string-equal "html") (string-equal ext "org") (string-equal ext "txt"))
+                       (async-shell-command (format "pandoc -i \"%s\" -o \"%s.pdf\"" file base-name-sans-ext)))
+                      ((or (string-equal ext "jpg") (string-equal ext "jpeg") (string-equal ext "png"))
+                       (async-shell-command (format "convert \"%s\" -rotate 90 \"%s\"" file file)))
+                      ))) (dired-get-marked-files)))
+
+;; Toggle youtube-dl-list if in elfeed-youtube buffer, else perform regular load
+(defun dired-load-or-youtube-toggle ()
+  (interactive)
+  (cond ((string-equal (buffer-name) "elfeed-youtube")
+         (youtube-dl-list))
+        ((eq major-mode 'youtube-dl-list-mode) (kill-buffer))
+        (t (dired-do-load))))
+
+(map! :map dired-mode-map
+      ;:after dired-mode
+      ;:n doom-leader-key nil
+      :n "c" #'dired-convert-file
+      :n "L" #'dired-load-or-youtube-toggle)
+
+(map! :map youtube-dl-list-mode-map
+      :n "L" #'dired-load-or-youtube-toggle)
+
+(provide 'dired-tweaks)
+#+end_src
+** Ebooks
+#+begin_src emacs-lisp
+(load-module 'ebook-tweaks)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/ebook-tweaks.el
+;;; ebook-tweaks.el -*- lexical-binding: t; -*-
+
+(use-package! calibredb
+  :commands calibredb
+  :config
+  (setq calibredb-root-dir "/home/user/sshfs/calibre/"
+        calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
+        sql-sqlite-program "sqlite3")
+
+(setq calibredb-id-width 12)
+(setq calibredb-format-all-the-icons t)
+(setq calibredb-format-icons-in-terminal t)
+(setq calibredb-format-character-icons t)
+  (map! :map calibredb-show-mode-map
+        :ne "?" #'calibredb-entry-dispatch
+        :ne "o" #'calibredb-find-file
+        :ne "O" #'calibredb-find-file-other-frame
+        :ne "V" #'calibredb-open-file-with-default-tool
+        :ne "s" #'calibredb-set-metadata-dispatch
+        :ne "e" #'calibredb-export-dispatch
+        :ne "q" #'calibredb-entry-quit
+        :ne "." #'calibredb-open-dired
+        :ne [tab] #'calibredb-toggle-view-at-point
+        :ne "M-t" #'calibredb-set-metadata--tags
+        :ne "M-a" #'calibredb-set-metadata--author_sort
+        :ne "M-A" #'calibredb-set-metadata--authors
+        :ne "M-T" #'calibredb-set-metadata--title
+        :ne "M-c" #'calibredb-set-metadata--comments)
+  (map! :map calibredb-search-mode-map
+        :ne [mouse-3] #'calibredb-search-mouse
+        :ne "RET" #'calibredb-find-file
+        :ne "?" #'calibredb-dispatch
+        :ne "a" #'calibredb-add
+        :ne "A" #'calibredb-add-dir
+        :ne "c" #'calibredb-clone
+        :ne "d" #'calibredb-remove
+        :ne "D" #'calibredb-remove-marked-items
+        :ne "j" #'calibredb-next-entry
+        :ne "k" #'calibredb-previous-entry
+        :ne "l" #'calibredb-virtual-library-list
+        :ne "L" #'calibredb-library-list
+        :ne "n" #'calibredb-virtual-library-next
+        :ne "N" #'calibredb-library-next
+        :ne "p" #'calibredb-virtual-library-previous
+        :ne "P" #'calibredb-library-previous
+        :ne "s" #'calibredb-set-metadata-dispatch
+        :ne "S" #'calibredb-switch-library
+        :ne "o" #'calibredb-find-file
+        :ne "O" #'calibredb-find-file-other-frame
+        :ne "v" #'calibredb-view
+        :ne "V" #'calibredb-open-file-with-default-tool
+        :ne "." #'calibredb-open-dired
+        :ne "b" #'calibredb-catalog-bib-dispatch
+        :ne "e" #'calibredb-export-dispatch
+        :ne "r" #'calibredb-search-refresh-and-clear-filter
+        :ne "R" #'calibredb-search-clear-filter
+        :ne "q" #'calibredb-search-quit
+        :ne "m" #'calibredb-mark-and-forward
+        :ne "f" #'calibredb-toggle-favorite-at-point
+        :ne "x" #'calibredb-toggle-archive-at-point
+        :ne "h" #'calibredb-toggle-highlight-at-point
+        :ne "u" #'calibredb-unmark-and-forward
+        :ne "i" #'calibredb-edit-annotation
+        :ne "DEL" #'calibredb-unmark-and-backward
+        :ne [backtab] #'calibredb-toggle-view
+        :ne [tab] #'calibredb-toggle-view-at-point
+        :ne "M-n" #'calibredb-show-next-entry
+        :ne "M-p" #'calibredb-show-previous-entry
+        :ne "/" #'calibredb-search-live-filter
+        :ne "M-t" #'calibredb-set-metadata--tags
+        :ne "M-a" #'calibredb-set-metadata--author_sort
+        :ne "M-A" #'calibredb-set-metadata--authors
+        :ne "M-T" #'calibredb-set-metadata--title
+        :ne "M-c" #'calibredb-set-metadata--comments))
+
+(use-package! nov
+  :mode ("\\.epub\\'" . nov-mode)
+  :config
+  (map! :map nov-mode-map
+        :n "RET" #'nov-scroll-up)
+
+  (defun doom-modeline-segment--nov-info ()
+    (concat
+     " "
+     (propertize
+      (cdr (assoc 'creator nov-metadata))
+      'face 'doom-modeline-project-parent-dir)
+     " "
+     (cdr (assoc 'title nov-metadata))
+     " "
+     (propertize
+      (format "%d/%d"
+              (1+ nov-documents-index)
+              (length nov-documents))
+      'face 'doom-modeline-info)))
+
+  (advice-add 'nov-render-title :override #'ignore)
+
+  (defun +nov-mode-setup ()
+    (face-remap-add-relative 'variable-pitch
+                             :family "Merriweather"
+                             :height 1.4
+                             :width 'semi-expanded)
+    (face-remap-add-relative 'default :height 0.7)
+    (setq-local line-spacing 0.1
+                next-screen-context-lines 4
+                shr-use-colors nil)
+    (require 'visual-fill-column nil t)
+    (setq-local visual-fill-column-center-text t
+                visual-fill-column-width 81
+                nov-text-width 120)
+    (visual-fill-column-mode 1)
+    (hl-line-mode -1)
+
+    (add-to-list '+lookup-definition-functions #'+lookup/dictionary-definition)
+
+    (setq-local mode-line-format
+                `((:eval
+                   (doom-modeline-segment--workspace-name))
+                  (:eval
+                   (doom-modeline-segment--window-number))
+                  (:eval
+                   (doom-modeline-segment--nov-info))
+                  ,(propertize
+                    " %P "
+                    'face 'doom-modeline-buffer-minor-mode)
+                  ,(propertize
+                    " "
+                    'face (if (doom-modeline--active) 'mode-line 'mode-line-inactive)
+                    'display `((space
+                                :align-to
+                                (- (+ right right-fringe right-margin)
+                                   ,(* (let ((width (doom-modeline--font-width)))
+                                         (or (and (= width 1) 1)
+                                             (/ width (frame-char-width) 1.0)))
+                                       (string-width
+                                        (format-mode-line (cons "" '(:eval (doom-modeline-segment--major-mode))))))))))
+                  (:eval (doom-modeline-segment--major-mode)))))
+
+  (add-hook 'nov-mode-hook #'+nov-mode-setup))
+
+(provide 'ebook-tweaks)
+#+end_src
+
+** Org-Roam
+#+begin_src emacs-lisp
+(load-module 'org-roam-tweaks)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-roam)
+(package! org-roam-ui)
+(package! org-roam-timestamps)
+(package! org-roam-bibtex)
+(package! citar-org-roam)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/org-roam-tweaks.el
+(setq org-roam-directory "~/dox/sync/org/roam")
+(org-roam-db-autosync-mode 1)
+(provide 'org-roam-tweaks)
+#+end_src
+
+** Editing
+#+begin_src emacs-lisp
+(load-module 'editing)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+*** Code
+#+end_src
+#+begin_src emacs-lisp :tangle modules/editing.el
+;;; editing.el -*- lexical-binding: t; -*-
+
+(defun which-active-modes ()
+  "Return which minor modes are enabled in the current buffer."
+  (let ((active-modes))
+    (mapc (lambda (mode) (condition-case nil
+                        (if (and (symbolp mode) (symbol-value mode))
+                            (add-to-list 'active-modes mode))
+                      (error nil) ))
+          minor-mode-list)
+    (format "%s" active-modes)))
+
+(defun replace-regexp-entire-buffer (pattern replacement)
+  "Perform regular-expression replacement throughout buffer."
+  (interactive
+   (let ((args (query-replace-read-args "Replace" t)))
+     (setcdr (cdr args) nil)    ; remove third value returned from query---args
+     args))
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward pattern nil t)
+      (replace-match replacement))))
+
+
+(setq toggle-auto-fill-boolean nil
+      which-key-idle-delay 0.5
+      which-key-allow-multiple-replacements t)
+
+(after! which-key
+  (pushnew!
+   which-key-replacement-alist
+   '(("" . "\\`+?evil[-:]?\\(?:a-\\)?\\(.*\\)") . (nil . "◂\\1"))
+   '(("\\`g s" . "\\`evilem--?motion-\\(.*\\)") . (nil . "◃\\1"))
+   ))
+
+(after! company
+  (setq company-idle-delay 0.5
+        company-minimum-prefix-length 2
+        company-show-numbers t)
+  (add-hook 'evil-normal-state-entry-hook #'company-abort))
+
+(set-company-backend!
+  '(text-mode
+    markdown-mode
+    gfm-mode)
+  '(:seperate
+    company-ispell
+    company-files
+    company-yasnippet))
+
+(set-company-backend! 'ess-r-mode
+  '(company-R-args company-R-objects company-dabbrev-code :separate))
+
+(use-package! vlf-setup
+  :defer-incrementally vlf-tune vlf-base vlf-write vlf-search vlf-occur vlf-follow vlf-ediff vlf)
+
+(setq eros-eval-result-prefix "⟹ ")
+
+(defun toggle-auto-fill-on ()
+  (set-fill-column 100) ;80
+  (auto-fill-mode t)
+  (setq toggle-auto-fill-boolean t)
+  ;(string-match-p "auto-fill-function" (which-active-modes))
+  (message "auto-fill-mode on"))
+
+
+(defun toggle-auto-fill-off ()
+  (replace-regexp-entire-buffer "\n" " ")
+  (auto-fill-mode nil)
+  (setq toggle-auto-fill-boolean nil)
+  (message "auto-fill-mode off")
+  )
+
+(defun toggle-auto-fill ()
+  "Toggle auto fill mode and reset buffer to non-auto-fill."
+  (interactive)
+  (if toggle-auto-fill-boolean
+      (toggle-auto-fill-off)
+    (toggle-auto-fill-on)
+    ))
+
+
+
+(global-set-key (kbd "M-q") 'toggle-auto-fill)
+
+(use-package! aas
+  :commands aas-mode)
+
+(setq yas-triggers-in-field t)
+
+(use-package! string-inflection
+  :commands (string-inflection-all-cycle
+             string-inflection-toggle
+             string-inflection-camelcase
+             string-inflection-lower-camelcase
+             string-inflection-kebab-case
+             string-inflection-underscore
+             string-inflection-capital-underscore
+             string-inflection-upcase)
+  :init
+  (map! :leader :prefix ("c~" . "naming convention")
+        :desc "cycle" "~" #'string-inflection-all-cycle
+        :desc "toggle" "t" #'string-inflection-toggle
+        :desc "CamelCase" "c" #'string-inflection-camelcase
+        :desc "downCase" "d" #'string-inflection-lower-camelcase
+        :desc "kebab-case" "k" #'string-inflection-kebab-case
+        :desc "under_score" "_" #'string-inflection-underscore
+        :desc "Upper_Score" "u" #'string-inflection-capital-underscore
+        :desc "UP_CASE" "U" #'string-inflection-upcase)
+  (after! evil
+    (evil-define-operator evil-operator-string-inflection (beg end _type)
+      "Define a new evil operator that cycles symbol casing."
+      :move-point nil
+      (interactive "<R>")
+      (string-inflection-all-cycle)
+      (setq evil-repeat-info '([?g ?~])))
+    (define-key evil-normal-state-map (kbd "g~") 'evil-operator-string-inflection)
+    (define-key evil-normal-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-normal-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-next-line>") 'evil-next-visual-line)
+    (define-key evil-motion-state-map (kbd "<remap> <evil-previous-line>") 'evil-previous-visual-line)
+    ))
+
+(sp-local-pair
+ '(org-mode)
+ "<<" ">>"
+ :actions '(insert))
+
+(use-package! authinfo-color-mode
+  :mode ("authinfo.gpg\\'" . authinfo-color-mode)
+  :init (advice-add 'authinfo-mode :override #'authinfo-color-mode))
+
+(use-package! systemd
+  :defer t)
+
+(setq global-visual-line-mode t
+ evil-respect-visual-line-mode t)
+
+(provide 'editing)
+#+end_src
+
+** Elfeed Tweaks
+#+begin_src emacs-lisp
+(load-module 'elfeed-tweaks)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+*** Code
+#+end_src
+#+begin_src emacs-lisp :tangle modules/elfeed-tweaks.el
+;;; elfeed-tweaks.el -*- lexical-binding: t; -*-
+
+(setq rmh-elfeed-org-files (cons (expand-file-name "ext/elfeed/elfeed.org" doom-private-dir)())
+      elfeed-db-directory (expand-file-name "ext/elfeed/db/" doom-private-dir)
+      elfeed-thumbnail-dir "/tmp/elfeed-thumbnails/")
+
+
+(map! :map elfeed-search-mode-map
+      :after elfeed-search
+                                        ;[remap kill-this-buffer] "q"
+                                        ;[remap kill-buffer] "q"
+      :n doom-leader-key nil
+      :n "q" #'elfeed-save-summary
+      :n "e" #'elfeed-update
+      :n "r" #'elfeed-search-untag-all-unread
+      :n "u" #'elfeed-search-tag-all-unread
+      :n "s" #'elfeed-search-live-filter
+      :n "RET" #'elfeed-search-show-entry
+      :n "p" #'elfeed-show-pdf
+      :n "v" #'elfeed-search-youtube-dl
+      :n "L" #'youtube-dl-list
+      :n "+" #'elfeed-search-tag-all
+      :n "-" #'elfeed-search-untag-all
+      :n "S" #'elfeed-search-set-filter
+      :n "b" #'elfeed-search-browse-url
+      :n "t" #'elfeed-search-thumbnail
+      :n "y" #'elfeed-search-yank)
+
+(map! :map elfeed-show-mode-map
+      :after elfeed-show
+                                        ;[remap kill-this-buffer] "q"
+                                        ;[remap kill-buffer] "q"
+      :n doom-leader-key nil
+      :nm "q" #'elfeed-save-close
+      :nm "o" #'ace-link-elfeed
+      :nm "A" #'elfeed-wget-url
+      :nm "RET" #'elfeed-tube-mpv-open
+      :nm "n" #'elfeed-show-next
+      :nm "N" #'elfeed-show-prev
+      :nm "p" #'elfeed-show-pdf
+      :nm "v" #'elfeed-show-youtube-dl
+      :nm "d" #'elfeed-show-download-enclosure
+      :nm "D" #'elfeed-show-download-enclosure
+      :nm "L" #'youtube-dl-list
+      :nm "+" #'elfeed-show-tag
+      :nm "-" #'elfeed-show-untag
+      :nm "s" #'elfeed-show-new-live-search
+      :nm "y" #'elfeed-show-yank)
+(map! :map elfeed-summary-mode-map
+      :after elfeed-summary
+      :n "L" #'youtube-dl-list
+      :n "V" #'open-yt-dl-videos
+      :n "R" #'elfeed-summary-load-update
+      :n "C-x C-s" #'elfeed-summary-save
+      :n "RET" #'elfeed-summary-action-save-location)
+
+(after! elfeed-search
+  (set-evil-initial-state! 'elfeed-search-mode 'normal))
+(after! elfeed-show-mode
+  (set-evil-initial-state! 'elfeed-show-mode   'normal))
+
+(after! evil-snipe
+  (push 'elfeed-show-mode   evil-snipe-disabled-modes)
+  (push 'elfeed-search-mode evil-snipe-disabled-modes))
+
+(after! elfeed
+  (elfeed-org)
+  (use-package! elfeed-link)
+  (elfeed-db-load)
+  (setq ;elfeed-search-filter "@1-week-ago +unread"
+        elfeed-search-filter "@3-days-ago unread"
+        flycheck-global-modes '(not . (elfeed-search-mode))
+        elfeed-summary--only-unread t
+        elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
+        elfeed-search-title-min-width 80
+        elfeed-show-entry-switch #'pop-to-buffer
+        elfeed-show-entry-delete #'+rss/delete-pane
+        elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
+        shr-max-image-proportion 0.6)
+
+  (add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+(defun elfeed-eb-garamond ()
+  (buffer-face-set '(:family "EB Garamond" :height 120)))
+
+(add-hook! 'elfeed-show-mode-hook 'elfeed-eb-garamond)
+  (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+
+  (defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.5)))
+    "title face in elfeed show buffer"
+    :group 'elfeed)
+  (defface elfeed-show-author-face `((t (:weight light)))
+    "title face in elfeed show buffer"
+    :group 'elfeed)
+  (set-face-attribute 'elfeed-search-title-face nil
+                      :foreground 'nil
+                      :weight 'light)
+
+  (defadvice! +rss-elfeed-wrap-h-nicer ()
+    "Enhances an elfeed entry's readability by wrapping it to a width of
+`fill-column' and centering it with `visual-fill-column-mode'."
+    :override #'+rss-elfeed-wrap-h
+    (setq-local truncate-lines nil
+                shr-width 120
+                visual-fill-column-center-text t
+                default-text-properties '(line-height 1.1))
+    (let ((inhibit-read-only t)
+          (inhibit-modification-hooks t))
+      (visual-fill-column-mode nil)
+      (setq-local shr-current-font '(:family "Linux Libertine O" :height 1.2))
+      (set-buffer-modified-p nil)))
+
+  (defun +rss/elfeed-search-print-entry (entry)
+    "Print ENTRY to the buffer."
+    (let* ((elfeed-goodies/tag-column-width 40)
+           (elfeed-goodies/feed-source-column-width 30)
+           (title (or (elfeed-meta entry :title) (elfeed-entry-title entry) ""))
+           (title-faces (elfeed-search--faces (elfeed-entry-tags entry)))
+           (feed (elfeed-entry-feed entry))
+           (feed-title
+            (when feed
+              (or (elfeed-meta feed :title) (elfeed-feed-title feed))))
+           (tags (mapcar #'symbol-name (elfeed-entry-tags entry)))
+           (tags-str (concat (mapconcat 'identity tags ",")))
+           (title-width (- (window-width) elfeed-goodies/feed-source-column-width
+                           elfeed-goodies/tag-column-width 4))
+
+           (tag-column (elfeed-format-column
+                        tags-str (elfeed-clamp (length tags-str)
+                                               elfeed-goodies/tag-column-width
+                                               elfeed-goodies/tag-column-width)
+                        :left))
+           (feed-column (elfeed-format-column
+                         feed-title (elfeed-clamp elfeed-goodies/feed-source-column-width
+                                                  elfeed-goodies/feed-source-column-width
+                                                  elfeed-goodies/feed-source-column-width)
+                         :left)))
+
+                                        ;(insert (propertize feed-column 'face 'elfeed-search-feed-face) " ")
+                                        ;(insert (propertize tag-column 'face 'elfeed-search-tag-face) " ")
+      (insert (propertize title 'face title-faces 'kbd-help title))
+      (setq-local line-spacing 0.2)))
+
+  (defun +rss/elfeed-show-refresh--better-style ()
+    "Update the buffer to match the selected entry, using a mail-style."
+    (interactive)
+    (let* ((inhibit-read-only t)
+           (title (elfeed-entry-title elfeed-show-entry))
+           (date (seconds-to-time (elfeed-entry-date elfeed-show-entry)))
+           (author (elfeed-meta elfeed-show-entry :author))
+           (link (elfeed-entry-link elfeed-show-entry))
+           (tags (elfeed-entry-tags elfeed-show-entry))
+           (tagsstr (mapconcat #'symbol-name tags ", "))
+           (nicedate (format-time-string "%a, %e %b %Y %T %Z" date))
+           (content (elfeed-deref (elfeed-entry-content elfeed-show-entry)))
+           (type (elfeed-entry-content-type elfeed-show-entry))
+           (feed (elfeed-entry-feed elfeed-show-entry))
+           (feed-title (elfeed-feed-title feed))
+           (base (and feed (elfeed-compute-base (elfeed-feed-url feed)))))
+      (erase-buffer)
+      (insert "\n")
+      (insert (format "%s\n\n" (propertize title 'face 'elfeed-show-title-face)))
+      (insert (format "%s\t" (propertize feed-title 'face 'elfeed-search-feed-face)))
+      (when (and author elfeed-show-entry-author)
+        (insert (format "%s\n" (propertize author 'face 'elfeed-show-author-face))))
+      (insert (format "%s\n\n" (propertize nicedate 'face 'elfeed-log-date-face)))
+      (when tags
+        (insert (format "%s\n"
+                        (propertize tagsstr 'face 'elfeed-search-tag-face))))
+      ;; (insert (propertize "Link: " 'face 'message-header-name))
+      ;; (elfeed-insert-link link link)
+      ;; (insert "\n")
+      (cl-loop for enclosure in (elfeed-entry-enclosures elfeed-show-entry)
+               do (insert (propertize "Enclosure: " 'face 'message-header-name))
+               do (elfeed-insert-link (car enclosure))
+               do (insert "\n"))
+      (insert "\n")
+      (if content
+          (if (eq type 'html)
+              (elfeed-insert-html content base)
+            (insert content))
+        (insert (propertize "(empty)\n" 'face 'italic)))
+      (goto-char (point-min))))
+
+  (defface elfeed-youtube
+    '((t :foreground "purple"))
+    "Marks YouTube videos in Elfeed."
+    :group 'elfeed)
+
+  (defface elfeed-religion
+    '((t :foreground "gold"))
+    "Marks YouTube videos in Elfeed."
+    :group 'elfeed)
+
+  (defface elfeed-tech
+    '((t :foreground "LightSteelBlue4"))
+    "Marks Tech videos in Elfeed."
+    :group 'elfeed)
+
+  (push '(youtube elfeed-youtube)
+        elfeed-search-face-alist)
+  (push '(religion elfeed-religion)
+        elfeed-search-face-alist)
+  (push '(tech elfeed-tech)
+        elfeed-search-face-alist)
+
+
+  )
+
+(after! elfeed-show
+  (require 'url)
+
+  (defun elfeed-show-download-enclosure ()
+    "Download the enclosure to yt-dlp directory"
+    (interactive)
+    (let*
+         ((url-enclosure (car (elt (elfeed-entry-enclosures elfeed-show-entry) 0)))
+          (filename (concat elfeed-enclosure-default-dir "/" (elfeed-entry-title elfeed-show-entry) ".mp3")))
+      (elfeed--download-enclosure url-enclosure filename)
+      (message (format "Downloading %s" filename))))
+
+  (defvar elfeed-pdf-dir
+    (expand-file-name "pdfs/"
+                      (file-name-directory (directory-file-name elfeed-enclosure-default-dir))))
+
+  (defvar elfeed-link-pdfs
+    '(("https://www.jstatsoft.org/index.php/jss/article/view/v0\\([^/]+\\)" . "https://www.jstatsoft.org/index.php/jss/article/view/v0\\1/v\\1.pdf")
+      ("http://arxiv.org/abs/\\([^/]+\\)" . "https://arxiv.org/pdf/\\1.pdf"))
+    "List of alists of the form (REGEX-FOR-LINK . FORM-FOR-PDF)")
+
+  (defun elfeed-show-pdf (entry)
+    (interactive
+     (list (or elfeed-show-entry (elfeed-search-selected :ignore-region))))
+    (let ((link (elfeed-entry-link entry))
+          (feed-name (plist-get (elfeed-feed-meta (elfeed-entry-feed entry)) :title))
+          (title (elfeed-entry-title entry))
+          (file-view-function
+           (lambda (f)
+             (when elfeed-show-entry
+               (elfeed-kill-buffer))
+             (pop-to-buffer (find-file-noselect f))))
+          pdf)
+
+      (let ((file (expand-file-name
+                   (concat (subst-char-in-string ?/ ?, title) ".pdf")
+                   (expand-file-name (subst-char-in-string ?/ ?, feed-name)
+                                     elfeed-pdf-dir))))
+        (if (file-exists-p file)
+            (funcall file-view-function file)
+          (dolist (link-pdf elfeed-link-pdfs)
+            (when (and (string-match-p (car link-pdf) link)
+                       (not pdf))
+              (setq pdf (replace-regexp-in-string (car link-pdf) (cdr link-pdf) link))))
+          (if (not pdf)
+              (message "No associated PDF for entry")
+            (message "Fetching %s" pdf)
+            (unless (file-exists-p (file-name-directory file))
+              (make-directory (file-name-directory file) t))
+            (url-copy-file pdf file)
+            (funcall file-view-function file))))))
+
+  )
+
+(after! elfeed-summary
+  (elfeed-org))
+
+(defun elfeed-summary-save ()
+  "Save database"
+  (interactive)
+  (elfeed-db-save-safe))
+
+(defun elfeed-save-summary ()
+  "Save database and go to summary"
+  (interactive)
+  (elfeed-db-save-safe)
+  (kill-this-buffer)
+  (elfeed-summary)
+  (when (boundp 'elfeed-summary--current-pos)
+    (goto-char elfeed-summary--current-pos)))
+
+(defun elfeed-save-close ()
+  "Save database and close rss"
+  (interactive)
+  (elfeed-db-save-safe)
+  (+rss/delete-pane))
+
+(defun elfeed-load-summary ()
+  "Load database and go to summary"
+  (interactive)
+  (when (and (functionp 'elfeed-db-load) (not (get-buffer "*elfeed-summary*")))
+    (make-thread (elfeed-db-load)))
+  (elfeed-summary)
+  (when (boundp 'elfeed-summary--current-pos)
+    (progn
+      (goto-char elfeed-summary--current-pos)
+      (recenter-top-bottom))))
+
+(defun elfeed-summary-load-update ()
+  "Loads the database again before updating"
+  (interactive)
+  (elfeed-db-load)
+  (message "Refreshing db...")
+  (elfeed-update)
+  (elfeed-summary-update))
+
+(setq elfeed-summary-settings
+      '(
+        (group (:title . "Blogs [Security]")
+               (:elements
+                (query . (and people security))))
+        (group (:title . "Blogs [People]")
+               (:elements
+                (query . (and people (not security)))
+                ))
+        (group (:title . "Religion")
+               (:elements
+                (query . religion)))
+        (group (:title . "Cooking")
+               (:elements
+                (query . cooking)))
+        (group (:title . "ASMR")
+               (:elements
+                (query . asmr)))
+        (group (:title . "Crafting")
+               (:elements
+                (query . crafting)))
+        (group (:title . "Entertainment")
+               (:elements
+                (query . entertainment)))
+        (group (:title . "Finances")
+               (:elements
+                (query . finances)))
+        (group (:title . "Foreign Places")
+               (:elements
+                (query . foreign_places)))
+        (group (:title . "Geography")
+               (:elements
+                (query . geography)))
+        (group (:title . "History")
+               (:elements
+                (query . history)))
+        (group (:title . "Language")
+               (:elements
+                (query . language)))
+        (group (:title . "Math")
+               (:elements
+                (query . music)))
+        (group (:title . "Nature")
+               (:elements
+                (query . nature)))
+        (group (:title . "Philosophy")
+               (:elements
+                (query . philosophy)))
+        (group (:title . "Politics")
+               (:elements
+                (query . politics)))
+        (group (:title . "Science")
+               (:elements
+                (query . science)))
+        (group (:title . "SCP")
+               (:elements
+                (query . scp)))
+        (group (:title . "Tech")
+               (:elements
+                (query . tech)))
+        (group (:title . "Podcasts")
+               (:elements
+                (query . podcast)))
+        (group (:title . "Pictures")
+               (:elements
+                (query . picture)))
+        ;; ...
+        (group (:title . "Miscellaneous")
+               (:elements
+                                        ;(group
+                                        ; (:title . "Searches")
+                                        ; (:elements
+                                        ;  (search
+                                        ;   (:filter . "@6-months-ago")
+                                        ;   (:title . "Unread"))))
+                (group
+                 (:title . "Ungrouped")
+                 (:elements :misc))))))
+(global-set-key (kbd "s-e") 'elfeed-load-summary)
+
+                                        ; Elfeed Youtube
+
+                                        ; External youtube-dl library
+(add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
+(after-startup (require 'youtube-dl))
+(setq youtube-dl-directory "~/elfeed-youtube"
+      elfeed-enclosure-default-dir youtube-dl-directory
+      youtube-dl-temp-directory "/tmp/elfeed-youtube"
+      youtube-dl-program "yt-dlp"
+      youtube-dl-arguments
+      (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
+               "--sponsorblock-remove" "default"
+               "--prefer-free-formats"
+               "--embed-subs"
+               "--embed-metadata"
+               "--embed-chapters"
+               "--ffmpeg-location" "/home/user/.doom.d/ext/bin/"
+               "--no-colors")
+             youtube-dl-arguments))
+                                        ; (setq youtube-dl-arguments nil)
+
+(global-set-key (kbd "s-v") 'open-yt-dl-videos)
+(global-set-key (kbd "s-V") 'open-yt-dl-temp-videos)
+
+(defun open-yt-dl-videos ()
+  (interactive)
+  (find-file youtube-dl-directory))
+
+(defun open-yt-dl-temp-videos ()
+  (interactive)
+  (find-file youtube-dl-temp-directory))
+
+
+(cl-defun elfeed-show-youtube-dl (&key slow)
+  "Download the current entry with youtube-dl."
+  (interactive)
+  (if (null (youtube-dl (elfeed-entry-link elfeed-show-entry)
+                        :title (elfeed-entry-title elfeed-show-entry)
+                        :slow slow))
+      (message "Entry is not a YouTube link!")
+    (message "Downloading %s" (elfeed-entry-title elfeed-show-entry))))
+
+
+(cl-defun elfeed-search-youtube-dl (&key slow)
+  "Download the current entry with youtube-dl."
+  (interactive)
+  (let ((entries (elfeed-search-selected)))
+    (dolist (entry entries)
+      (if (null (youtube-dl (elfeed-entry-link entry)
+                            :title (elfeed-entry-title entry)
+                            :slow slow))
+          (message "Entry is not a YouTube link!")
+        (message "Downloading %s" (elfeed-entry-title entry)))
+      (elfeed-untag entry 'unread)
+      (elfeed-search-update-entry entry)
+      (unless (use-region-p) (forward-line)))))
+
+(defun youtube-dl-list-url ()
+  "Return url of item under point."
+  (interactive)
+  (let* ((n (1- (line-number-at-pos)))
+         (item (nth n youtube-dl-items)))
+    (when item
+      (message (youtube-dl-item-destination item)))))
+                                        ; Faces
+
+(defun elfeed-summary-action-save-location (pos &optional event)
+  (interactive "@d")
+  (setq elfeed-summary--current-pos pos)
+  (elfeed-summary--action pos event)
+  )
+
+
+
+(defun image-tooltip (img-path)
+  "Display image at img-path as tooltip"
+  (tooltip-mode 1)
+  (tooltip-show
+    (propertize "Look in minbuffer"
+                'display (create-image img-path))))
+
+(defun elfeed-search-thumbnail ()
+  "Display the thumbnail of the currently selected video"
+  (interactive)
+  (mkdir elfeed-thumbnail-dir t)
+  (let ((buffer (current-buffer))
+        (entries (elfeed-search-selected)))
+    (cl-loop for entry in entries
+             when (elfeed-entry-link entry)
+             do (let ((title (concat elfeed-thumbnail-dir (secure-hash 'sha224 (elfeed-entry-title entry)))))
+                  (if (file-exists-p (concat title ".jpg"))
+                      (image-tooltip (concat title ".jpg"))
+                    (youtube-dl-get-video-thumbnail it title (lambda (a) (image-tooltip (concat title ".jpg"))))))
+    (with-current-buffer buffer
+      (mapc #'elfeed-search-update-entry entries)
+      (unless (or elfeed-search-remain-on-entry (use-region-p)))))))
+
+(defun elfeed-wget-url ()
+  "Wgets URL at point to elfeed video dir"
+  (interactive)
+  (let ((url (shr-url-at-point current-prefix-arg)))
+    (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
+    (async-shell-command (concat "wget -O " youtube-dl-directory "/\"" (elfeed-entry-title elfeed-show-entry) "\".mp3 " url))))
+
+(defun youtube-dl-move-temp ()
+  "Moves content of elfeed video dir to temporary location"
+  (interactive)
+  (mkdir youtube-dl-temp-directory t)
+  (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
+  (async-shell-command (concat "mv " youtube-dl-directory "/* " youtube-dl-temp-directory "/")))
+
+(use-package! elfeed-tube
+  :after elfeed
+  :demand t
+  :config
+  ;; (setq elfeed-tube-auto-save-p nil) ; default value
+  ;; (setq elfeed-tube-auto-fetch-p t)  ; default value
+  (elfeed-tube-setup)
+
+  :bind (:map elfeed-show-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)
+         :map elfeed-search-mode-map
+         ("F" . elfeed-tube-fetch)
+         ([remap save-buffer] . elfeed-tube-save)))
+
+(use-package! elfeed-tube-mpv
+  :bind
+  ("C-c C-f" . elfeed-tube-mpv-follow-mode)
+  ("C-c C-w" . elfeed-tube-mpv-where))
+
+(setq elfeed-tube-captions-languages '("en" "de" "la" "english (auto generated)" "german (auto generated)")
+      elfeed-tube-captions-chunk-time 60
+      elfeed-tube-thumbnail-size 'large)
+
+(defun elfeed-tube-mpv-open ()
+  "Opens selected elfeed tube feed in mpv and activates follow mode"
+  (interactive)
+  (elfeed-tube-mpv-follow-mode 1)
+  (elfeed-tube-mpv (point)))
+
+(add-hook! 'elfeed-show-mode-hook '(lambda () (elfeed-tube-mpv-follow-mode 1)))
+
+(provide 'elfeed-tweaks)
 #+end_src

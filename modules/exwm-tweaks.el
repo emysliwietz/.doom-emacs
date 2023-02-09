@@ -410,13 +410,8 @@
      ((lambda (dir)
        ,@actions) ,dir)))
 
-(when
-    (file-exists-p "/home/user/dox/wallpapers")
-  ((lambda
-     (dir)
-     (setq wallpaper-cycle-directory dir)
-     (wallpaper-set-wallpaper))
-   "/home/user/dox/wallpapers"))
-
+(ifdirexists "/home/user/dox/wallpapers"
+             (setq wallpaper-cycle-directory dir)
+             (wallpaper-set-wallpaper))
 
 (provide 'exwm-tweaks)

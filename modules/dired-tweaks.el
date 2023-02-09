@@ -66,7 +66,7 @@
 
 ; I don't like colors that much, icons already do everything
 ;(use-package dired-rainbow
-; 
+;
 ;  :defer t
 ;  :config
 ;  (progn

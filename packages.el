@@ -112,3 +112,9 @@
 (package! elfeed-tube-mpv)
 (package! spell-fu)
 (package! wallpaper)
+
+(package! org-roam)
+(package! org-roam-ui)
+(package! org-roam-timestamps)
+(package! org-roam-bibtex)
+(package! citar-org-roam)
