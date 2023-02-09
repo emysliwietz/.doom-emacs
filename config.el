@@ -61,7 +61,18 @@
 ;; they are implemented.
 
 (add-to-list 'load-path "~/.doom.d/modules")
-(setq debug-my-config 0)
+
+(defmacro dec (var)
+  `(when ,var
+    (setq ,var (- ,var 1))))
+
+(defmacro inc (var)
+  `(when ,var
+    (setq ,var (+ ,var 1))))
+
+
+(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (message "a"))
+
 (setq use-package-verbose t)
 (async-bytecomp-package-mode 1)
 
@@ -70,13 +81,16 @@
                             (make-thread
                              (load-module func)))))
 
+;; Variable to determine how many modules are loaded, for debugging
+;; Any number is number of modules
+;; -1 means all
+(setq debug-my-config nil)
 (defmacro load-module (module)
-   `(make-thread
+   `(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (make-thread
    (let ((time (current-time)))
      ;(message (format "Loading %s." func-name))
      (require ,module)
-     (message (format "Loaded %s in %.06f." ,module (float-time (time-since time)))))))
-
+     (message (format "Loaded %s in %.06f." ,module (float-time (time-since time))))))))
 
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'exwm-tweaks)
@@ -86,20 +100,14 @@
 (load-module 'shortcuts)
 (load-module 'private-config)
 (load-module 'search)
-(load-module 'auto-correct)
 (load-module 'read-aloud)
 (load-module 'read-single)
-(load-module 'dired-tweaks)
-(load-module 'dired-inline-images)
-(load-module 'editing)
 (load-module 'pamparam)
 (load-module 'beancount-tweaks)
 (load-module 'popes)
 ;(load-module '(require 'bible))
 (load-module 'keycast-tweaks)
 (load-module 'wttrin)
-(load-module 'ebook-tweaks)
-(load-module 'elfeed-tweaks)
 (load-module 'org-tweaks)
 (load-module 'languages)
 (when (require 'mu4e nil 'noerror)
@@ -108,5 +116,22 @@
   (load-module 'email-accounts))
 (load-module 'latex-tweaks)
 ; Unsorted
+(setq doom-modeline-enable-word-count t)
+
+(load-module 'utility-functions)
+
+(load-module 'auto-correct)
+
+(load-module 'beancount-tweaks)
+
+(load-module 'dired-inline-images)
+
+(load-module 'dired-tweaks)
+
+(load-module 'ebook-tweaks)
 
 (load-module 'org-roam-tweaks)
+
+(load-module 'editing)
+
+(load-module 'elfeed-tweaks)
