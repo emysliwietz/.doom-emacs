@@ -10,6 +10,7 @@
       scroll-margin 2)                            ; It's nice to maintain a little margin
 
 (display-time-mode 1)                             ; Enable time in the mode-line
+(display-battery-mode 1)
 
 ;;; Unicode emojis
 (if (>= emacs-major-version 27)
