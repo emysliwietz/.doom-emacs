@@ -109,6 +109,8 @@ This forces a complete recompilation of the document, even if the source
 (setq org-export-with-sub-superscripts "{}"
       org-export-with-smart-quotes nil)
 
+(engrave-faces-use-theme 'doom-one)
+
 (setq org-preview-latex-process-alist
    '((dvipng :programs
       ("dvilualatex" "dvipng")

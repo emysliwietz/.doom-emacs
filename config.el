@@ -62,11 +62,11 @@
 
 (add-to-list 'load-path "~/.doom.d/modules")
 
-(defmacro dec (var)
+(defmacro -- (var)
   `(when ,var
     (setq ,var (- ,var 1))))
 
-(defmacro inc (var)
+(defmacro ++ (var)
   `(when ,var
     (setq ,var (+ ,var 1))))
 
@@ -78,19 +78,25 @@
 
 (defun after-startup (func)
   (unless debug-my-config (add-hook! after-startup-hook
-                            (make-thread
-                             (load-module func)))))
+                             (load-module func))))
+
+(mkdir (concat doom-private-dir "modules") t)
 
 ;; Variable to determine how many modules are loaded, for debugging
 ;; Any number is number of modules
 ;; nil means all
 (setq debug-my-config nil)
 (defmacro load-module (module)
-   `(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (make-thread
+   `(when (or (not debug-my-config) (> debug-my-config 0)) (-- debug-my-config) (make-thread
    (let ((time (current-time)))
      ;(message (format "Loading %s." func-name))
      (require ,module)
      (message (format "Loaded %s in %.06f." ,module (float-time (time-since time))))))))
+
+;; Load a module only if dependency could successfully be loaded
+(defmacro load-module-if (dependency module)
+`(when (require ,dependency nil 'noerror)
+   (load-module ,module)))
 
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'exwm-tweaks)
@@ -165,3 +171,43 @@
 (load-module 'elfeed-tweaks)
 
 (load-module 'interface)
+
+(load-module 'exwm-tweaks)
+
+(load-module 'general)
+
+(load-module 'navigation)
+
+(load-module 'shortcuts)
+
+(load-module 'config-visit)
+
+(load-module 'search)
+
+(load-module 'read-aloud)
+
+(load-module 'speed-read)
+
+(load-module 'spaced-repetition)
+
+(load-module 'accounting)
+
+(load-module 'popes)
+
+(load-module 'keycast-tweaks)
+
+(load-module 'weather)
+
+(load-module 'org-tweaks)
+
+(load-module 'languages)
+
+(load-module-if 'mu4e 'email)
+
+(load-module-if 'mu4e 'email-config)
+
+(load-module-if 'mu4e 'email-accounts)
+
+(load-module 'latex-tweaks)
+
+(load-module 'org-links)

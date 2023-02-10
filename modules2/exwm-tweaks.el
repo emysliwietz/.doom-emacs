@@ -127,10 +127,10 @@
 	      (progn))
 	    (exwm-layout-hide-mode-line)))
 
-(setq exwm-input-prefix-keys
+(setq exwm-input-prefix-keys 
 '(?\C-x ?\C-u ?\C-h ?\M-x ?\M-` ?\M-& ?\M-:))
 
-
+ 
 (global-set-key (kbd "s-<f4>") 'go-to-scratch)
 (global-set-key (kbd "s-S-<f4>") 'save-buffer-temp)
 (require 'exwm-edit)
