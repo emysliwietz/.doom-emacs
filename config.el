@@ -83,7 +83,7 @@
 
 ;; Variable to determine how many modules are loaded, for debugging
 ;; Any number is number of modules
-;; -1 means all
+;; nil means all
 (setq debug-my-config nil)
 (defmacro load-module (module)
    `(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (make-thread
@@ -95,7 +95,6 @@
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'exwm-tweaks)
 (load-module 'general)
-(load-module 'interface)
 (load-module 'navigation)
 (load-module 'shortcuts)
 (load-module 'private-config)
@@ -135,3 +134,5 @@
 (load-module 'editing)
 
 (load-module 'elfeed-tweaks)
+
+(load-module 'interface)

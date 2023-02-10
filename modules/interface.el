@@ -1,10 +1,6 @@
-;;; interface.el -*- lexical-binding: t; -*-
-
-(global-set-key (kbd "<f5>") 'revert-buffer)
-
 (setq-default
  x-stretch-cursor t)
-(good-scroll-mode 1)
+(good-scroll-mode -1)
 (setq-default word-wrap t)
 
 (setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
@@ -14,12 +10,6 @@
       scroll-margin 2)                            ; It's nice to maintain a little margin
 
 (display-time-mode 1)                             ; Enable time in the mode-line
-
-                                        ;(unless (string-match-p "^Power N/A" (battery))   ; On laptops...
-                                        ;  (display-battery-mode 1))                       ; it's nice to know how much power you have
-
-(global-subword-mode 1)                           ; Iterate through CamelCase words
-
 
 ;;; Unicode emojis
 (if (>= emacs-major-version 27)
@@ -71,6 +61,19 @@
     (advice-remove 'emojify--propertize-text-for-emoji #'emojify--replace-text-with-emoji)))
 
 (add-hook! '(mu4e-compose-mode org-msg-edit-mode circe-channel-mode org-mode) (emoticon-to-emoji 1))
+
+;;; interface.el -*- lexical-binding: t; -*-
+
+(global-set-key (kbd "<f5>") 'revert-buffer)
+
+                                        ;(unless (string-match-p "^Power N/A" (battery))   ; On laptops...
+                                        ;  (display-battery-mode 1))                       ; it's nice to know how much power you have
+(global-subword-mode 1)                           ; Iterate through CamelCase words
+(setq battery-mode-line-format "%t")
+(display-battery-mode t)
+(display-battery-mode -1)
+
+
 
 (use-package! selectic-mode
   :commands selectic-mode)
@@ -179,6 +182,5 @@
          (cons
           "\\*Async Shell Command\\*.*"
           (cons #'display-buffer-no-window nil)))))
-    (async-shell-command
-     command)))
+    (async-shell-command command)))
 (provide 'interface)
