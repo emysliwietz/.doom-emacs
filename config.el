@@ -71,7 +71,7 @@
     (setq ,var (+ ,var 1))))
 
 
-(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (message "a"))
+;(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (message "a"))
 
 (setq use-package-verbose t)
 (async-bytecomp-package-mode 1)
