@@ -657,6 +657,38 @@ Return a string suitable for insertion in `dired' buffer."
 
 (provide 'dired-tweaks)
 #+end_src
+*** Tab to Expand Subfiles
+#+begin_src emacs-lisp
+(load-module 'tab-to-expand-subfiles)
+#+end_src
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! dired-subtree)
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/tab-to-expand-subfiles.el
+(use-package! dired-subtree
+  :defer t
+  :after dired
+  :config
+  (bind-key "<tab>" #'dired-subtree-toggle dired-mode-map)
+  (bind-key "<backtab>" #'dired-subtree-cycle dired-mode-map))
+(provide 'tab-to-expand-subfiles)
+#+end_src
+** Narrow by regex dired
+#+begin_src emacs-lisp
+(load-module 'narrow-by-regex-dired)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! dired-narrow)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/narrow-by-regex-dired.el
+(use-package! dired-narrow
+  :after dired)
+(provide 'narrow-by-regex-dired)
+#+end_src
 ** Ebooks
 #+begin_src emacs-lisp
 (load-module 'ebook-tweaks)

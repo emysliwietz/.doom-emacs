@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: config-module
-# expand-env: ((yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
+# expand-env: ((require 'string-inflection) (yas-indent-line 'fixed) (yas-wrap-around-region 'nil))
 # key: mod
 # mode: org
 # --

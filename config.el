@@ -162,6 +162,10 @@
 
 (load-module 'dired-tweaks)
 
+(load-module 'tab-to-expand-subfiles)
+
+(load-module 'narrow-by-regex-dired)
+
 (load-module 'ebook-tweaks)
 
 (load-module 'org-roam-tweaks)
