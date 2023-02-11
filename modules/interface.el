@@ -70,13 +70,8 @@
 (global-set-key (kbd "<f5>") 'revert-buffer)
 
                                         ;(unless (string-match-p "^Power N/A" (battery))   ; On laptops...
-                                        ;  (display-battery-mode 1))                       ; it's nice to know how much power you have
 (global-subword-mode 1)                           ; Iterate through CamelCase words
 (setq battery-mode-line-format "%t")
-(display-battery-mode t)
-(display-battery-mode -1)
-
-
 
 (use-package! selectic-mode
   :commands selectic-mode)
@@ -155,13 +150,26 @@
 (defun buffer-empty-p (&optional buffer)
   (= (buffer-size buffer) 0))
 
+(defvar transparent-mode nil)
+
+(define-minor-mode transparent-mode
+  "Toggle default transparency."
+  :lighter ""
+  :global t
+  (if transparent-mode
+      (setq transparent-mode nil)
+    (setq transparent-mode t))
+  (force-mode-line-update))
+
 (defun frame-trans-on ()
   (interactive)
   (set-frame-parameter (selected-frame) 'alpha '(0 0)))
 
 (defun frame-trans-off ()
   (interactive)
-  (set-frame-parameter (selected-frame) 'alpha '(100 100)))
+  (if transparent-mode
+      (set-frame-parameter (selected-frame) 'alpha '(95 95))
+  (set-frame-parameter (selected-frame) 'alpha '(100 100))))
 
 (defun scratch-trans ()
   (setq my-buffer (get-buffer "*scratch*"))
