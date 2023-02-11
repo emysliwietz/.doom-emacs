@@ -86,12 +86,30 @@
 ;; Any number is number of modules
 ;; nil means all
 (setq debug-my-config nil)
+
+(defmacro execution-time (func)
+  `(let ((time (current-time)))
+     ,func
+     (float-time (time-since time))))
+
+(defmacro execution-time-format (func)
+  `(let ((time (current-time)))
+     ,func
+     (message (format "Loaded %s in %.06f." ',func (float-time (time-since time))))))
+
+(execution-time-format (require 'cl))
+
 (defmacro load-module (module)
-   `(when (or (not debug-my-config) (> debug-my-config 0)) (-- debug-my-config) (make-thread
-   (let ((time (current-time)))
-     ;(message (format "Loading %s." func-name))
-     (require ,module)
-     (message (format "Loaded %s in %.06f." ,module (float-time (time-since time))))))))
+   `(when
+        (or (not debug-my-config) (> debug-my-config 0))
+      (-- debug-my-config)
+      (make-thread
+       (let* ((benchmark (benchmark-run (require ,module)))
+             (time (car benchmark))
+             (gbc (nth 1 benchmark))
+             (gbt (nth 2 benchmark)))
+         (message "Loaded %s in %.06fs, using %s garbage collections in %.06fs."
+                  ,module time gbc gbt)))))
 
 ;; Load a module only if dependency could successfully be loaded
 (defmacro load-module-if (dependency module)
@@ -174,7 +192,11 @@
 
 (load-module 'elfeed-tweaks)
 
+(mkdir "~/.local/share/applications/" t)
+
 update-desktop-database ~/.local/share/applications/
+
+(mkdir "./ext/org-protocol/" t)
 
 (add-to-list 'org-protocol-protocol-alist
              '("Download like with youtube-dl"

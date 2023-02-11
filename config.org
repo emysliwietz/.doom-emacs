@@ -91,12 +91,30 @@
 ;; Any number is number of modules
 ;; nil means all
 (setq debug-my-config nil)
+
+(defmacro execution-time (func)
+  `(let ((time (current-time)))
+     ,func
+     (float-time (time-since time))))
+
+(defmacro execution-time-format (func)
+  `(let ((time (current-time)))
+     ,func
+     (message (format "Loaded %s in %.06f." ',func (float-time (time-since time))))))
+
+(execution-time-format (require 'cl))
+
 (defmacro load-module (module)
-   `(when (or (not debug-my-config) (> debug-my-config 0)) (-- debug-my-config) (make-thread
-   (let ((time (current-time)))
-     ;(message (format "Loading %s." func-name))
-     (require ,module)
-     (message (format "Loaded %s in %.06f." ,module (float-time (time-since time))))))))
+   `(when
+        (or (not debug-my-config) (> debug-my-config 0))
+      (-- debug-my-config)
+      (make-thread
+       (let* ((benchmark (benchmark-run (require ,module)))
+             (time (car benchmark))
+             (gbc (nth 1 benchmark))
+             (gbt (nth 2 benchmark)))
+         (message "Loaded %s in %.06fs, using %s garbage collections in %.06fs."
+                  ,module time gbc gbt)))))
 
 ;; Load a module only if dependency could successfully be loaded
 (defmacro load-module-if (dependency module)
@@ -685,8 +703,6 @@ Return a string suitable for insertion in `dired' buffer."
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/narrow-by-regex-dired.el
-(use-package! dired-narrow
-  :after dired)
 (provide 'narrow-by-regex-dired)
 #+end_src
 ** Ebooks
@@ -1551,7 +1567,11 @@ Return a string suitable for insertion in `dired' buffer."
 
 ** Org Protocol
 *** System
+**** Linux
 Set up emacsclient as org-protocol scheme-handler
+#+begin_src emacs-lisp
+(mkdir "~/.local/share/applications/" t)
+#+end_src
 #+begin_src desktop :tangle ~/.local/share/applications/org-protocol.desktop
 [Desktop Entry]
 Name=org-protocol
@@ -1569,6 +1589,33 @@ Update MIME cache
 #+begin_src bash
 update-desktop-database ~/.local/share/applications/
 #+end_src
+#+RESULTS:
+
+**** Windows
+#+begin_src emacs-lisp :tangle yes
+(mkdir "./ext/org-protocol/" t)
+#+end_src
+#+begin_src conf :tangle ./ext/org-protocol/org-protocol.reg
+REGEDIT4
+
+[HKEY_CLASSES_ROOT\org-protocol]
+@="URL:Org Protocol"
+"URL Protocol"=""
+[HKEY_CLASSES_ROOT\org-protocol\shell]
+[HKEY_CLASSES_ROOT\org-protocol\shell\open]
+[HKEY_CLASSES_ROOT\org-protocol\shell\open\command]
+@="\"C:\\Windows\\System32\\wsl.exe\" emacsclient \"%1\""
+#+end_src
+**** JS Bookmarks
+Replace =capture= subprotocol with =store-link= or =youtube-dl=
+#+begin_src js :tangle ./ext/org-protocol/capture-bookmark.js
+javascript:location.href='org-protocol://capture?' +
+      new URLSearchParams({
+            template: 'x', url: window.location.href,
+            title: document.title, body: window.getSelection()});
+#+end_src
+
+#+RESULTS:
 
 *** youtube-dl handler
 #+begin_src emacs-lisp
@@ -1587,15 +1634,15 @@ update-desktop-database ~/.local/share/applications/
        :title (plist-get data :title))))
   nil)
 #+end_src
-** Interface
+*** Interface
 #+begin_src emacs-lisp
 (load-module 'interface)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 #+end_src
-*** Code
-**** General settings
+**** Code
+***** General settings
 #+begin_src emacs-lisp :tangle modules/interface.el
 (setq-default
  x-stretch-cursor t)
@@ -1611,7 +1658,7 @@ update-desktop-database ~/.local/share/applications/
 (display-time-mode 1)                             ; Enable time in the mode-line
 (display-battery-mode 1)
 #+end_src
-**** Font
+***** Font
 #+begin_src emacs-lisp :tangle modules/interface.el
 
 ;;; Unicode emojis
@@ -1665,7 +1712,7 @@ update-desktop-database ~/.local/share/applications/
 
 (add-hook! '(mu4e-compose-mode org-msg-edit-mode circe-channel-mode org-mode) (emoticon-to-emoji 1))
 #+end_src
-**** Other
+***** Other
 #+begin_src emacs-lisp :tangle modules/interface.el
 ;;; interface.el -*- lexical-binding: t; -*-
 
@@ -1791,15 +1838,15 @@ update-desktop-database ~/.local/share/applications/
 (provide 'interface)
 #+end_src
 
-** EXWM Tweaks
+*** EXWM Tweaks
 #+begin_src emacs-lisp
 (load-module 'exwm-tweaks)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/exwm-tweaks.el
 ;;; exwm-tweaks.el -*- lexical-binding: t; -*-
 (use-package! exwm
@@ -2220,14 +2267,14 @@ update-desktop-database ~/.local/share/applications/
 (provide 'exwm-tweaks)
 #+end_src
 
-** General
+*** General
 #+begin_src emacs-lisp
 (load-module 'general)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/general.el
 ;;; general.el -*- lexical-binding: t; -*-
 
@@ -2251,15 +2298,15 @@ update-desktop-database ~/.local/share/applications/
 (provide 'general)
 #+end_src
 
-** Navigation
+*** Navigation
 #+begin_src emacs-lisp
 (load-module 'navigation)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/navigation.el
 ;;; navigation.el -*- lexical-binding: t; -*-
 
@@ -2479,14 +2526,14 @@ This function is intended for use with `ivy-ignore-buffers'."
 (provide 'navigation)
 #+end_src
 
-** Shortcuts
+*** Shortcuts
 #+begin_src emacs-lisp
 (load-module 'shortcuts)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/shortcuts.el
 ;;; shortcuts.el -*- lexical-binding: t; -*-
 
@@ -2697,15 +2744,15 @@ This function is intended for use with `ivy-ignore-buffers'."
 (provide 'shortcuts)
 #+end_src
 
-** Config visit
+*** Config visit
 #+begin_src emacs-lisp
 (load-module 'config-visit)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/config-visit.el
 ;;; config.el -*- lexical-binding: t; -*-
 
@@ -2751,15 +2798,15 @@ This function is intended for use with `ivy-ignore-buffers'."
 (provide 'config-visit)
 #+end_src
 
-** Search
+*** Search
 #+begin_src emacs-lisp
 (load-module 'search)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/search.el
 ;;; search.el -*- lexical-binding: t; -*-
 
@@ -2905,15 +2952,15 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 
 (provide 'search)
 #+end_src
-** Read Aloud
+*** Read Aloud
 #+begin_src emacs-lisp
 (load-module 'read-aloud)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/read-aloud.el
 ;;; read-aloud.el -*- lexical-binding: t; -*-
 
@@ -3256,15 +3303,15 @@ return (beg end word) or nil."
 (provide 'read-aloud)
 #+end_src
 
-** Speed Read
+*** Speed Read
 #+begin_src emacs-lisp
 (load-module 'speed-read)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/speed-read.el
 ;;; read-single.el -*- lexical-binding: t; -*-
 
@@ -3295,15 +3342,15 @@ return (beg end word) or nil."
 (provide 'speed-read)
 #+end_src
 
-** Spaced Repetition
+*** Spaced Repetition
 #+begin_src emacs-lisp
 (load-module 'spaced-repetition)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/spaced-repetition.el
 ;;; pamparam.el -*- lexical-binding: t; -*-
 
@@ -4486,15 +4533,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'spaced-repetition)
 #+end_src
 
-** Accounting
+*** Accounting
 #+begin_src emacs-lisp
 (load-module 'accounting)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/accounting.el
 ;;; beancount.el -*- lexical-binding: t; -*-
 
@@ -4521,15 +4568,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'accounting)
 #+end_src
 
-** Popes
+*** Popes
 #+begin_src emacs-lisp
 (load-module 'popes)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/popes.el
 ;;; popes.el -*- lexical-binding: t; -*-
 
@@ -4608,15 +4655,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'popes)
 #+end_src
 
-** Keycast Tweaks
+*** Keycast Tweaks
 #+begin_src emacs-lisp
 (load-module 'keycast-tweaks)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/keycast-tweaks.el
 ;;; keycast.el -*- lexical-binding: t; -*-
 
@@ -4641,15 +4688,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 
 (provide 'keycast-tweaks)
 #+end_src
-** Weather
+*** Weather
 #+begin_src emacs-lisp
 (load-module 'weather)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/weather.el
 ;;; wttrin.el --- Emacs frontend for weather web service wttr.in -*- lexical-binding: t; -*-
 ;; Copyright (C) 2016 Carl X. Su
@@ -4783,15 +4830,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 
 #+end_src
 
-** Org Tweaks
+*** Org Tweaks
 #+begin_src emacs-lisp
 (load-module 'org-tweaks)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 (package! engrave-faces)
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/org-tweaks.el
 ;;; org-tweaks.el -*- lexical-binding: t; -*-
 ;;; Code:
@@ -4846,15 +4893,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'org-tweaks)
 #+end_src
 
-** Languages
+*** Languages
 #+begin_src emacs-lisp
 (load-module 'languages)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/languages.el
 ;;; languages.el -*- lexical-binding: t; -*-
 
@@ -4924,15 +4971,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'languages)
 #+end_src
 
-** Email
+*** Email
 #+begin_src emacs-lisp
 (load-module-if 'mu4e 'email)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/email.el
 ;;; email.el -*- lexical-binding: t; -*-
 
@@ -4994,15 +5041,15 @@ Prevents a series of redisplays from being called (when set to an appropriate va
 (provide 'email)
 #+end_src
 
-** Email Config
+*** Email Config
 #+begin_src emacs-lisp
 (load-module-if 'mu4e 'email-config)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/email-config.el
 ;;; email-config.el -*- lexical-binding: t; -*-
 
@@ -5092,15 +5139,15 @@ html-images)))
 (provide 'email-config)
 #+end_src
 
-** Email Accounts
+*** Email Accounts
 #+begin_src emacs-lisp
 (load-module-if 'mu4e 'email-accounts)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/email-accounts.el
 ;; Email Accounts
 (require 'email-refile)
@@ -5223,15 +5270,15 @@ html-images)))
 (provide 'email-accounts)
 #+end_src
 
-** Latex Tweaks
+*** Latex Tweaks
 #+begin_src emacs-lisp
 (load-module 'latex-tweaks)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/latex-tweaks.el
 ;;; latex.el -*- lexical-binding: t; -*-
 
@@ -5378,15 +5425,15 @@ This forces a complete recompilation of the document, even if the source
 (provide 'latex-tweaks)
 #+end_src
 
-** Org Links
+*** Org Links
 #+begin_src emacs-lisp
 (load-module 'org-links)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/org-links.el
 ;;; ol-man.el - Support for links to man pages in Org mode
 (require 'ol)
