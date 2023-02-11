@@ -1954,11 +1954,12 @@ javascript:location.href='org-protocol://capture?' +
         exwm-workspace-show-all-buffers t
         exwm-layout-show-all-buffers t
         exwm-manage-force-tiling t)
+
   (setq exwm-input-global-keys
-      `(([?\s-f] . fullscreen)
-	([?\s-F] . toggle-maximize-buffer)
-        ([?\s-g] . toggle-float-buffer)
-	([?\s-q] . kill-curr-buffer)
+        `(([?\s-f] . fullscreen)
+	  ([?\s-F] . toggle-maximize-buffer)
+          ([?\s-g] . toggle-float-buffer)
+	  ([?\s-q] . kill-curr-buffer)
 	([?\s-n] . switchmonitor-next)
 	([?\s-p] . switchmonitor-prev)
         ;((kbd "s-<return>") . switchmonitor-prev)
@@ -1968,6 +1969,8 @@ javascript:location.href='org-protocol://capture?' +
                         (interactive)
                         (exwm-workspace-switch-create ,i))))
                   (number-sequence 0 9))))
+
+
   (add-hook 'exwm-manage-finish-hook
           (lambda ()
             (if (and exwm-class-name
@@ -2266,15 +2269,36 @@ javascript:location.href='org-protocol://capture?' +
 
 (provide 'exwm-tweaks)
 #+end_src
-
-*** General
+*** Exwm Gaps
 #+begin_src emacs-lisp
-(load-module 'general)
+(load-module 'exwm-gaps)
 #+end_src
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
+(package! exwm-outer-gaps
+  :recipe
+  (:host github
+   :repo "lucasgruss/exwm-outer-gaps"))
 #+end_src
 **** Code
+#+begin_src emacs-lisp :tangle modules/exwm-gaps.el
+(use-package exwm-outer-gaps
+  :after (exwm xelb)
+  :config
+  (exwm-outer-gaps-mode +1))
+(exwm-input-set-key (kbd "s-+") 'exwm-outer-gaps-increment)
+(exwm-input-set-key (kbd "s--") 'exwm-outer-gaps-decrement)
+(provide 'exwm-gaps)
+#+end_src
+
+** General
+#+begin_src emacs-lisp
+(load-module 'general)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+#+end_src
+*** Code
 #+begin_src emacs-lisp :tangle modules/general.el
 ;;; general.el -*- lexical-binding: t; -*-
 
@@ -2298,15 +2322,15 @@ javascript:location.href='org-protocol://capture?' +
 (provide 'general)
 #+end_src
 
-*** Navigation
+** Navigation
 #+begin_src emacs-lisp
 (load-module 'navigation)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/navigation.el
 ;;; navigation.el -*- lexical-binding: t; -*-
 
@@ -2526,14 +2550,14 @@ This function is intended for use with `ivy-ignore-buffers'."
 (provide 'navigation)
 #+end_src
 
-*** Shortcuts
+** Shortcuts
 #+begin_src emacs-lisp
 (load-module 'shortcuts)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/shortcuts.el
 ;;; shortcuts.el -*- lexical-binding: t; -*-
 
@@ -2744,15 +2768,15 @@ This function is intended for use with `ivy-ignore-buffers'."
 (provide 'shortcuts)
 #+end_src
 
-*** Config visit
+** Config visit
 #+begin_src emacs-lisp
 (load-module 'config-visit)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/config-visit.el
 ;;; config.el -*- lexical-binding: t; -*-
 
@@ -2798,15 +2822,15 @@ This function is intended for use with `ivy-ignore-buffers'."
 (provide 'config-visit)
 #+end_src
 
-*** Search
+** Search
 #+begin_src emacs-lisp
 (load-module 'search)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/search.el
 ;;; search.el -*- lexical-binding: t; -*-
 
@@ -2952,15 +2976,15 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 
 (provide 'search)
 #+end_src
-*** Read Aloud
+** Read Aloud
 #+begin_src emacs-lisp
 (load-module 'read-aloud)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/read-aloud.el
 ;;; read-aloud.el -*- lexical-binding: t; -*-
 
@@ -3303,15 +3327,15 @@ return (beg end word) or nil."
 (provide 'read-aloud)
 #+end_src
 
-*** Speed Read
+** Speed Read
 #+begin_src emacs-lisp
 (load-module 'speed-read)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/speed-read.el
 ;;; read-single.el -*- lexical-binding: t; -*-
 
@@ -3342,15 +3366,15 @@ return (beg end word) or nil."
 (provide 'speed-read)
 #+end_src
 
-*** Spaced Repetition
+** Spaced Repetition
 #+begin_src emacs-lisp
 (load-module 'spaced-repetition)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/spaced-repetition.el
 ;;; pamparam.el -*- lexical-binding: t; -*-
 
@@ -4688,15 +4712,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 
 (provide 'keycast-tweaks)
 #+end_src
-*** Weather
+** Weather
 #+begin_src emacs-lisp
 (load-module 'weather)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/weather.el
 ;;; wttrin.el --- Emacs frontend for weather web service wttr.in -*- lexical-binding: t; -*-
 ;; Copyright (C) 2016 Carl X. Su
@@ -4830,15 +4854,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 
 #+end_src
 
-*** Org Tweaks
+** Org Tweaks
 #+begin_src emacs-lisp
 (load-module 'org-tweaks)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 (package! engrave-faces)
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/org-tweaks.el
 ;;; org-tweaks.el -*- lexical-binding: t; -*-
 ;;; Code:
@@ -4893,15 +4917,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'org-tweaks)
 #+end_src
 
-*** Languages
+** Languages
 #+begin_src emacs-lisp
 (load-module 'languages)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/languages.el
 ;;; languages.el -*- lexical-binding: t; -*-
 
@@ -4971,15 +4995,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'languages)
 #+end_src
 
-*** Email
+** Email
 #+begin_src emacs-lisp
 (load-module-if 'mu4e 'email)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/email.el
 ;;; email.el -*- lexical-binding: t; -*-
 

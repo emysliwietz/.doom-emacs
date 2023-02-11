@@ -217,6 +217,8 @@ update-desktop-database ~/.local/share/applications/
 
 (load-module 'exwm-tweaks)
 
+(load-module 'exwm-gaps)
+
 (load-module 'general)
 
 (load-module 'navigation)

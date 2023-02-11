@@ -127,6 +127,11 @@
 
 
 
+(package! exwm-outer-gaps
+  :recipe
+  (:host github
+   :repo "lucasgruss/exwm-outer-gaps"))
+
 
 
 

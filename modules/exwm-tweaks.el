@@ -104,11 +104,12 @@
         exwm-workspace-show-all-buffers t
         exwm-layout-show-all-buffers t
         exwm-manage-force-tiling t)
+
   (setq exwm-input-global-keys
-      `(([?\s-f] . fullscreen)
-	([?\s-F] . toggle-maximize-buffer)
-        ([?\s-g] . toggle-float-buffer)
-	([?\s-q] . kill-curr-buffer)
+        `(([?\s-f] . fullscreen)
+	  ([?\s-F] . toggle-maximize-buffer)
+          ([?\s-g] . toggle-float-buffer)
+	  ([?\s-q] . kill-curr-buffer)
 	([?\s-n] . switchmonitor-next)
 	([?\s-p] . switchmonitor-prev)
         ;((kbd "s-<return>") . switchmonitor-prev)
@@ -118,6 +119,8 @@
                         (interactive)
                         (exwm-workspace-switch-create ,i))))
                   (number-sequence 0 9))))
+
+
   (add-hook 'exwm-manage-finish-hook
           (lambda ()
             (if (and exwm-class-name
