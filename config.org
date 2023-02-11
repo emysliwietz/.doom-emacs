@@ -1554,6 +1554,7 @@ update-desktop-database ~/.local/share/applications/
        (plist-get data :url)
        :title (plist-get data :title))))
   nil)
+#+end_src
 ** Interface
 #+begin_src emacs-lisp
 (load-module 'interface)
