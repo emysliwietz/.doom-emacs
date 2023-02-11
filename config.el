@@ -194,10 +194,9 @@
 
 (mkdir "~/.local/share/applications/" t)
 
-update-desktop-database ~/.local/share/applications/
-
 (mkdir "./ext/org-protocol/" t)
 
+(require 'org-protocol)
 (add-to-list 'org-protocol-protocol-alist
              '("Download like with youtube-dl"
                :protocol "youtube-dl"

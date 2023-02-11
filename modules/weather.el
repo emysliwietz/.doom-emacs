@@ -127,3 +127,4 @@
                               (when (= (length wttrin-default-cities) 1)
                                 (car wttrin-default-cities)))))))
   (wttrin-query city api-version))
+(provide 'weather)

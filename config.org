@@ -870,6 +870,7 @@ Return a string suitable for insertion in `dired' buffer."
 *** Code
 #+begin_src emacs-lisp :tangle modules/org-roam-tweaks.el
 (setq org-roam-directory "~/dox/sync/org/roam")
+(mkdir org-roam-directory t)
 (org-roam-db-autosync-mode 1)
 (provide 'org-roam-tweaks)
 #+end_src
@@ -1586,7 +1587,7 @@ StartupWMClass=Emacs
 MimeType=x-scheme-handler/org-protocol;
 #+end_src
 Update MIME cache
-#+begin_src bash
+#+begin_src bash :tangle no
 update-desktop-database ~/.local/share/applications/
 #+end_src
 #+RESULTS:
@@ -1619,6 +1620,7 @@ javascript:location.href='org-protocol://capture?' +
 
 *** youtube-dl handler
 #+begin_src emacs-lisp
+(require 'org-protocol)
 (add-to-list 'org-protocol-protocol-alist
              '("Download like with youtube-dl"
                :protocol "youtube-dl"
@@ -4853,7 +4855,7 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
                               (when (= (length wttrin-default-cities) 1)
                                 (car wttrin-default-cities)))))))
   (wttrin-query city api-version))
-
+(provide 'weather)
 #+end_src
 
 ** Org Tweaks
