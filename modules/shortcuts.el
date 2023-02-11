@@ -70,10 +70,10 @@
   (find-file (shell-command-to-string "date +'/home/user/dp/dailyplan/%Y/%Y-%m/%Y-%m-%d.org' | tr -d '\n'"))
   (end-of-buffer))
 
-;(add-hook 'find-file-hook 'dailyplan-hook)
-;(defun dailyplan-hook ()
-;  (when (string= (buffer-file-name) "dailyplan.org")
-;    (agenda-today)))
+                                        ;(add-hook 'find-file-hook 'dailyplan-hook)
+                                        ;(defun dailyplan-hook ()
+                                        ;  (when (string= (buffer-file-name) "dailyplan.org")
+                                        ;    (agenda-today)))
 
 (defun books()
   (interactive)
@@ -129,16 +129,19 @@
 (defun open-uni-folder (folder)
   "Mount/Open university folder specified as FOLDER."
   (when (not (file-exists-p uni-base-folder))
-    (shell-command "sshfs sermak.xyz:/ /mnt/server-de"))
-  (find-file (f-join uni-base-folder folder)))
+    (shell-command "sshfs -p2222 sermak.xyz:/ /mnt/server-de"))
+  (let ((dir (f-join uni-base-folder folder)))
+    (when (not (file-exists-p dir))
+      (mkdir dir t))
+    (find-file (f-join uni-base-folder folder))))
 
 (defmacro uni-folder-shortcut (shortcut folder funcname)
   `(progn
-  (defun ,funcname ()
-    ,(format "Open Uni/%s" folder)
-     (interactive)
-     (open-uni-folder ,folder))
-  (global-set-key (kbd (concat "C-c u " ,shortcut)) ',funcname)))
+     (defun ,funcname ()
+       ,(format "Open Uni/%s" folder)
+       (interactive)
+       (open-uni-folder ,folder))
+     (global-set-key (kbd (concat "C-c u " ,shortcut)) ',funcname)))
 
 (uni-folder-shortcut "u" "" uni)
 (uni-folder-shortcut "6" "6" uni6)
@@ -178,7 +181,7 @@
 
 (global-set-key (kbd "s-<return>") (lambda () (interactive) (+vterm/toggle nil)))
 
-; Org agenda
+                                        ; Org agenda
 
 (defun agenda-folder ()
   (interactive)
@@ -196,7 +199,7 @@
 (global-set-key (kbd "C-c a u") 'agenda-uni)
 (global-set-key (kbd "C-c a p") 'agenda-personal)
 
-; Books
+                                        ; Books
 
 (defun books ()
   (interactive)
