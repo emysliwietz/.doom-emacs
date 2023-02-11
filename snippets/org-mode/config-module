@@ -12,8 +12,8 @@
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 $3
-*** Code
 #+end_src
+*** Code
 #+begin_src emacs-lisp :tangle modules/${1:$(string-inflection-title-to-lisp-case-function yas-text)}.el
 $0
 (provide '${1:$(string-inflection-title-to-lisp-case-function yas-text)})

@@ -336,4 +336,8 @@ return (beg end word) or nil."
       (unless (= start end)
 	(list start end (buffer-substring-no-properties start end)))
       )))
+
+
+
 (provide 'read-aloud)
+;;; read-aloud.el ends here

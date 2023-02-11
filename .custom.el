@@ -41,3 +41,4 @@
  '(doom-modeline-buffer-modified ((t (:foreground "orange")))))
 (put 'secrets-mode 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)

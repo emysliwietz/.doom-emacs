@@ -1,3 +1,7 @@
+#+title: Latex Tweaks for Emacs
+#+property: header-args :tangle latex-tweaks.el
+
+#+begin_src emacs-lisp
 ;;; latex.el -*- lexical-binding: t; -*-
 
 (setq TeX-command-extra-options "--shell-escape")
@@ -139,3 +143,4 @@ This forces a complete recompilation of the document, even if the source
       ("convert -density %D -trim -antialias %f -quality 100 %O"))))
 
 (provide 'latex-tweaks)
+#+end_src
