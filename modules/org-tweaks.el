@@ -18,6 +18,8 @@
   ;;; Add org mode to txt and archive files
   (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 
+  (mixed-pitch-mode 1)
+
   ;; Org Babel
   (setq org-confirm-babel-evaluate nil
         org-src-fontify-natively t

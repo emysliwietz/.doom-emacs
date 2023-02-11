@@ -1655,6 +1655,8 @@ javascript:location.href='org-protocol://capture?' +
       password-cache-expiry nil                   ; I can trust my computers ... can't I?
       scroll-margin 2)                            ; It's nice to maintain a little margin
 
+(setq display-time-day-and-date t
+      display-time-24hr-format t)
 (display-time-mode 1)                             ; Enable time in the mode-line
 (display-battery-mode 1)
 #+end_src
@@ -4884,6 +4886,8 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
   ;;; Add org mode to txt and archive files
   (add-to-list 'auto-mode-alist '("\\.\\(org\\|org_archive\\|txt\\)$" . org-mode))
 
+  (mixed-pitch-mode 1)
+
   ;; Org Babel
   (setq org-confirm-babel-evaluate nil
         org-src-fontify-natively t
@@ -5415,6 +5419,7 @@ This forces a complete recompilation of the document, even if the source
 (setq org-export-with-sub-superscripts "{}"
       org-export-with-smart-quotes nil)
 
+(require 'engrave-faces)
 (engrave-faces-use-theme 'doom-one)
 
 (setq org-preview-latex-process-alist

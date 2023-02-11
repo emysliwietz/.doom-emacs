@@ -9,6 +9,8 @@
       password-cache-expiry nil                   ; I can trust my computers ... can't I?
       scroll-margin 2)                            ; It's nice to maintain a little margin
 
+(setq display-time-day-and-date t
+      display-time-24hr-format t)
 (display-time-mode 1)                             ; Enable time in the mode-line
 (display-battery-mode 1)
 
