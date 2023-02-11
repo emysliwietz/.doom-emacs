@@ -135,3 +135,20 @@
 (load-module 'editing)
 
 (load-module 'elfeed-tweaks)
+
+update-desktop-database ~/.local/share/applications/
+
+(add-to-list 'org-protocol-protocol-alist
+             '("Download like with youtube-dl"
+               :protocol "youtube-dl"
+               :function youtube-dl-protocol-handler))
+
+(defun youtube-dl-protocol-handler (data)
+  "Add url to youtube-dl download queue."
+  (let ((url (plist-get data :url))
+        (title (plist-get data :title)))
+    (unless (string= title "about:blank")
+      (youtube-dl
+       (plist-get data :url)
+       :title (plist-get data :title))))
+  nil)

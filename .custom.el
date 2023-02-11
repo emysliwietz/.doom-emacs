@@ -40,3 +40,4 @@
  ;; If there is more than one, they won't work right.
  '(doom-modeline-buffer-modified ((t (:foreground "orange")))))
 (put 'secrets-mode 'disabled nil)
+(put 'narrow-to-region 'disabled nil)

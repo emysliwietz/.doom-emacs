@@ -414,23 +414,15 @@
   (interactive)
   (find-file youtube-dl-temp-directory))
 
-(cl-defun youtube-dl-download (url title &key slow)
-  "Download url with youtube-dl."
-  (if (null (youtube-dl url
-                        :title title
-                        :slow slow))
-      (message "Entry is not a YouTube link!"))
-    (message "Downloading %s" title)
-    ;(youtube-dl-get-video-thumbnail url youtube-dl-directory '(lambda () nil))
-    )
 
 (cl-defun elfeed-show-youtube-dl (&key slow)
   "Download the current entry with youtube-dl."
   (interactive)
-  (youtube-dl-download
-  (elfeed-entry-link elfeed-show-entry)
-                        (elfeed-entry-title elfeed-show-entry)
+  (if (null (youtube-dl (elfeed-entry-link elfeed-show-entry)
+                        :title (elfeed-entry-title elfeed-show-entry)
                         :slow slow))
+      (message "Entry is not a YouTube link!")
+    (message "Downloading %s" (elfeed-entry-title elfeed-show-entry))))
 
 
 (cl-defun elfeed-search-youtube-dl (&key slow)
