@@ -150,7 +150,7 @@
 (defun buffer-empty-p (&optional buffer)
   (= (buffer-size buffer) 0))
 
-(defvar transparent-mode nil)
+(defvar transparent-mode t)
 
 (define-minor-mode transparent-mode
   "Toggle default transparency."

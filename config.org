@@ -1636,15 +1636,15 @@ javascript:location.href='org-protocol://capture?' +
        :title (plist-get data :title))))
   nil)
 #+end_src
-*** Interface
+** Interface
 #+begin_src emacs-lisp
 (load-module 'interface)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 #+end_src
-**** Code
-***** General settings
+*** Code
+**** General settings
 #+begin_src emacs-lisp :tangle modules/interface.el
 (setq-default
  x-stretch-cursor t)
@@ -1662,7 +1662,7 @@ javascript:location.href='org-protocol://capture?' +
 (display-time-mode 1)                             ; Enable time in the mode-line
 (display-battery-mode 1)
 #+end_src
-***** Font
+**** Font
 #+begin_src emacs-lisp :tangle modules/interface.el
 
 ;;; Unicode emojis
@@ -1716,7 +1716,7 @@ javascript:location.href='org-protocol://capture?' +
 
 (add-hook! '(mu4e-compose-mode org-msg-edit-mode circe-channel-mode org-mode) (emoticon-to-emoji 1))
 #+end_src
-***** Other
+**** Other
 #+begin_src emacs-lisp :tangle modules/interface.el
 ;;; interface.el -*- lexical-binding: t; -*-
 
@@ -1803,7 +1803,7 @@ javascript:location.href='org-protocol://capture?' +
 (defun buffer-empty-p (&optional buffer)
   (= (buffer-size buffer) 0))
 
-(defvar transparent-mode nil)
+(defvar transparent-mode t)
 
 (define-minor-mode transparent-mode
   "Toggle default transparency."
