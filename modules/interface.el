@@ -151,6 +151,9 @@
   (= (buffer-size buffer) 0))
 
 (defvar transparent-mode t)
+(setq transparent-mode--opacity 90)
+(exwm-input-set-key (kbd "s-_") '(lambda () (interactive) (-- transparent-mode--opacity) (frame-trans-off)))
+(exwm-input-set-key (kbd "s-*") '(lambda () (interactive) (++ transparent-mode--opacity) (frame-trans-off)))
 
 (define-minor-mode transparent-mode
   "Toggle default transparency."
@@ -168,7 +171,7 @@
 (defun frame-trans-off ()
   (interactive)
   (if transparent-mode
-      (set-frame-parameter (selected-frame) 'alpha '(95 95))
+      (set-frame-parameter (selected-frame) 'alpha `(,transparent-mode--opacity ,transparent-mode--opacity))
   (set-frame-parameter (selected-frame) 'alpha '(100 100))))
 
 (defun scratch-trans ()
