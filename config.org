@@ -102,8 +102,6 @@
      ,func
      (message (format "Loaded %s in %.06f." ',func (float-time (time-since time))))))
 
-(execution-time-format (require 'cl))
-
 (defmacro load-module (module)
    `(when
         (or (not debug-my-config) (> debug-my-config 0))
@@ -122,27 +120,13 @@
    (load-module ,module)))
 
 (load-module 'cl) ; Still a requirement for ivy
-(load-module 'exwm-tweaks)
-(load-module 'general)
-(load-module 'navigation)
-(load-module 'shortcuts)
 (load-module 'private-config)
-(load-module 'search)
-(load-module 'read-aloud)
-(load-module 'read-single)
-(load-module 'pamparam)
 (load-module 'beancount-tweaks)
-(load-module 'popes)
 ;(load-module '(require 'bible))
-(load-module 'keycast-tweaks)
-(load-module 'wttrin)
-(load-module 'org-tweaks)
-(load-module 'languages)
 (when (require 'mu4e nil 'noerror)
   (load-module 'email)
   (load-module 'email-config)
   (load-module 'email-accounts))
-(load-module 'latex-tweaks)
 ; Unsorted
 (setq doom-modeline-enable-word-count t)
 ;(doom/quickload-session)
@@ -1594,7 +1578,7 @@ update-desktop-database ~/.local/share/applications/
 
 **** Windows
 #+begin_src emacs-lisp :tangle yes
-(mkdir "./ext/org-protocol/" t)
+(mkdir (concat doom-private-dir "ext/org-protocol/") t)
 #+end_src
 #+begin_src conf :tangle ./ext/org-protocol/org-protocol.reg
 REGEDIT4
