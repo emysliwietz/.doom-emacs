@@ -216,6 +216,8 @@
 
 (load-module 'exwm-tweaks)
 
+(load-module 'exwm-buffer-movements)
+
 (load-module 'exwm-gaps)
 
 (load-module 'general)

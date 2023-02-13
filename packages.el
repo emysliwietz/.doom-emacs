@@ -127,6 +127,8 @@
 
 
 
+(package! buffer-move)
+
 (package! exwm-outer-gaps
   :recipe
   (:host github
