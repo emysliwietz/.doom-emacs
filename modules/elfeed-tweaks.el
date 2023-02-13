@@ -202,8 +202,6 @@
         elfeed-search-face-alist)
   (push '(tech elfeed-tech)
         elfeed-search-face-alist)
-
-
   )
 
 (after! elfeed-show
@@ -385,14 +383,16 @@
                                         ; Elfeed Youtube
 
                                         ; External youtube-dl library
+(when (not (boundp 'youtube-dl-arguments))
+  (setq youtube-dl-arguments '())
+  )
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
 (after-startup (require 'youtube-dl))
 (setq youtube-dl-directory "~/elfeed-youtube"
       elfeed-enclosure-default-dir youtube-dl-directory
       youtube-dl-temp-directory "/tmp/elfeed-youtube"
       youtube-dl-program "yt-dlp"
-      youtube-dl-arguments
-      (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
+      youtube-dl-arguments (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
                "--sponsorblock-remove" "default"
                "--prefer-free-formats"
                "--embed-subs"

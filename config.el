@@ -71,21 +71,20 @@
     (setq ,var (+ ,var 1))))
 
 
-;(when (or (not debug-my-config) (> debug-my-config 0)) (dec debug-my-config) (message "a"))
-
 (setq use-package-verbose t)
 (async-bytecomp-package-mode 1)
-
-(defun after-startup (func)
-  (unless debug-my-config (add-hook! after-startup-hook
-                             (load-module func))))
-
-(mkdir (concat doom-private-dir "modules") t)
 
 ;; Variable to determine how many modules are loaded, for debugging
 ;; Any number is number of modules
 ;; nil means all
 (setq debug-my-config nil)
+
+(defmacro after-startup (&rest func)
+  `(unless debug-my-config (add-hook! 'after-startup-hook
+                             '(lambda () ,@func))))
+
+(after-startup (message "hello"))
+(mkdir (concat doom-private-dir "modules") t)
 
 (defmacro execution-time (func)
   `(let ((time (current-time)))
