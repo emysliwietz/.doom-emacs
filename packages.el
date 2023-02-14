@@ -72,8 +72,8 @@
 (package! hydra)
 (package! ace-link)
 (package! sudo-edit)
-(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
-  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
+;(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
+;  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
 (package! rotate)
 (package! vlf)
 (package! evil-escape :disable t)
@@ -127,6 +127,8 @@
 
 
 
+
+
 (package! buffer-move)
 
 (package! exwm-outer-gaps
@@ -171,3 +173,7 @@
 
 
 
+
+
+
+(package! org-noter)

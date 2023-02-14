@@ -116,7 +116,7 @@
             ("\\.\\(mp4\\|mp3\\|webm\\|avi\\|flv\\|mov\\)$"
              "open" ("-a" "VLC" file))))
          ((string-equal system-type "gnu/linux")
-          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|pdf\\|part\\)$"
+          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|part\\)$" ; removed \\|pdf
              "xdg-open" (file))))))
   (openwith-mode t)
   (setq large-file-warning-threshold 3000000000))
@@ -127,8 +127,7 @@
 ;; Paging is prefered to scrolling
 (after! doc-view-mode
 (define-key doc-view-mode-map (kbd "j") 'doc-view-next-page)
-(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-page)
-  )
+(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-page))
 
 ;; Convert files automatically
 (defun dired-convert-file ()

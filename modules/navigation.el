@@ -194,6 +194,11 @@ This function is intended for use with `ivy-ignore-buffers'."
 ;(global-set-key (kbd "C-<tab>") 'next-buffer)
 ;(global-set-key (kbd "<C-iso-lefttab>") 'previous-buffer)
 
+;;; Cycle through workspaces
+(exwm-input-set-key (kbd "C-TAB") '+workspace/cycle)
+(global-set-key (kbd "C-TAB") '+workspace/cycle)
+(exwm-input--update-global-prefix-keys)
+
 ;;; Winum mode for easy moving through windows
 (use-package! winum
   :config

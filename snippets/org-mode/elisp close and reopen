@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: elisp close and reopen
+# key: ee
+# --
+#+end_src
+#+begin_src emacs-lisp

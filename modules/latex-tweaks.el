@@ -99,12 +99,33 @@ This forces a complete recompilation of the document, even if the source
       (notes-dir (concat base-dir "notes/"))
       (lib-dir (concat base-dir "papers/")))
   (setq bibtex-completion-bibliography bibfile
-        citar-bibliography `(,bibfile)
         bibtex-completion-library-path `(,lib-dir)
         bibtex-completion-notes-path notes-dir
+        bibtex-completion-pdf-field "file"
+        citar-bibliography `(,bibfile)
         citar-library-paths `(,lib-dir)
         citar-notes-paths `(,notes-dir)
+        deft-directory notes-dir
+        deft-default-extension "org"
+        org-noter-notes-search-path `(,notes-dir)
         org-cite-global-bibliography `(,bibfile)))
+(setq bibtex-completion-notes-template-multiple-files
+      (concat
+       "#+TITLE: ${title}\n"
+       "#+ROAM_KEY: cite:${=key=}\n"
+       "* TODO Notes\n"
+       ":PROPERTIES:\n"
+       ":Custom_ID: ${=key=}\n"
+       ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+       ":AUTHOR: ${author-abbrev}\n"
+       ":JOURNAL: ${journaltitle}\n"
+       ":DATE: ${date}\n"
+       ":YEAR: ${year}\n"
+       ":DOI: ${doi}\n"
+       ":URL: ${url}\n"
+       ":END:\n\n"
+       ))
+
 
 (setq org-export-with-sub-superscripts "{}"
       org-export-with-smart-quotes nil)

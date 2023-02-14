@@ -229,6 +229,8 @@
 
 (load-module 'org-tweaks)
 
+(load-module 'org-functions)
+
 (load-module 'languages)
 
 (load-module-if 'mu4e 'email)
@@ -240,3 +242,5 @@
 (load-module 'latex-tweaks)
 
 (load-module 'org-links)
+
+(load-module 'pdf-and-annotation-tweaks)

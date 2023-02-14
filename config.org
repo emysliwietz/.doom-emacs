@@ -236,8 +236,8 @@
 (package! hydra)
 (package! ace-link)
 (package! sudo-edit)
-(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
-  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
+;(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
+;  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
 (package! rotate)
 (package! vlf)
 (package! evil-escape :disable t)
@@ -609,7 +609,7 @@ Return a string suitable for insertion in `dired' buffer."
             ("\\.\\(mp4\\|mp3\\|webm\\|avi\\|flv\\|mov\\)$"
              "open" ("-a" "VLC" file))))
          ((string-equal system-type "gnu/linux")
-          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|pdf\\|part\\)$"
+          '(("\\.\\(mp4\\|m4a\\|mp3\\|mkv\\|webm\\|avi\\|flv\\|mov\\|part\\)$" ; removed \\|pdf
              "xdg-open" (file))))))
   (openwith-mode t)
   (setq large-file-warning-threshold 3000000000))
@@ -620,8 +620,7 @@ Return a string suitable for insertion in `dired' buffer."
 ;; Paging is prefered to scrolling
 (after! doc-view-mode
 (define-key doc-view-mode-map (kbd "j") 'doc-view-next-page)
-(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-page)
-  )
+(define-key doc-view-mode-map (kbd "k") 'doc-view-previous-page))
 
 ;; Convert files automatically
 (defun dired-convert-file ()
@@ -855,9 +854,58 @@ Return a string suitable for insertion in `dired' buffer."
 (setq org-roam-directory "~/dox/sync/org/roam")
 (mkdir org-roam-directory t)
 (org-roam-db-autosync-mode 1)
+
+;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
+;; makes it easier to distinguish among other org buffers.
+(add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode)
+
+;; Since the org module lazy loads org-protocol (waits until an org URL is
+;; detected), we can safely chain `org-roam-protocol' to it.
+(use-package org-roam-protocol
+  :after org-protocol)
+
+
+(use-package org-roam-bibtex
+  :after (org-roam)
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :config
+  (setq org-roam-bibtex-preformat-keywords
+        '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+  (setq orb-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "${slug}"
+           :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
+
+- tags ::
+- keywords :: ${keywords}
+
+\n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
+
+           :unnarrowed t))))
+
+;; Actually start using templates
+ (after! org-capture
+ ;; For browser capture
+ (add-to-list 'org-capture-templates
+ '("P" "Protocol" entry ; key, name, type
+ (file+headline +org-capture-notes-file "Inbox") ; target
+ "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?"
+ :prepend t ; properties
+ :kill-buffer t))
+(add-to-list 'org-capture-templates
+'("L" "Protocol Link" entry
+(file+headline +org-capture-notes-file "Inbox")
+"* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
+:prepend t
+:kill-buffer t))
+)
+
+(use-package! org-roam-bibtex
+  :after org-roam)
+
 (provide 'org-roam-tweaks)
 #+end_src
-
 ** Editing
 #+begin_src emacs-lisp
 (load-module 'editing)
@@ -1015,9 +1063,8 @@ Return a string suitable for insertion in `dired' buffer."
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-
-*** Code
 #+end_src
+*** Code
 #+begin_src emacs-lisp :tangle modules/elfeed-tweaks.el
 ;;; elfeed-tweaks.el -*- lexical-binding: t; -*-
 
@@ -1099,7 +1146,7 @@ Return a string suitable for insertion in `dired' buffer."
         elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
         shr-max-image-proportion 0.6)
 
-  (add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+  (add-hook! 'elfeed-show-mode-hook '(lambda () (hide-mode-line-mode 1)))
 (defun elfeed-eb-garamond ()
   (buffer-face-set '(:family "EB Garamond" :height 120)))
 
@@ -2542,6 +2589,11 @@ This function is intended for use with `ivy-ignore-buffers'."
 ;;; Cycle though tabs
 ;(global-set-key (kbd "C-<tab>") 'next-buffer)
 ;(global-set-key (kbd "<C-iso-lefttab>") 'previous-buffer)
+
+;;; Cycle through workspaces
+(exwm-input-set-key (kbd "C-TAB") '+workspace/cycle)
+(global-set-key (kbd "C-TAB") '+workspace/cycle)
+(exwm-input--update-global-prefix-keys)
 
 ;;; Winum mode for easy moving through windows
 (use-package! winum
@@ -4937,6 +4989,78 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'org-tweaks)
 #+end_src
 
+** Org Functions
+#+begin_src emacs-lisp
+(load-module 'org-functions)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+*** Copy subtree without heading or children
+#+begin_src emacs-lisp :tangle modules/org-functions.el
+(defun org-copy-subtree-only ()
+  "Copy the current subtree excluding heading and children into clipboard."
+  (interactive)
+  (if (org-before-first-heading-p)
+      (message "Not in or on an org heading")
+    (save-excursion
+      ;; If inside heading contents, move the point back to the heading
+      ;; otherwise `org-agenda-get-some-entry-text' won't work.
+      (unless (org-on-heading-p) (org-previous-visible-heading 1))
+      (let ((contents (substring-no-properties
+                       (org-agenda-get-some-entry-text
+                        (point-marker)
+                        most-positive-fixnum))))
+        (message "Copied %d chars" (length contents))
+        (kill-new contents)))))
+#+end_src
+*** Adds filename prefixes to counsel-org-goto-all
+#+begin_src emacs-lisp :tangle modules/org-functions.el
+(defun add-filename-to-counsel-outline-candidates (candidates)
+  "Add the filename at the beginning for CANDIDATES from `counsel-outline-candidates'."
+  (mapcar
+   (lambda (candidate)
+     (let* ((marker (cdr candidate))
+            (filename (buffer-file-name (marker-buffer marker)))
+            (filename-abbreviated (when filename (concat (abbreviate-file-name filename) " ")))
+            ;; Use this if you want the buffer name. It's a bit shorter.
+            ;; (buffername (buffer-name (marker-buffer (cdr candidate))))
+            )
+       (cons (concat filename-abbreviated (car candidate)) marker)))
+   candidates))
+
+(advice-add 'counsel-outline-candidates :filter-return #'add-filename-to-counsel-outline-candidates)
+#+end_src
+*** Add text to any org headline
+#+begin_src emacs-lisp :tangle modules/org-functions.el
+(require 'counsel)
+(defun org-insert-under-headline ()
+  "Insert yanked text as last line under selected org headline."
+  (interactive)
+  (let (entries)
+    (dolist (b (buffer-list))
+      (with-current-buffer b
+        (when (derived-mode-p 'org-mode)
+          (setq entries
+                (nconc entries
+                       (counsel-outline-candidates
+                        (cdr (assq 'org-mode counsel-outline-settings))
+                        (counsel-org-goto-all--outline-path-prefix)))))))
+    (ivy-read "Goto: " entries
+              :history 'counsel-org-goto-history
+              :action #'org-insert-under-headline-helper
+              :caller 'counsel-org-select-all)))
+
+(defun org-insert-under-headline-helper (x)
+  (save-window-excursion
+  (org-goto-marker-or-bmk (cdr x))
+  (outline-next-heading)
+  (counsel-yank-pop)
+  (newline)))
+
+(provide 'org-functions)
+#+end_src
 ** Languages
 #+begin_src emacs-lisp
 (load-module 'languages)
@@ -5425,12 +5549,33 @@ This forces a complete recompilation of the document, even if the source
       (notes-dir (concat base-dir "notes/"))
       (lib-dir (concat base-dir "papers/")))
   (setq bibtex-completion-bibliography bibfile
-        citar-bibliography `(,bibfile)
         bibtex-completion-library-path `(,lib-dir)
         bibtex-completion-notes-path notes-dir
+        bibtex-completion-pdf-field "file"
+        citar-bibliography `(,bibfile)
         citar-library-paths `(,lib-dir)
         citar-notes-paths `(,notes-dir)
+        deft-directory notes-dir
+        deft-default-extension "org"
+        org-noter-notes-search-path `(,notes-dir)
         org-cite-global-bibliography `(,bibfile)))
+(setq bibtex-completion-notes-template-multiple-files
+      (concat
+       "#+TITLE: ${title}\n"
+       "#+ROAM_KEY: cite:${=key=}\n"
+       "* TODO Notes\n"
+       ":PROPERTIES:\n"
+       ":Custom_ID: ${=key=}\n"
+       ":NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n"
+       ":AUTHOR: ${author-abbrev}\n"
+       ":JOURNAL: ${journaltitle}\n"
+       ":DATE: ${date}\n"
+       ":YEAR: ${year}\n"
+       ":DOI: ${doi}\n"
+       ":URL: ${url}\n"
+       ":END:\n\n"
+       ))
+
 
 (setq org-export-with-sub-superscripts "{}"
       org-export-with-smart-quotes nil)
@@ -5524,4 +5669,32 @@ This forces a complete recompilation of the document, even if the source
       (t path))))
 
 (provide 'org-links)
+#+end_src
+
+** PDF and Annotation Tweaks
+#+begin_src emacs-lisp
+(load-module 'pdf-and-annotation-tweaks)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-noter)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/pdf-and-annotation-tweaks.el
+(use-package org-noter
+  :after (:any org pdf-view)
+  :config
+  (setq
+   ;; Please stop opening frames
+   org-noter-always-create-frame nil
+   org-noter-notes-window-location 'vertical-split
+   ;; I want to see the whole file
+   org-noter-hide-other nil
+   org-noter-auto-save-last-location t
+   org-noter-suggest-from-attachments t
+   )
+  )
+
+(add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
+(provide 'pdf-and-annotation-tweaks)
 #+end_src
