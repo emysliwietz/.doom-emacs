@@ -223,12 +223,7 @@
 (package! switch-window)
 (package! try)
 (package! counsel)
-(package! ivy)
-(package! all-the-icons-ibuffer)
-(package! all-the-icons-ivy)
-(package! swiper)
-(package! ido-vertical-mode)
-(package! amx)
+
 (package! diredfl)
 (package! all-the-icons-dired)
 (package! diredful)
@@ -240,8 +235,6 @@
 (package! hydra)
 (package! ace-link)
 (package! sudo-edit)
-;(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
-;  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
 (package! rotate)
 (package! vlf)
 (package! evil-escape :disable t)
@@ -293,6 +286,27 @@ age95IpQjrQoIy0CPDtiouDWKNrXrTSQctareltEAkkB+p48HdVkKg==
 =z0qj
 -----END PGP MESSAGE-----
 * Modules
+** Workarounds
+#+begin_src emacs-lisp
+(load-module 'workarounds)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+; Temporary workaround, remove at emacs 29
+(package! transient
+      :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440"
+      :recipe (:host github :repo "magit/transient"))
+
+(package! with-editor
+          :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
+          :recipe (:host github :repo "magit/with-editor"))
+
+(unpin! magit)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/workarounds.el
+(provide 'workarounds)
+#+end_src
 ** Utility functions
 #+begin_src emacs-lisp
 (load-module 'utility-functions)
@@ -927,9 +941,8 @@ Return a string suitable for insertion in `dired' buffer."
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-
-*** Code
 #+end_src
+*** Code
 #+begin_src emacs-lisp :tangle modules/editing.el
 ;;; editing.el -*- lexical-binding: t; -*-
 
@@ -1917,7 +1930,8 @@ javascript:location.href='org-protocol://capture?' +
         focus-follows-mouse t)
   (require 'exwm)
   (require 'exwm-config)
-  (exwm-config-default)
+  ; no need for (exwm-config-example), has unwanted defaults and uses ido
+  (exwm-enable)
   (require 'exwm-randr)
 
 (when (string= (system-name) "astaroth")
@@ -1944,6 +1958,7 @@ javascript:location.href='org-protocol://capture?' +
 	  ([?\C-e] . [end])
 	  ([?\M-a] . [C-a])
 	  ([?\M-v] . [prior])
+	  ([?\C-v] . [next])
 	  ([?\C-d] . [delete])
 	  ([?\C-k] . [S-end delete])
 	  ([?\C-w] . [?\C-x])
@@ -1952,8 +1967,6 @@ javascript:location.href='org-protocol://capture?' +
 	  ;; search
 	  ([?\C-s] . [?\C-f])
 	  ([?\M-s] . [?\C-s])))
-  (when (functionp 'exwm-enable-ido-workaround)
-    (exwm-enable-ido-workaround))
   (with-eval-after-load 'ediff-wind
   (setq ediff-control-frame-parameters
 	(cons '(unsplittable . t) ediff-control-frame-parameters)))
@@ -2019,6 +2032,7 @@ javascript:location.href='org-protocol://capture?' +
 
   (setq exwm-input-global-keys
         `(([?\s-f] . fullscreen)
+	  ([?\s-r] . exwm-reset)
 	  ([?\s-F] . toggle-maximize-buffer)
           ([?\s-g] . toggle-float-buffer)
 	  ([?\s-q] . kill-curr-buffer)
@@ -2452,34 +2466,6 @@ javascript:location.href='org-protocol://capture?' +
 
 (setq display-line-numbers-type 'relative)
 
-(defun ignore-dired-buffers-ivy (str)
-  "Return non-nil if STR names a Dired buffer.
-This function is intended for use with `ivy-ignore-buffers'."
-  (let ((buf (get-buffer str)))
-    (and buf (eq (buffer-local-value 'major-mode buf) 'dired-mode))))
-
-(defun ignore-help-buffers-ivy (str)
-  "Return non-nil if STR names a help buffer (buffers starting and ending with *)
-This function is intended for use with `ivy-ignore-buffers'."
-  (and
-   (s-starts-with-p "*" str)
-   (s-ends-with-p "*" str)))
-
-(defun ignore-unwanted-buffers-ivy (str)
-  "Return non-nil if STR names a Dired buffer.
-This function is intended for use with `ivy-ignore-buffers'."
-  (or
-   (string-equal "elfeed.org" str)
-   (member str (map 'list 'file-name-nondirectory org-agenda-files))
-   ))
-
-(with-eval-after-load 'ivy
-  (progn
-  (add-to-list 'ivy-ignore-buffers #'ignore-dired-buffers-ivy)
-  (add-to-list 'ivy-ignore-buffers #'ignore-help-buffers-ivy)
-  (add-to-list 'ivy-ignore-buffers #'ignore-unwanted-buffers-ivy)
-  ))
-
 ;;; Switch window
 (use-package! switch-window
   :config
@@ -2909,40 +2895,58 @@ This function is intended for use with `ivy-ignore-buffers'."
 (provide 'config-visit)
 #+end_src
 
-** Search
+** Legacy ivy functions
 #+begin_src emacs-lisp
-(load-module 'search)
+(load-module 'search-ivy)
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
 *** Code
-#+begin_src emacs-lisp :tangle modules/search.el
+#+begin_src emacs-lisp :tangle modules/search-ivy.el
 ;;; search.el -*- lexical-binding: t; -*-
 
 ;; Swiper / Ivy / Counsel
 ;;  Swiper gives us a really efficient incremental search with regular expressions
 ;;  and Ivy / Counsel replace a lot of ido or helms completion functionality
+
+(defun ignore-dired-buffers-ivy (str)
+  "Return non-nil if STR names a Dired buffer.
+This function is intended for use with `ivy-ignore-buffers'."
+  (let ((buf (get-buffer str)))
+    (and buf (eq (buffer-local-value 'major-mode buf) 'dired-mode))))
+
+(defun ignore-help-buffers-ivy (str)
+  "Return non-nil if STR names a help buffer (buffers starting and ending with *)
+This function is intended for use with `ivy-ignore-buffers'."
+  (and
+   (s-starts-with-p "*" str)
+   (s-ends-with-p "*" str)))
+
+(defun ignore-unwanted-buffers-ivy (str)
+  "Return non-nil if STR names a Dired buffer.
+This function is intended for use with `ivy-ignore-buffers'."
+  (or
+   (string-equal "elfeed.org" str)
+   (member str (map 'list 'file-name-nondirectory org-agenda-files))
+   ))
+
+(with-eval-after-load 'ivy
+  (progn
+  (add-to-list 'ivy-ignore-buffers #'ignore-dired-buffers-ivy)
+  (add-to-list 'ivy-ignore-buffers #'ignore-help-buffers-ivy)
+  (add-to-list 'ivy-ignore-buffers #'ignore-unwanted-buffers-ivy)
+  ))
+
 (use-package! counsel
   :bind
   (("M-y" . counsel-yank-pop)
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line)))
 
-(use-package! ivy
-  :diminish (ivy-mode)
-  :bind (("C-x C-b" . ivy-icon-switch-buffer))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-	ivy-count-format "%d/%d "
-	ivy-height 20
-	enable-recursive-minibuffers t
-	ivy-display-style 'fancy))
-
-(use-package! all-the-icons-ibuffer
-  :init (all-the-icons-ibuffer-mode 1))
+;(use-package! all-the-icons-ibuffer
+;  :init (all-the-icons-ibuffer-mode 1))
 
 (defun ivy-icon-switch-buffer ()
   "ivy-switch-buffer with icons"
@@ -3022,46 +3026,229 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 	    )))
 
 
-(use-package! swiper
-  :bind (("C-s" . swiper)
-	 ("C-r" . swiper)
-	 ("C-c C-r" . ivy-resume)
-	 ("M-x" . counsel-M-x)
-	 ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-    ))
-
-;; IDO
-;;; enable ido mode
-(setq ido-enable-flex-matching nil)
-(setq ido-create-new-buffer 'always)
-(setq ido-everywhere t)
-(ido-mode 1)
-
-;;; ido vertical
-(use-package! ido-vertical-mode
+(provide 'search-ivy)
+#+end_src
+** Search with vertico
+#+begin_src emacs-lisp
+(load-module 'search-with-vertico)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(unpin! vertico)
+(package! vertico)
+ (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+                             :includes (vertico-indexed
+                                        vertico-flat
+                                        vertico-grid
+                                        vertico-mouse
+                                        vertico-quick
+                                        vertico-buffer
+                                        vertico-repeat
+                                        vertico-reverse
+                                        vertico-directory
+                                        vertico-multiform
+                                        vertico-unobtrusive
+                                        )))
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/search-with-vertico.el
+(use-package! marginalia
+  :general
+  (:keymaps 'minibuffer-local-map
+            "M-A" 'marginalia-cycle)
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'right)
   :init
-  (ido-vertical-mode 1)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
+  (marginalia-mode))
 
-;;; smex
-(use-package! amx
-  :init (amx-initialize)
+(use-package! all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode))
+
+(require 'vertico)
+(use-package! vertico
+  :demand t                             ; Otherwise won't get loaded immediately
+  :general
+  (:keymaps '(normal insert visual motion)
+            "M-." #'vertico-repeat
+            )
+  (:keymaps 'vertico-map
+            "<tab>" #'vertico-insert ; Set manually otherwise setting `vertico-quick-insert' overrides this
+            "<escape>" #'minibuffer-keyboard-quit
+            "?" #'minibuffer-completion-help
+            "C-M-n" #'vertico-next-group
+            "C-M-p" #'vertico-previous-group
+            ;; Multiform toggles
+            "<backspace>" #'vertico-directory-delete-char
+            "C-w" #'vertico-directory-delete-word
+            "C-<backspace>" #'vertico-directory-delete-word
+            "RET" #'vertico-directory-enter
+            "C-i" #'vertico-quick-insert
+            "C-o" #'vertico-quick-exit
+            "M-o" #'kb/vertico-quick-embark
+            "M-G" #'vertico-multiform-grid
+            "M-F" #'vertico-multiform-flat
+            "M-R" #'vertico-multiform-reverse
+            "M-U" #'vertico-multiform-unobtrusive
+            "C-l" #'kb/vertico-multiform-indexed-toggle
+            )
+  :bind (
+         ("C-s" . consult-line)
+         ("C-S" . consult-line-multi)
+         ("C-x C-b" . consult-buffer))
+  :hook ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
+         (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
+         )
+  :custom
+  ;(vertico-count 13)
+  (vertico-resize t)
+  (vertico-cycle nil)
+  ;; Extensions
+  (vertico-grid-separator "       ")
+  (vertico-grid-lookahead 50)
+  (vertico-buffer-display-action '(display-buffer-reuse-window))
+  (vertico-multiform-categories
+   '((file reverse)
+     (consult-grep buffer)
+     (consult-location)
+     (imenu buffer)
+     (library reverse indexed)
+     (org-roam-node reverse indexed)
+     (t reverse)
+     ))
+  (vertico-multiform-commands
+   '(("flyspell-correct-*" grid reverse)
+     (org-refile grid reverse indexed)
+     (consult-yank-pop indexed)
+     (consult-flycheck)
+     (consult-lsp-diagnostics)
+     ))
+  :init
+  (defun kb/vertico-multiform-indexed-toggle ()
+    "Toggle between indexed and reverse."
+    (interactive)
+    (vertico-multiform--display-toggle 'vertico-indexed-mode)
+    (if vertico-indexed-mode
+        (vertico-multiform--temporary-mode 'vertico-reverse-mode -1)
+      (vertico-multiform--temporary-mode 'vertico-reverse-mode 1)))
+  (defun kb/vertico-quick-embark (&optional arg)
+    "Embark on candidate using quick keys."
+    (interactive)
+    (when (vertico-quick-jump)
+      (embark-act arg)))
+
+  ;; Workaround for problem with `tramp' hostname completions. This overrides
+  ;; the completion style specifically for remote files! See
+  ;; https://github.com/minad/vertico#tramp-hostname-completion
+  (defun kb/basic-remote-try-completion (string table pred point)
+    (and (vertico--remote-p string)
+         (completion-basic-try-completion string table pred point)))
+  (defun kb/basic-remote-all-completions (string table pred point)
+    (and (vertico--remote-p string)
+         (completion-basic-all-completions string table pred point)))
+  (add-to-list 'completion-styles-alist
+               '(basic-remote           ; Name of `completion-style'
+                 kb/basic-remote-try-completion kb/basic-remote-all-completions nil))
   :config
-  (setq amx-backend 'ivy
-	-show-key-bindings t)
-  :bind
-  ("M-x" . amx))
+  (vertico-mode)
+  ;; Extensions
+  (vertico-multiform-mode)
+  ;; Needed to move away from ido
+  (setq completing-read-function 'completing-read-default)
 
-;;; switch buffer
-(global-set-key (kbd "C-x b") 'ido-switch-buffer)
+  ;; Prefix the current candidate with “» ”. From
+  ;; https://github.com/minad/vertico/wiki#prefix-current-candidate-with-arrow
+  (advice-add #'vertico--format-candidate :around
+              (lambda (orig cand prefix suffix index _start)
+                (setq cand (funcall orig cand prefix suffix index _start))
+                (concat
+                 (if (= vertico--index index)
+                     (propertize "» " 'face 'vertico-current)
+                   "  ")
+                 cand)))
+  )
 
-(provide 'search)
+(use-package orderless
+  :custom
+  (completion-styles '(orderless))
+  (completion-category-defaults nil)    ; I want to be in control!
+  (completion-category-overrides
+   '((file (styles basic-remote ; For `tramp' hostname completion with `vertico'
+                   orderless
+                   ))
+     ))
+
+  (orderless-component-separator 'orderless-escapable-split-on-space)
+  (orderless-matching-styles
+   '(orderless-literal
+     orderless-prefixes
+     orderless-initialism
+     orderless-regexp
+     orderless-flex ;; Fuzzy finding
+     ;; orderless-strict-leading-initialism
+     ;; orderless-strict-initialism
+     ;; orderless-strict-full-initialism
+     ;; orderless-without-literal          ; Recommended for dispatches instead
+     ))
+  (orderless-style-dispatchers
+   '(prot-orderless-literal-dispatcher
+     prot-orderless-strict-initialism-dispatcher
+     prot-orderless-flex-dispatcher
+     ))
+  :init
+  (defun orderless--strict-*-initialism (component &optional anchored)
+    "Match a COMPONENT as a strict initialism, optionally ANCHORED.
+The characters in COMPONENT must occur in the candidate in that
+order at the beginning of subsequent words comprised of letters.
+Only non-letters can be in between the words that start with the
+initials.
+
+If ANCHORED is `start' require that the first initial appear in
+the first word of the candidate.  If ANCHORED is `both' require
+that the first and last initials appear in the first and last
+words of the candidate, respectively."
+    (orderless--separated-by
+        '(seq (zero-or-more alpha) word-end (zero-or-more (not alpha)))
+      (cl-loop for char across component collect `(seq word-start ,char))
+      (when anchored '(seq (group buffer-start) (zero-or-more (not alpha))))
+      (when (eq anchored 'both)
+        '(seq (zero-or-more alpha) word-end (zero-or-more (not alpha)) eol))))
+
+  (defun orderless-strict-initialism (component)
+    "Match a COMPONENT as a strict initialism.
+This means the characters in COMPONENT must occur in the
+candidate in that order at the beginning of subsequent words
+comprised of letters.  Only non-letters can be in between the
+words that start with the initials."
+    (orderless--strict-*-initialism component))
+
+  (defun prot-orderless-literal-dispatcher (pattern _index _total)
+    "Literal style dispatcher using the equals sign as a suffix.
+It matches PATTERN _INDEX and _TOTAL according to how Orderless
+parses its input."
+    (when (string-suffix-p "=" pattern)
+      `(orderless-literal . ,(substring pattern 0 -1))))
+
+  (defun prot-orderless-strict-initialism-dispatcher (pattern _index _total)
+    "Leading initialism  dispatcher using the comma suffix.
+It matches PATTERN _INDEX and _TOTAL according to how Orderless
+parses its input."
+    (when (string-suffix-p "," pattern)
+      `(orderless-strict-initialism . ,(substring pattern 0 -1))))
+
+  (defun prot-orderless-flex-dispatcher (pattern _index _total)
+    "Flex  dispatcher using the tilde suffix.
+It matches PATTERN _INDEX and _TOTAL according to how Orderless
+parses its input."
+    (when (string-suffix-p "." pattern)
+      `(orderless-flex . ,(substring pattern 0 -1))))
+  )
+
+
+(provide 'search-with-vertico)
 #+end_src
 ** Read Aloud
 #+begin_src emacs-lisp
@@ -5576,6 +5763,7 @@ This forces a complete recompilation of the document, even if the source
         deft-default-extension "org"
         org-noter-notes-search-path `(,notes-dir)
         org-cite-global-bibliography `(,bibfile)))
+
 (setq bibtex-completion-notes-template-multiple-files
       (concat
        "#+TITLE: ${title}\n"
@@ -5671,7 +5859,7 @@ This forces a complete recompilation of the document, even if the source
   "Extract the page name from the buffer name."
   ;; This works for both `Man-mode' and `woman-mode'.
   (if (string-match " \\(\\S-+\\)\\*" (buffer-name))
-      (match-string 1 (buffer-name))
+
     (error "Cannot create link to this man page")))
 
 (defun org-b-export (link description format _)
@@ -5688,6 +5876,43 @@ This forces a complete recompilation of the document, even if the source
 (provide 'org-links)
 #+end_src
 
+** Org Citations
+#+begin_src emacs-lisp
+(load-module 'org-citations)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/org-citations.el
+(use-package! citar-embark
+  :after citar embark
+  :config (citar-embark-mode))
+
+(use-package! citar
+  :custom
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+  )
+
+(after! citar
+(setq citar-templates
+      '((main . "${author editor:30}     ${date year issued:4}     ${title:80}")
+        (suffix . "          ${=key= id:15}    ${=type=:10}    ${tags keywords:*}")
+        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+        (note . "Notes on ${author editor}, ${title}")))
+
+(setq citar-symbols
+      `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+        (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+        (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+
+(setq citar-symbol-separator " ")
+
+(provide 'org-citations)
+#+end_src
 ** PDF and Annotation Tweaks
 #+begin_src emacs-lisp
 (load-module 'pdf-and-annotation-tweaks)
@@ -5704,11 +5929,13 @@ This forces a complete recompilation of the document, even if the source
   (setq
    ;; Please stop opening frames
    org-noter-always-create-frame nil
-   org-noter-notes-window-location 'vertical-split
+   org-noter-notes-window-location 'horizontal-split
    ;; I want to see the whole file
    org-noter-hide-other nil
    org-noter-auto-save-last-location t
    org-noter-suggest-from-attachments t
+   org-noter-doc-split-percentage '(0.7 . 0.3)
+   org-noter-doc-split-fraction '(0.7 . 0.3)
    )
   )
 

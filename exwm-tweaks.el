@@ -5,7 +5,7 @@
         focus-follows-mouse t)
   (require 'exwm)
   (require 'exwm-config)
-  ; no need for (exwm-config-example), has unwanted defaults and uses ido
+  ; no need for exwm-config-example, has unwanted defaults and uses ido
   (exwm-enable)
   (require 'exwm-randr)
 
@@ -33,7 +33,7 @@
 	  ([?\C-e] . [end])
 	  ([?\M-a] . [C-a])
 	  ([?\M-v] . [prior])
-	  ([?\C-v] . [next])
+          ([?\C-v] . [next])
 	  ([?\C-d] . [delete])
 	  ([?\C-k] . [S-end delete])
 	  ([?\C-w] . [?\C-x])
@@ -107,7 +107,8 @@
 
   (setq exwm-input-global-keys
         `(([?\s-f] . fullscreen)
-	  ([?\s-r] . exwm-reset)
+          ([?\s-r] . exwm-reset)
+          ([])
 	  ([?\s-F] . toggle-maximize-buffer)
           ([?\s-g] . toggle-float-buffer)
 	  ([?\s-q] . kill-curr-buffer)
@@ -417,5 +418,4 @@
 (ifdirexists "/home/user/dox/wallpapers"
              (setq wallpaper-cycle-directory dir)
              (wallpaper-set-wallpaper))
-
 (provide 'exwm-tweaks)

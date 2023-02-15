@@ -26,7 +26,7 @@
   "Extract the page name from the buffer name."
   ;; This works for both `Man-mode' and `woman-mode'.
   (if (string-match " \\(\\S-+\\)\\*" (buffer-name))
-      (match-string 1 (buffer-name))
+
     (error "Cannot create link to this man page")))
 
 (defun org-b-export (link description format _)

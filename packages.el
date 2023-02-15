@@ -55,12 +55,7 @@
 (package! switch-window)
 (package! try)
 (package! counsel)
-(package! ivy)
-(package! all-the-icons-ibuffer)
-(package! all-the-icons-ivy)
-(package! swiper)
-(package! ido-vertical-mode)
-(package! amx)
+
 (package! diredfl)
 (package! all-the-icons-dired)
 (package! diredful)
@@ -72,8 +67,6 @@
 (package! hydra)
 (package! ace-link)
 (package! sudo-edit)
-;(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
-;  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
 (package! rotate)
 (package! vlf)
 (package! evil-escape :disable t)
@@ -113,6 +106,17 @@
 (package! spell-fu)
 (package! wallpaper)
 
+; Temporary workaround, remove at emacs 29
+(package! transient
+      :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440"
+      :recipe (:host github :repo "magit/transient"))
+
+(package! with-editor
+          :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
+          :recipe (:host github :repo "magit/with-editor"))
+
+(unpin! magit)
+
 (package! dired-subtree)
 
 (package! dired-narrow)
@@ -122,6 +126,8 @@
 (package! org-roam-timestamps)
 (package! org-roam-bibtex)
 (package! citar-org-roam)
+
+
 
 
 
@@ -145,6 +151,22 @@
 
 
 
+
+(unpin! vertico)
+(package! vertico)
+ (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+                             :includes (vertico-indexed
+                                        vertico-flat
+                                        vertico-grid
+                                        vertico-mouse
+                                        vertico-quick
+                                        vertico-buffer
+                                        vertico-repeat
+                                        vertico-reverse
+                                        vertico-directory
+                                        vertico-multiform
+                                        vertico-unobtrusive
+                                        )))
 
 
 
@@ -175,5 +197,7 @@
 
 
 
+
+(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
 
 (package! org-noter)

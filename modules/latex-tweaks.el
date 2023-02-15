@@ -109,6 +109,7 @@ This forces a complete recompilation of the document, even if the source
         deft-default-extension "org"
         org-noter-notes-search-path `(,notes-dir)
         org-cite-global-bibliography `(,bibfile)))
+
 (setq bibtex-completion-notes-template-multiple-files
       (concat
        "#+TITLE: ${title}\n"

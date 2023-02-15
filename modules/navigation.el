@@ -39,34 +39,6 @@
 
 (setq display-line-numbers-type 'relative)
 
-(defun ignore-dired-buffers-ivy (str)
-  "Return non-nil if STR names a Dired buffer.
-This function is intended for use with `ivy-ignore-buffers'."
-  (let ((buf (get-buffer str)))
-    (and buf (eq (buffer-local-value 'major-mode buf) 'dired-mode))))
-
-(defun ignore-help-buffers-ivy (str)
-  "Return non-nil if STR names a help buffer (buffers starting and ending with *)
-This function is intended for use with `ivy-ignore-buffers'."
-  (and
-   (s-starts-with-p "*" str)
-   (s-ends-with-p "*" str)))
-
-(defun ignore-unwanted-buffers-ivy (str)
-  "Return non-nil if STR names a Dired buffer.
-This function is intended for use with `ivy-ignore-buffers'."
-  (or
-   (string-equal "elfeed.org" str)
-   (member str (map 'list 'file-name-nondirectory org-agenda-files))
-   ))
-
-(with-eval-after-load 'ivy
-  (progn
-  (add-to-list 'ivy-ignore-buffers #'ignore-dired-buffers-ivy)
-  (add-to-list 'ivy-ignore-buffers #'ignore-help-buffers-ivy)
-  (add-to-list 'ivy-ignore-buffers #'ignore-unwanted-buffers-ivy)
-  ))
-
 ;;; Switch window
 (use-package! switch-window
   :config

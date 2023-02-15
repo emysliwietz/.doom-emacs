@@ -3,25 +3,43 @@
 ;; Swiper / Ivy / Counsel
 ;;  Swiper gives us a really efficient incremental search with regular expressions
 ;;  and Ivy / Counsel replace a lot of ido or helms completion functionality
+
+(defun ignore-dired-buffers-ivy (str)
+  "Return non-nil if STR names a Dired buffer.
+This function is intended for use with `ivy-ignore-buffers'."
+  (let ((buf (get-buffer str)))
+    (and buf (eq (buffer-local-value 'major-mode buf) 'dired-mode))))
+
+(defun ignore-help-buffers-ivy (str)
+  "Return non-nil if STR names a help buffer (buffers starting and ending with *)
+This function is intended for use with `ivy-ignore-buffers'."
+  (and
+   (s-starts-with-p "*" str)
+   (s-ends-with-p "*" str)))
+
+(defun ignore-unwanted-buffers-ivy (str)
+  "Return non-nil if STR names a Dired buffer.
+This function is intended for use with `ivy-ignore-buffers'."
+  (or
+   (string-equal "elfeed.org" str)
+   (member str (map 'list 'file-name-nondirectory org-agenda-files))
+   ))
+
+(with-eval-after-load 'ivy
+  (progn
+  (add-to-list 'ivy-ignore-buffers #'ignore-dired-buffers-ivy)
+  (add-to-list 'ivy-ignore-buffers #'ignore-help-buffers-ivy)
+  (add-to-list 'ivy-ignore-buffers #'ignore-unwanted-buffers-ivy)
+  ))
+
 (use-package! counsel
   :bind
   (("M-y" . counsel-yank-pop)
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line)))
 
-(use-package! ivy
-  :diminish (ivy-mode)
-  :bind (("C-x C-b" . ivy-icon-switch-buffer))
-  :config
- ; (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-	ivy-count-format "%d/%d "
-	ivy-height 20
-	enable-recursive-minibuffers t
-	ivy-display-style 'fancy))
-
-(use-package! all-the-icons-ibuffer
-  :init (all-the-icons-ibuffer-mode 1))
+;(use-package! all-the-icons-ibuffer
+;  :init (all-the-icons-ibuffer-mode 1))
 
 (defun ivy-icon-switch-buffer ()
   "ivy-switch-buffer with icons"
@@ -101,43 +119,4 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 	    )))
 
 
-(use-package! swiper
-  :bind (("C-s" . swiper)
-	 ("C-r" . swiper)
-	 ("C-c C-r" . ivy-resume)
-	 ("M-x" . counsel-M-x)
-	 ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
-;    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-    ))
-
-;; IDO
-;;; enable ido mode
-(setq ido-enable-flex-matching nil)
-(setq ido-create-new-buffer 'always)
-;(setq ido-everywhere t)
-;(ido-mode 1)
-
-;;; ido vertical
-(use-package! ido-vertical-mode
-  :init
-  ;(ido-vertical-mode 1)
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only))
-
-;;; smex
-(use-package! amx
-  :init (amx-initialize)
-  :config
-  (setq amx-backend 'ivy
-	-show-key-bindings t)
-  :bind
-  ("M-x" . amx))
-
-;;; switch buffer
-;(global-set-key (kbd "C-x b") 'ido-switch-buffer)
-
-(provide 'search)
+(provide 'search-ivy)
