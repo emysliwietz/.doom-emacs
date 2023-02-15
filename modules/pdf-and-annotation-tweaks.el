@@ -14,7 +14,5 @@
    )
   )
 
-
-
 (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 (provide 'pdf-and-annotation-tweaks)

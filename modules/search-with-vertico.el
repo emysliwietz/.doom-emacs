@@ -14,6 +14,7 @@
   :init
   (all-the-icons-completion-mode))
 
+(require 'vertico)
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately
   :general
@@ -40,6 +41,10 @@
             "M-U" #'vertico-multiform-unobtrusive
             "C-l" #'kb/vertico-multiform-indexed-toggle
             )
+  :bind (
+         ("C-s" . consult-line)
+         ("C-S" . consult-line-multi)
+         ("C-x C-b" . consult-buffer))
   :hook ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
          (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
          )

@@ -220,10 +220,6 @@
 (package! try)
 (package! counsel)
 
-(package! ivy)
-(package! all-the-icons-ivy)
-(package! all-the-icons-ibuffer)
-(package! swiper)
 (package! diredfl)
 (package! all-the-icons-dired)
 (package! diredful)
@@ -235,8 +231,6 @@
 (package! hydra)
 (package! ace-link)
 (package! sudo-edit)
-;(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
-;  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
 (package! rotate)
 (package! vlf)
 (package! evil-escape :disable t)
@@ -911,9 +905,8 @@ Return a string suitable for insertion in `dired' buffer."
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-
-*** Code
 #+end_src
+*** Code
 #+begin_src emacs-lisp :tangle modules/editing.el
 ;;; editing.el -*- lexical-binding: t; -*-
 
@@ -1934,8 +1927,6 @@ javascript:location.href='org-protocol://capture?' +
 	  ;; search
 	  ([?\C-s] . [?\C-f])
 	  ([?\M-s] . [?\C-s])))
-  ;(when (functionp 'exwm-enable-ido-workaround)
-  ;  (exwm-enable-ido-workaround))
   (with-eval-after-load 'ediff-wind
   (setq ediff-control-frame-parameters
 	(cons '(unsplittable . t) ediff-control-frame-parameters)))
@@ -2863,7 +2854,7 @@ javascript:location.href='org-protocol://capture?' +
 (provide 'config-visit)
 #+end_src
 
-** Search with ido and ivy :disabled:
+** Legacy ivy functions
 #+begin_src emacs-lisp
 (load-module 'search-ivy)
 #+end_src
@@ -2913,19 +2904,8 @@ This function is intended for use with `ivy-ignore-buffers'."
    :map ivy-minibuffer-map
    ("M-y" . ivy-next-line)))
 
-(use-package! ivy
-  :diminish (ivy-mode)
-  :bind (("C-x C-b" . ivy-icon-switch-buffer))
-  :config
- (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-	ivy-count-format "%d/%d "
-	ivy-height 20
-	enable-recursive-minibuffers t
-	ivy-display-style 'fancy))
-
-(use-package! all-the-icons-ibuffer
-  :init (all-the-icons-ibuffer-mode 1))
+;(use-package! all-the-icons-ibuffer
+;  :init (all-the-icons-ibuffer-mode 1))
 
 (defun ivy-icon-switch-buffer ()
   "ivy-switch-buffer with icons"
@@ -3005,20 +2985,6 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 	    )))
 
 
-(use-package! swiper
-  :bind (("C-s" . swiper)
-	 ("C-r" . swiper)
-	 ("C-c C-r" . ivy-resume)
-	 ("M-x" . counsel-M-x)
-	 ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
-    (ivy-mode 1)
-    (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-    ))
-
 (provide 'search-ivy)
 #+end_src
 ** Search with vertico
@@ -3027,19 +2993,21 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
-                            :includes (vertico-indexed
-                                       vertico-flat
-                                       vertico-grid
-                                       vertico-mouse
-                                       vertico-quick
-                                       vertico-buffer
-                                       vertico-repeat
-                                       vertico-reverse
-                                       vertico-directory
-                                       vertico-multiform
-                                       vertico-unobtrusive
-                                       )))
+(unpin! vertico)
+(package! vertico)
+ (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+                             :includes (vertico-indexed
+                                        vertico-flat
+                                        vertico-grid
+                                        vertico-mouse
+                                        vertico-quick
+                                        vertico-buffer
+                                        vertico-repeat
+                                        vertico-reverse
+                                        vertico-directory
+                                        vertico-multiform
+                                        vertico-unobtrusive
+                                        )))
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/search-with-vertico.el
@@ -3059,6 +3027,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
   :init
   (all-the-icons-completion-mode))
 
+(require 'vertico)
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately
   :general
@@ -3085,6 +3054,10 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
             "M-U" #'vertico-multiform-unobtrusive
             "C-l" #'kb/vertico-multiform-indexed-toggle
             )
+  :bind (
+         ("C-s" . consult-line)
+         ("C-S" . consult-line-multi)
+         ("C-x C-b" . consult-buffer))
   :hook ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
          (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
          )
@@ -5808,23 +5781,17 @@ This forces a complete recompilation of the document, even if the source
 
 (after! citar
 (setq citar-templates
-      '((main . "${file}")
-        (suffix . "asdf")
-        (preview . "")
+      '((main . "${author editor:30}     ${date year issued:4}     ${title:80}")
+        (suffix . "          ${=key= id:15}    ${=type=:10}    ${tags keywords:*}")
+        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
         (note . "Notes on ${author editor}, ${title}")))
-
-;(setq citar-templates
-;      '((main . "${author editor:10}     ${date year issued:4}     ${title:10}")
-;        (suffix . "          ${=key= id:1}    ${=type=:5}    ${tags keywords:*}")
-;        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-;        (note . "Notes on ${author editor}, ${title}")))
 
 (setq citar-symbols
       `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
         (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
         (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
 
-(setq citar-symbol-separator "ä ")
+(setq citar-symbol-separator " ")
 
 (provide 'org-citations)
 #+end_src
@@ -5853,8 +5820,6 @@ This forces a complete recompilation of the document, even if the source
    org-noter-doc-split-fraction '(0.7 . 0.3)
    )
   )
-
-
 
 (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 (provide 'pdf-and-annotation-tweaks)

@@ -56,10 +56,6 @@
 (package! try)
 (package! counsel)
 
-(package! ivy)
-(package! all-the-icons-ivy)
-(package! all-the-icons-ibuffer)
-(package! swiper)
 (package! diredfl)
 (package! all-the-icons-dired)
 (package! diredful)
@@ -71,8 +67,6 @@
 (package! hydra)
 (package! ace-link)
 (package! sudo-edit)
-;(package! beancount :recipe (:host github :repo "beancount/beancount-mode")
-;  :pin "ea8257881b7e276e8d170d724e3b2e179f25cb77")
 (package! rotate)
 (package! vlf)
 (package! evil-escape :disable t)
@@ -128,6 +122,8 @@
 
 
 
+
+
 (package! buffer-move)
 
 (package! exwm-outer-gaps
@@ -145,19 +141,21 @@
 
 
 
-(package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
-                            :includes (vertico-indexed
-                                       vertico-flat
-                                       vertico-grid
-                                       vertico-mouse
-                                       vertico-quick
-                                       vertico-buffer
-                                       vertico-repeat
-                                       vertico-reverse
-                                       vertico-directory
-                                       vertico-multiform
-                                       vertico-unobtrusive
-                                       )))
+(unpin! vertico)
+(package! vertico)
+ (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+                             :includes (vertico-indexed
+                                        vertico-flat
+                                        vertico-grid
+                                        vertico-mouse
+                                        vertico-quick
+                                        vertico-buffer
+                                        vertico-repeat
+                                        vertico-reverse
+                                        vertico-directory
+                                        vertico-multiform
+                                        vertico-unobtrusive
+                                        )))
 
 
 
