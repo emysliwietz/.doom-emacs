@@ -1,2 +1,5 @@
 modules/flycheck*
-ext/
+/ext/elfeed/
+/ext/bin/ffplay
+/ext/bin/ffprobe
+/ext/bin/ffmpeg

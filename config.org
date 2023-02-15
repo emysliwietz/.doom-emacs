@@ -120,7 +120,6 @@
 
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'private-config)
-(load-module 'beancount-tweaks)
 ;(load-module '(require 'bible))
 (when (require 'mu4e nil 'noerror)
   (load-module 'email)
@@ -144,6 +143,11 @@
     (delay-mode-hooks (emacs-lisp-mode))
     (insert (replace-regexp-in-string " " "\n" (prin1-to-string modules)))
     (indent-region (point-min) (point-max))))
+
+(defun indent-buffer ()
+  "Indent each nonblank line in the buffer"
+  (interactive)
+  (indent-region (point-min) (point-max)))
 
 ;;;###autoload
 (defun doom/what-has-changed ()
@@ -380,6 +384,12 @@ abort completely with `C-g'."
   (map! :map beancount-mode-map
         :n "TAB" #'beancount-align-to-previous-number
         :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
+
+; install via cargo install beancount-sort
+(defun beancount-sort ()
+  "Sort default beancount file"
+  (interactive)
+  (message "%s" beancount-local-file))
 
 (provide 'beancount-tweaks)
 
@@ -1476,11 +1486,13 @@ Return a string suitable for insertion in `dired' buffer."
 
 (defun open-yt-dl-videos ()
   (interactive)
-  (find-file youtube-dl-directory))
+  (find-file youtube-dl-directory)
+  (dired-hide-details-mode))
 
 (defun open-yt-dl-temp-videos ()
   (interactive)
-  (find-file youtube-dl-temp-directory))
+  (find-file youtube-dl-temp-directory)
+  (dired-hide-details-mode))
 
 
 (cl-defun elfeed-show-youtube-dl (&key slow)

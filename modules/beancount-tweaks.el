@@ -20,4 +20,10 @@
         :n "TAB" #'beancount-align-to-previous-number
         :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
 
+; install via cargo install beancount-sort
+(defun beancount-sort ()
+  "Sort default beancount file"
+  (interactive)
+  (message "%s" beancount-local-file))
+
 (provide 'beancount-tweaks)

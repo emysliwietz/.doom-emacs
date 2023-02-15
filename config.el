@@ -115,7 +115,6 @@
 
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'private-config)
-(load-module 'beancount-tweaks)
 ;(load-module '(require 'bible))
 (when (require 'mu4e nil 'noerror)
   (load-module 'email)
@@ -139,6 +138,11 @@
     (delay-mode-hooks (emacs-lisp-mode))
     (insert (replace-regexp-in-string " " "\n" (prin1-to-string modules)))
     (indent-region (point-min) (point-max))))
+
+(defun indent-buffer ()
+  "Indent each nonblank line in the buffer"
+  (interactive)
+  (indent-region (point-min) (point-max)))
 
 ;;;###autoload
 (defun doom/what-has-changed ()

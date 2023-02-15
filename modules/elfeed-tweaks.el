@@ -408,11 +408,13 @@
 
 (defun open-yt-dl-videos ()
   (interactive)
-  (find-file youtube-dl-directory))
+  (find-file youtube-dl-directory)
+  (dired-hide-details-mode))
 
 (defun open-yt-dl-temp-videos ()
   (interactive)
-  (find-file youtube-dl-temp-directory))
+  (find-file youtube-dl-temp-directory)
+  (dired-hide-details-mode))
 
 
 (cl-defun elfeed-show-youtube-dl (&key slow)
