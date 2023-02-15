@@ -211,7 +211,9 @@
 
 (load-module 'config-visit)
 
-(load-module 'search)
+(load-module 'search-ivy)
+
+(load-module 'search-with-vertico)
 
 (load-module 'read-aloud)
 
@@ -242,5 +244,7 @@
 (load-module 'latex-tweaks)
 
 (load-module 'org-links)
+
+(load-module 'org-citations)
 
 (load-module 'pdf-and-annotation-tweaks)

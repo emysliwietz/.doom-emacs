@@ -55,12 +55,11 @@
 (package! switch-window)
 (package! try)
 (package! counsel)
+
 (package! ivy)
-(package! all-the-icons-ibuffer)
 (package! all-the-icons-ivy)
+(package! all-the-icons-ibuffer)
 (package! swiper)
-(package! ido-vertical-mode)
-(package! amx)
 (package! diredfl)
 (package! all-the-icons-dired)
 (package! diredful)
@@ -146,6 +145,20 @@
 
 
 
+(package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+                            :includes (vertico-indexed
+                                       vertico-flat
+                                       vertico-grid
+                                       vertico-mouse
+                                       vertico-quick
+                                       vertico-buffer
+                                       vertico-repeat
+                                       vertico-reverse
+                                       vertico-directory
+                                       vertico-multiform
+                                       vertico-unobtrusive
+                                       )))
+
 
 
 
@@ -175,5 +188,7 @@
 
 
 
+
+(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
 
 (package! org-noter)

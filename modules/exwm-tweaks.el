@@ -40,8 +40,8 @@
 	  ;; search
 	  ([?\C-s] . [?\C-f])
 	  ([?\M-s] . [?\C-s])))
-  (when (functionp 'exwm-enable-ido-workaround)
-    (exwm-enable-ido-workaround))
+  ;(when (functionp 'exwm-enable-ido-workaround)
+  ;  (exwm-enable-ido-workaround))
   (with-eval-after-load 'ediff-wind
   (setq ediff-control-frame-parameters
 	(cons '(unsplittable . t) ediff-control-frame-parameters)))

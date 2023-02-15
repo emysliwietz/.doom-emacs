@@ -3,6 +3,35 @@
 ;; Swiper / Ivy / Counsel
 ;;  Swiper gives us a really efficient incremental search with regular expressions
 ;;  and Ivy / Counsel replace a lot of ido or helms completion functionality
+
+(defun ignore-dired-buffers-ivy (str)
+  "Return non-nil if STR names a Dired buffer.
+This function is intended for use with `ivy-ignore-buffers'."
+  (let ((buf (get-buffer str)))
+    (and buf (eq (buffer-local-value 'major-mode buf) 'dired-mode))))
+
+(defun ignore-help-buffers-ivy (str)
+  "Return non-nil if STR names a help buffer (buffers starting and ending with *)
+This function is intended for use with `ivy-ignore-buffers'."
+  (and
+   (s-starts-with-p "*" str)
+   (s-ends-with-p "*" str)))
+
+(defun ignore-unwanted-buffers-ivy (str)
+  "Return non-nil if STR names a Dired buffer.
+This function is intended for use with `ivy-ignore-buffers'."
+  (or
+   (string-equal "elfeed.org" str)
+   (member str (map 'list 'file-name-nondirectory org-agenda-files))
+   ))
+
+(with-eval-after-load 'ivy
+  (progn
+  (add-to-list 'ivy-ignore-buffers #'ignore-dired-buffers-ivy)
+  (add-to-list 'ivy-ignore-buffers #'ignore-help-buffers-ivy)
+  (add-to-list 'ivy-ignore-buffers #'ignore-unwanted-buffers-ivy)
+  ))
+
 (use-package! counsel
   :bind
   (("M-y" . counsel-yank-pop)
@@ -138,6 +167,6 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
   ("M-x" . amx))
 
 ;;; switch buffer
-;(global-set-key (kbd "C-x b") 'ido-switch-buffer)
+(global-set-key (kbd "C-x b") 'ido-switch-buffer)
 
-(provide 'search)
+(provide 'search-ido-ivy)
