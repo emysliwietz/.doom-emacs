@@ -282,6 +282,27 @@ age95IpQjrQoIy0CPDtiouDWKNrXrTSQctareltEAkkB+p48HdVkKg==
 =z0qj
 -----END PGP MESSAGE-----
 * Modules
+** Workarounds
+#+begin_src emacs-lisp
+(load-module 'workarounds)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+; Temporary workaround, remove at emacs 29
+(package! transient
+      :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440"
+      :recipe (:host github :repo "magit/transient"))
+
+(package! with-editor
+          :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
+          :recipe (:host github :repo "magit/with-editor"))
+
+(unpin! magit)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/workarounds.el
+(provide 'workarounds)
+#+end_src
 ** Utility functions
 #+begin_src emacs-lisp
 (load-module 'utility-functions)

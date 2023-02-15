@@ -153,6 +153,8 @@
     (doom--put-modules private-init-el new-modules)
     (ediff private-init-el example-init-el)))
 
+(load-module 'workarounds)
+
 (load-module 'utility-functions)
 
 (load-module 'auto-correct)
