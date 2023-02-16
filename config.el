@@ -219,7 +219,9 @@
 
 (load-module 'search-ivy)
 
-(load-module 'search-with-vertico)
+(after! vertico
+   (load-module 'search-with-vertico)
+)
 
 (load-module 'read-aloud)
 

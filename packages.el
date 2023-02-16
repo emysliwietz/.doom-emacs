@@ -58,6 +58,7 @@
 
 (package! diredfl)
 (package! all-the-icons-dired)
+(package! all-the-icons-completion)
 (package! diredful)
 (package! dired-git-info)
 (package! async)

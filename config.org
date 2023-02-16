@@ -226,6 +226,7 @@
 
 (package! diredfl)
 (package! all-the-icons-dired)
+(package! all-the-icons-completion)
 (package! diredful)
 (package! dired-git-info)
 (package! async)
@@ -3030,7 +3031,9 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 #+end_src
 ** Search with vertico
 #+begin_src emacs-lisp
-(load-module 'search-with-vertico)
+(after! vertico
+   (load-module 'search-with-vertico)
+)
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
