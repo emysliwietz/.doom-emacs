@@ -42,7 +42,6 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
@@ -58,7 +57,7 @@
 ;; This will open documentation for it, including demos of how they are used.
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
+; they are implemented.
 
 (add-to-list 'load-path "~/.doom.d/modules")
 
@@ -83,7 +82,6 @@
   `(unless debug-my-config (add-hook! 'after-startup-hook
                              '(lambda () ,@func))))
 
-(after-startup (message "hello"))
 (mkdir (concat doom-private-dir "modules") t)
 
 (defmacro execution-time (func)
@@ -175,31 +173,9 @@
 
 (load-module 'ebook-tweaks)
 
-(load-module 'org-roam-tweaks)
-
 (load-module 'editing)
 
 (load-module 'elfeed-tweaks)
-
-(mkdir "~/.local/share/applications/" t)
-
-(mkdir (concat doom-private-dir "ext/org-protocol/") t)
-
-(require 'org-protocol)
-(add-to-list 'org-protocol-protocol-alist
-             '("Download like with youtube-dl"
-               :protocol "youtube-dl"
-               :function youtube-dl-protocol-handler))
-
-(defun youtube-dl-protocol-handler (data)
-  "Add url to youtube-dl download queue."
-  (let ((url (plist-get data :url))
-        (title (plist-get data :title)))
-    (unless (string= title "about:blank")
-      (youtube-dl
-       (plist-get data :url)
-       :title (plist-get data :title))))
-  nil)
 
 (load-module 'interface)
 
@@ -237,9 +213,35 @@
 
 (load-module 'weather)
 
+(mkdir "~/.local/share/applications/" t)
+
+(mkdir (concat doom-private-dir "ext/org-protocol/") t)
+
+(require 'org-protocol)
+(add-to-list 'org-protocol-protocol-alist
+             '("Download like with youtube-dl"
+               :protocol "youtube-dl"
+               :function youtube-dl-protocol-handler))
+
+(defun youtube-dl-protocol-handler (data)
+  "Add url to youtube-dl download queue."
+  (let ((url (plist-get data :url))
+        (title (plist-get data :title)))
+    (unless (string= title "about:blank")
+      (youtube-dl
+       (plist-get data :url)
+       :title (plist-get data :title))))
+  nil)
+
+(load-module 'org-roam-tweaks)
+
 (load-module 'org-tweaks)
 
 (load-module 'org-functions)
+
+(load-module 'org-citations)
+
+(load-module 'org-links)
 
 (load-module 'languages)
 
@@ -250,9 +252,5 @@
 (load-module-if 'mu4e 'email-accounts)
 
 (load-module 'latex-tweaks)
-
-(load-module 'org-links)
-
-(load-module 'org-citations)
 
 (load-module 'pdf-and-annotation-tweaks)

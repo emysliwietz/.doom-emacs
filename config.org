@@ -47,7 +47,6 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
-
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
 ;; - `load!' for loading external *.el files relative to this one
@@ -63,7 +62,7 @@
 ;; This will open documentation for it, including demos of how they are used.
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
+; they are implemented.
 
 (add-to-list 'load-path "~/.doom.d/modules")
 
@@ -88,7 +87,6 @@
   `(unless debug-my-config (add-hook! 'after-startup-hook
                              '(lambda () ,@func))))
 
-(after-startup (message "hello"))
 (mkdir (concat doom-private-dir "modules") t)
 
 (defmacro execution-time (func)
@@ -220,7 +218,6 @@
 (package! xelb)
 (package! exwm)
 (package! winum)
-(package! switch-window)
 (package! try)
 (package! counsel)
 
@@ -867,75 +864,6 @@ Return a string suitable for insertion in `dired' buffer."
 (provide 'ebook-tweaks)
 #+end_src
 
-** Org-Roam
-#+begin_src emacs-lisp
-(load-module 'org-roam-tweaks)
-#+end_src
-*** Requirements
-#+begin_src emacs-lisp :tangle packages.el
-(package! org-roam)
-(package! org-roam-ui)
-(package! org-roam-timestamps)
-(package! org-roam-bibtex)
-(package! citar-org-roam)
-#+end_src
-*** Code
-#+begin_src emacs-lisp :tangle modules/org-roam-tweaks.el
-(setq org-roam-directory "~/dox/sync/org/roam")
-(mkdir org-roam-directory t)
-(org-roam-db-autosync-mode 1)
-
-;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
-;; makes it easier to distinguish among other org buffers.
-(add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode)
-
-;; Since the org module lazy loads org-protocol (waits until an org URL is
-;; detected), we can safely chain `org-roam-protocol' to it.
-(use-package org-roam-protocol
-  :after org-protocol)
-
-
-(use-package org-roam-bibtex
-  :after (org-roam)
-  :hook (org-roam-mode . org-roam-bibtex-mode)
-  :config
-  (setq org-roam-bibtex-preformat-keywords
-        '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
-  (setq orb-templates
-        '(("r" "ref" plain (function org-roam-capture--get-point)
-           ""
-           :file-name "${slug}"
-           :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
-
-- tags ::
-- keywords :: ${keywords}
-
-\n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
-
-           :unnarrowed t))))
-
-;; Actually start using templates
- (after! org-capture
- ;; For browser capture
- (add-to-list 'org-capture-templates
- '("P" "Protocol" entry ; key, name, type
- (file+headline +org-capture-notes-file "Inbox") ; target
- "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?"
- :prepend t ; properties
- :kill-buffer t))
-(add-to-list 'org-capture-templates
-'("L" "Protocol Link" entry
-(file+headline +org-capture-notes-file "Inbox")
-"* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
-:prepend t
-:kill-buffer t))
-)
-
-(use-package! org-roam-bibtex
-  :after org-roam)
-
-(provide 'org-roam-tweaks)
-#+end_src
 ** Editing
 #+begin_src emacs-lisp
 (load-module 'editing)
@@ -1627,76 +1555,6 @@ Return a string suitable for insertion in `dired' buffer."
 (provide 'elfeed-tweaks)
 #+end_src
 
-** Org Protocol
-*** System
-**** Linux
-Set up emacsclient as org-protocol scheme-handler
-#+begin_src emacs-lisp
-(mkdir "~/.local/share/applications/" t)
-#+end_src
-#+begin_src desktop :tangle ~/.local/share/applications/org-protocol.desktop
-[Desktop Entry]
-Name=org-protocol
-Comment=Intercept calls from emacsclient to trigger custom actions
-Categories=Other;
-Keywords=org-protocol;
-Icon=emacs
-Type=Application
-Exec=emacsclient -- %u
-Terminal=false
-StartupWMClass=Emacs
-MimeType=x-scheme-handler/org-protocol;
-#+end_src
-Update MIME cache
-#+begin_src bash :tangle no
-update-desktop-database ~/.local/share/applications/
-#+end_src
-#+RESULTS:
-
-**** Windows
-#+begin_src emacs-lisp :tangle yes
-(mkdir (concat doom-private-dir "ext/org-protocol/") t)
-#+end_src
-#+begin_src conf :tangle ./ext/org-protocol/org-protocol.reg
-REGEDIT4
-
-[HKEY_CLASSES_ROOT\org-protocol]
-@="URL:Org Protocol"
-"URL Protocol"=""
-[HKEY_CLASSES_ROOT\org-protocol\shell]
-[HKEY_CLASSES_ROOT\org-protocol\shell\open]
-[HKEY_CLASSES_ROOT\org-protocol\shell\open\command]
-@="\"C:\\Windows\\System32\\wsl.exe\" emacsclient \"%1\""
-#+end_src
-**** JS Bookmarks
-Replace =capture= subprotocol with =store-link= or =youtube-dl=
-#+begin_src js :tangle ./ext/org-protocol/capture-bookmark.js
-javascript:location.href='org-protocol://capture?' +
-      new URLSearchParams({
-            template: 'x', url: window.location.href,
-            title: document.title, body: window.getSelection()});
-#+end_src
-
-#+RESULTS:
-
-*** youtube-dl handler
-#+begin_src emacs-lisp
-(require 'org-protocol)
-(add-to-list 'org-protocol-protocol-alist
-             '("Download like with youtube-dl"
-               :protocol "youtube-dl"
-               :function youtube-dl-protocol-handler))
-
-(defun youtube-dl-protocol-handler (data)
-  "Add url to youtube-dl download queue."
-  (let ((url (plist-get data :url))
-        (title (plist-get data :title)))
-    (unless (string= title "about:blank")
-      (youtube-dl
-       (plist-get data :url)
-       :title (plist-get data :title))))
-  nil)
-#+end_src
 ** Interface
 #+begin_src emacs-lisp
 (load-module 'interface)
@@ -2467,18 +2325,15 @@ javascript:location.href='org-protocol://capture?' +
 
 (setq display-line-numbers-type 'relative)
 
-;;; Switch window
-(use-package! switch-window
+;;; Ace window
+(use-package! ace-window
   :config
-  (setq switch-window-multiple-frames nil)
-  (setq switch-window-input-style 'minibuffer)
-  (setq switch-window-increase 4)
-  (setq switch-window-threshold 2)
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-qwerty-shortcuts
-	'("j" "k" "l" "a" "s" "d" "f")) ; ö does not work without pressing RET
+  (setq ace-window-display-mode t
+        aw-keys '(106 104 103 102 100 115 97 107 108)
+        aw-scope 'global)
+
   :bind
-  ([remap other-window] . switch-window))
+  ([remap other-window] . ace-window))
 
 ;;; Temporarily maximize current buffer
 (defun toggle-maximize-buffer () "Maximize buffer"
@@ -2799,7 +2654,7 @@ javascript:location.href='org-protocol://capture?' +
 (global-set-key (kbd "C-c 4") (lambda () (interactive) (insert "̀")))
 
 ;;; Rectangle mark mode
-(global-set-key (kbd "C-ö") (lambda () (interactive) (rectangle-mark-mode)))
+(global-set-key (kbd "C-ü") (lambda () (interactive) (rectangle-mark-mode)))
 ;;; Sudo-edit
 (use-package! sudo-edit
   :bind ("C-c s" . sudo-edit))
@@ -3071,6 +2926,8 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
   :init
   (all-the-icons-completion-mode))
 
+(global-set-key (kbd "C-ö") 'embark-act)
+
 (require 'vertico)
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately
@@ -3097,6 +2954,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
             "M-R" #'vertico-multiform-reverse
             "M-U" #'vertico-multiform-unobtrusive
             "C-l" #'kb/vertico-multiform-indexed-toggle
+            "C-ö" #'embark-act
             )
   :bind (
          ("C-s" . consult-line)
@@ -3190,7 +3048,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
      orderless-prefixes
      orderless-initialism
      orderless-regexp
-     orderless-flex ;; Fuzzy finding
+     ;;orderless-flex ;; Fuzzy finding
      ;; orderless-strict-leading-initialism
      ;; orderless-strict-initialism
      ;; orderless-strict-full-initialism
@@ -5131,15 +4989,155 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'weather)
 #+end_src
 
-** Org Tweaks
+** Org
+*** Org Protocol
+**** System
+***** Linux
+Set up emacsclient as org-protocol scheme-handler
+#+begin_src emacs-lisp
+(mkdir "~/.local/share/applications/" t)
+#+end_src
+#+begin_src desktop :tangle ~/.local/share/applications/org-protocol.desktop
+[Desktop Entry]
+Name=org-protocol
+Comment=Intercept calls from emacsclient to trigger custom actions
+Categories=Other;
+Keywords=org-protocol;
+Icon=emacs
+Type=Application
+Exec=emacsclient -- %u
+Terminal=false
+StartupWMClass=Emacs
+MimeType=x-scheme-handler/org-protocol;
+#+end_src
+Update MIME cache
+#+begin_src bash :tangle no
+update-desktop-database ~/.local/share/applications/
+#+end_src
+#+RESULTS:
+
+***** Windows
+#+begin_src emacs-lisp :tangle yes
+(mkdir (concat doom-private-dir "ext/org-protocol/") t)
+#+end_src
+#+begin_src conf :tangle ./ext/org-protocol/org-protocol.reg
+REGEDIT4
+
+[HKEY_CLASSES_ROOT\org-protocol]
+@="URL:Org Protocol"
+"URL Protocol"=""
+[HKEY_CLASSES_ROOT\org-protocol\shell]
+[HKEY_CLASSES_ROOT\org-protocol\shell\open]
+[HKEY_CLASSES_ROOT\org-protocol\shell\open\command]
+@="\"C:\\Windows\\System32\\wsl.exe\" emacsclient \"%1\""
+#+end_src
+***** JS Bookmarks
+Replace =capture= subprotocol with =store-link= or =youtube-dl=
+#+begin_src js :tangle ./ext/org-protocol/capture-bookmark.js
+javascript:location.href='org-protocol://capture?' +
+      new URLSearchParams({
+            template: 'x', url: window.location.href,
+            title: document.title, body: window.getSelection()});
+#+end_src
+
+#+RESULTS:
+
+**** youtube-dl handler
+#+begin_src emacs-lisp
+(require 'org-protocol)
+(add-to-list 'org-protocol-protocol-alist
+             '("Download like with youtube-dl"
+               :protocol "youtube-dl"
+               :function youtube-dl-protocol-handler))
+
+(defun youtube-dl-protocol-handler (data)
+  "Add url to youtube-dl download queue."
+  (let ((url (plist-get data :url))
+        (title (plist-get data :title)))
+    (unless (string= title "about:blank")
+      (youtube-dl
+       (plist-get data :url)
+       :title (plist-get data :title))))
+  nil)
+#+end_src
+*** Org-Roam
+#+begin_src emacs-lisp
+(load-module 'org-roam-tweaks)
+#+end_src
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-roam)
+(package! org-roam-ui)
+(package! org-roam-timestamps)
+(package! org-roam-bibtex)
+(package! citar-org-roam)
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/org-roam-tweaks.el
+(setq org-roam-directory "~/dox/sync/org/roam")
+(mkdir org-roam-directory t)
+(org-roam-db-autosync-mode 1)
+
+;; Hide the mode line in the org-roam buffer, since it serves no purpose. This
+;; makes it easier to distinguish among other org buffers.
+(add-hook 'org-roam-buffer-prepare-hook #'hide-mode-line-mode)
+
+;; Since the org module lazy loads org-protocol (waits until an org URL is
+;; detected), we can safely chain `org-roam-protocol' to it.
+(use-package org-roam-protocol
+  :after org-protocol)
+
+
+(use-package org-roam-bibtex
+  :after (org-roam)
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :config
+  (setq org-roam-bibtex-preformat-keywords
+        '("=key=" "title" "url" "file" "author-or-editor" "keywords"))
+  (setq orb-templates
+        '(("r" "ref" plain (function org-roam-capture--get-point)
+           ""
+           :file-name "${slug}"
+           :head "#+TITLE: ${=key=}: ${title}\n#+ROAM_KEY: ${ref}
+
+- tags ::
+- keywords :: ${keywords}
+
+\n* ${title}\n  :PROPERTIES:\n  :Custom_ID: ${=key=}\n  :URL: ${url}\n  :AUTHOR: ${author-or-editor}\n  :NOTER_DOCUMENT: %(orb-process-file-field \"${=key=}\")\n  :NOTER_PAGE: \n  :END:\n\n"
+
+           :unnarrowed t))))
+
+;; Actually start using templates
+ (after! org-capture
+ ;; For browser capture
+ (add-to-list 'org-capture-templates
+ '("P" "Protocol" entry ; key, name, type
+ (file+headline +org-capture-notes-file "Inbox") ; target
+ "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?"
+ :prepend t ; properties
+ :kill-buffer t))
+(add-to-list 'org-capture-templates
+'("L" "Protocol Link" entry
+(file+headline +org-capture-notes-file "Inbox")
+"* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
+:prepend t
+:kill-buffer t))
+)
+
+(use-package! org-roam-bibtex
+  :after org-roam)
+
+(provide 'org-roam-tweaks)
+#+end_src
+*** Org Tweaks
 #+begin_src emacs-lisp
 (load-module 'org-tweaks)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 (package! engrave-faces)
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/org-tweaks.el
 ;;; org-tweaks.el -*- lexical-binding: t; -*-
 ;;; Code:
@@ -5196,15 +5194,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'org-tweaks)
 #+end_src
 
-** Org Functions
+*** Org Functions
 #+begin_src emacs-lisp
 (load-module 'org-functions)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Copy subtree without heading or children
+**** Copy subtree without heading or children
 #+begin_src emacs-lisp :tangle modules/org-functions.el
 (defun org-copy-subtree-only ()
   "Copy the current subtree excluding heading and children into clipboard."
@@ -5222,7 +5220,7 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
         (message "Copied %d chars" (length contents))
         (kill-new contents)))))
 #+end_src
-*** Adds filename prefixes to counsel-org-goto-all
+**** Adds filename prefixes to counsel-org-goto-all
 #+begin_src emacs-lisp :tangle modules/org-functions.el
 (defun add-filename-to-counsel-outline-candidates (candidates)
   "Add the filename at the beginning for CANDIDATES from `counsel-outline-candidates'."
@@ -5239,12 +5237,12 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 
 (advice-add 'counsel-outline-candidates :filter-return #'add-filename-to-counsel-outline-candidates)
 #+end_src
-*** Add text to any org headline
+**** Add text to any org headline
 #+begin_src emacs-lisp :tangle modules/org-functions.el
 (require 'counsel)
-(defun org-insert-under-headline ()
-  "Insert yanked text as last line under selected org headline."
-  (interactive)
+
+(defun org-get-headline (prompt)
+  "Select a headline in any open org file."
   (let (entries)
     (dolist (b (buffer-list))
       (with-current-buffer b
@@ -5254,19 +5252,146 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
                        (counsel-outline-candidates
                         (cdr (assq 'org-mode counsel-outline-settings))
                         (counsel-org-goto-all--outline-path-prefix)))))))
-    (ivy-read "Goto: " entries
-              :history 'counsel-org-goto-history
-              :action #'org-insert-under-headline-helper
-              :caller 'counsel-org-select-all)))
+     (completing-read prompt entries nil t nil
+              'counsel-org-goto-history
+              )))
 
-(defun org-insert-under-headline-helper (x)
+(defun org-insert-under-headline ()
+  "Insert yanked text as last line under selected org headline."
+  (interactive)
   (save-window-excursion
-  (org-goto-marker-or-bmk (cdr x))
+  (org-goto-marker-or-bmk
+   (org-get-headline "Insert under: "))
   (outline-next-heading)
   (counsel-yank-pop)
   (newline)))
 
+(defun org-config-new-module ()
+  "Create a new code block beloning to specific module."
+  (interactive))
+
 (provide 'org-functions)
+#+end_src
+*** Org Citations
+#+begin_src emacs-lisp
+(load-module 'org-citations)
+#+end_src
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/org-citations.el
+(use-package! citar-embark
+  :after citar embark
+  :config (citar-embark-mode))
+
+(use-package! citar
+  :custom
+  (org-cite-insert-processor 'citar)
+  (org-cite-follow-processor 'citar)
+  (org-cite-activate-processor 'citar)
+  )
+
+(after! citar
+(setq citar-templates
+      '((main . "${author editor:30}     ${date year issued:4}     ${title:80}")
+        (suffix . "          ${=key= id:15}    ${=type=:10}    ${tags keywords:*}")
+        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
+        (note . "Notes on ${author editor}, ${title}")))
+
+(setq citar-symbols
+      `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
+        (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
+        (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
+
+(setq citar-symbol-separator " ")
+
+(defun ex/search-pdf-contents (keys-entries &optional str)
+  "Search pdfs."
+  (interactive (list (citar-select-refs)))
+  (let ((files (hash-table-to-value-list
+                (citar-get-files
+                 keys-entries)))
+        (search-str (or str (read-string "Search string: "))))
+    (pdf-occur-search files search-str t)))
+
+(defun hash-table-to-value-list (hashtable)
+  "Convert a hash table to a list of values"
+  (let ((vlist '()))
+    (maphash '(lambda (key value) (push value vlist)) hashtable)
+    (flatten-list vlist)))
+
+(hash-table-to-value-list (citar-get-files "behrJohnTheologianHis2019"))
+
+;; with this, you can exploit embark's multitarget actions, so that you can run `embark-act-all`
+(add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents)
+
+(provide 'org-citations)
+#+end_src
+*** Org Links
+#+begin_src emacs-lisp
+(load-module 'org-links)
+#+end_src
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/org-links.el
+;;; ol-man.el - Support for links to man pages in Org mode
+(require 'ol)
+
+(org-link-set-parameters "b"
+                         :follow #'org-b-open
+                         :export #'org-b-export
+                         :store #'org-b-store-link)
+
+(defun org-b-open (verse _)
+  "Visit the verse."
+  (funcall org-b-command path))
+
+(defun org-b-store-link ()
+  "Store a link to a man page."
+  (when (memq major-mode '(Man-mode woman-mode))
+    ;; This is a man page, we do make this link.
+    (let* ((page (org-man-get-page-name))
+           (link (concat "b:" page))
+           (description (format "B page for %s" page)))
+      (org-link-store-props
+       :type "b"
+       :link link
+       :description description))))
+
+(defun org-man-get-page-name ()
+  "Extract the page name from the buffer name."
+  ;; This works for both `Man-mode' and `woman-mode'.
+  (if (string-match " \\(\\S-+\\)\\*" (buffer-name))
+
+    (error "Cannot create link to this man page")))
+
+(defun org-b-export (link description format _)
+  "Export a man page link from Org files."
+  (let ((path (format "http://man.he.net/?topic=%s&section=all" link))
+        (desc (or description link)))
+    (pcase format
+      (`html (format "<a target=\"_blank\" href=\"%s\">%s</a>" path desc))
+      (`latex (format "\\href{%s}{%s}" path desc))
+      (`texinfo (format "@uref{%s,%s}" path desc))
+      (`ascii (format "%s (%s)" desc path))
+      (t path))))
+
+(provide 'org-links)
+#+end_src
+
+** Org Appear
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-appear :recipe (:host github :repo "awth13/org-appear"))
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/org-tweaks.el
+(add-hook 'org-mode-hook 'org-appear-mode)
 #+end_src
 ** Languages
 #+begin_src emacs-lisp
@@ -5824,98 +5949,6 @@ This forces a complete recompilation of the document, even if the source
 (provide 'latex-tweaks)
 #+end_src
 
-** Org Links
-#+begin_src emacs-lisp
-(load-module 'org-links)
-#+end_src
-*** Requirements
-#+begin_src emacs-lisp :tangle packages.el
-
-#+end_src
-*** Code
-#+begin_src emacs-lisp :tangle modules/org-links.el
-;;; ol-man.el - Support for links to man pages in Org mode
-(require 'ol)
-
-(org-link-set-parameters "b"
-                         :follow #'org-b-open
-                         :export #'org-b-export
-                         :store #'org-b-store-link)
-
-(defun org-b-open (verse _)
-  "Visit the verse."
-  (funcall org-b-command path))
-
-(defun org-b-store-link ()
-  "Store a link to a man page."
-  (when (memq major-mode '(Man-mode woman-mode))
-    ;; This is a man page, we do make this link.
-    (let* ((page (org-man-get-page-name))
-           (link (concat "b:" page))
-           (description (format "B page for %s" page)))
-      (org-link-store-props
-       :type "b"
-       :link link
-       :description description))))
-
-(defun org-man-get-page-name ()
-  "Extract the page name from the buffer name."
-  ;; This works for both `Man-mode' and `woman-mode'.
-  (if (string-match " \\(\\S-+\\)\\*" (buffer-name))
-
-    (error "Cannot create link to this man page")))
-
-(defun org-b-export (link description format _)
-  "Export a man page link from Org files."
-  (let ((path (format "http://man.he.net/?topic=%s&section=all" link))
-        (desc (or description link)))
-    (pcase format
-      (`html (format "<a target=\"_blank\" href=\"%s\">%s</a>" path desc))
-      (`latex (format "\\href{%s}{%s}" path desc))
-      (`texinfo (format "@uref{%s,%s}" path desc))
-      (`ascii (format "%s (%s)" desc path))
-      (t path))))
-
-(provide 'org-links)
-#+end_src
-
-** Org Citations
-#+begin_src emacs-lisp
-(load-module 'org-citations)
-#+end_src
-*** Requirements
-#+begin_src emacs-lisp :tangle packages.el
-(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
-#+end_src
-*** Code
-#+begin_src emacs-lisp :tangle modules/org-citations.el
-(use-package! citar-embark
-  :after citar embark
-  :config (citar-embark-mode))
-
-(use-package! citar
-  :custom
-  (org-cite-insert-processor 'citar)
-  (org-cite-follow-processor 'citar)
-  (org-cite-activate-processor 'citar)
-  )
-
-(after! citar
-(setq citar-templates
-      '((main . "${author editor:30}     ${date year issued:4}     ${title:80}")
-        (suffix . "          ${=key= id:15}    ${=type=:10}    ${tags keywords:*}")
-        (preview . "${author editor} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
-        (note . "Notes on ${author editor}, ${title}")))
-
-(setq citar-symbols
-      `((file ,(all-the-icons-faicon "file-o" :face 'all-the-icons-green :v-adjust -0.1) . " ")
-        (note ,(all-the-icons-material "speaker_notes" :face 'all-the-icons-blue :v-adjust -0.3) . " ")
-        (link ,(all-the-icons-octicon "link" :face 'all-the-icons-orange :v-adjust 0.01) . " "))))
-
-(setq citar-symbol-separator " ")
-
-(provide 'org-citations)
-#+end_src
 ** PDF and Annotation Tweaks
 #+begin_src emacs-lisp
 (load-module 'pdf-and-annotation-tweaks)

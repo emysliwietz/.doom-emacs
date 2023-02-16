@@ -52,7 +52,6 @@
 (package! xelb)
 (package! exwm)
 (package! winum)
-(package! switch-window)
 (package! try)
 (package! counsel)
 
@@ -122,12 +121,6 @@
 
 (package! dired-narrow)
 
-(package! org-roam)
-(package! org-roam-ui)
-(package! org-roam-timestamps)
-(package! org-roam-bibtex)
-(package! citar-org-roam)
-
 
 
 
@@ -183,22 +176,30 @@
 
 
 
+(package! org-roam)
+(package! org-roam-ui)
+(package! org-roam-timestamps)
+(package! org-roam-bibtex)
+(package! citar-org-roam)
+
 (package! engrave-faces)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 (package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+
+
+
+(package! org-appear :recipe (:host github :repo "awth13/org-appear"))
+
+
+
+
+
+
+
+
+
+
 
 (package! org-noter)

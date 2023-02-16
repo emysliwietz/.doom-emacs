@@ -30,9 +30,9 @@
 (advice-add 'counsel-outline-candidates :filter-return #'add-filename-to-counsel-outline-candidates)
 
 (require 'counsel)
-(defun org-insert-under-headline ()
-  "Insert yanked text as last line under selected org headline."
-  (interactive)
+
+(defun org-get-headline (prompt)
+  "Select a headline in any open org file."
   (let (entries)
     (dolist (b (buffer-list))
       (with-current-buffer b
@@ -42,16 +42,22 @@
                        (counsel-outline-candidates
                         (cdr (assq 'org-mode counsel-outline-settings))
                         (counsel-org-goto-all--outline-path-prefix)))))))
-    (ivy-read "Goto: " entries
-              :history 'counsel-org-goto-history
-              :action #'org-insert-under-headline-helper
-              :caller 'counsel-org-select-all)))
+     (completing-read prompt entries nil t nil
+              'counsel-org-goto-history
+              )))
 
-(defun org-insert-under-headline-helper (x)
+(defun org-insert-under-headline ()
+  "Insert yanked text as last line under selected org headline."
+  (interactive)
   (save-window-excursion
-  (org-goto-marker-or-bmk (cdr x))
+  (org-goto-marker-or-bmk
+   (org-get-headline "Insert under: "))
   (outline-next-heading)
   (counsel-yank-pop)
   (newline)))
+
+(defun org-config-new-module ()
+  "Create a new code block beloning to specific module."
+  (interactive))
 
 (provide 'org-functions)

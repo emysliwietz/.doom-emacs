@@ -51,3 +51,5 @@
     (message (org-icalendar-export-to-ics))))
 
 (provide 'org-tweaks)
+
+(add-hook 'org-mode-hook 'org-appear-mode)

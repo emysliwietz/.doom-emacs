@@ -23,4 +23,24 @@
 
 (setq citar-symbol-separator " ")
 
+(defun ex/search-pdf-contents (keys-entries &optional str)
+  "Search pdfs."
+  (interactive (list (citar-select-refs)))
+  (let ((files (hash-table-to-value-list
+                (citar-get-files
+                 keys-entries)))
+        (search-str (or str (read-string "Search string: "))))
+    (pdf-occur-search files search-str t)))
+
+(defun hash-table-to-value-list (hashtable)
+  "Convert a hash table to a list of values"
+  (let ((vlist '()))
+    (maphash '(lambda (key value) (push value vlist)) hashtable)
+    (flatten-list vlist)))
+
+(hash-table-to-value-list (citar-get-files "behrJohnTheologianHis2019"))
+
+;; with this, you can exploit embark's multitarget actions, so that you can run `embark-act-all`
+(add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents)
+
 (provide 'org-citations)

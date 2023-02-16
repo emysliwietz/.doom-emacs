@@ -14,6 +14,8 @@
   :init
   (all-the-icons-completion-mode))
 
+(global-set-key (kbd "C-ö") 'embark-act)
+
 (require 'vertico)
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately
@@ -40,6 +42,7 @@
             "M-R" #'vertico-multiform-reverse
             "M-U" #'vertico-multiform-unobtrusive
             "C-l" #'kb/vertico-multiform-indexed-toggle
+            "C-ö" #'embark-act
             )
   :bind (
          ("C-s" . consult-line)
@@ -133,7 +136,7 @@
      orderless-prefixes
      orderless-initialism
      orderless-regexp
-     orderless-flex ;; Fuzzy finding
+     ;;orderless-flex ;; Fuzzy finding
      ;; orderless-strict-leading-initialism
      ;; orderless-strict-initialism
      ;; orderless-strict-full-initialism

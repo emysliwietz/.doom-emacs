@@ -167,7 +167,7 @@
 (global-set-key (kbd "C-c 4") (lambda () (interactive) (insert "̀")))
 
 ;;; Rectangle mark mode
-(global-set-key (kbd "C-ö") (lambda () (interactive) (rectangle-mark-mode)))
+(global-set-key (kbd "C-ü") (lambda () (interactive) (rectangle-mark-mode)))
 ;;; Sudo-edit
 (use-package! sudo-edit
   :bind ("C-c s" . sudo-edit))

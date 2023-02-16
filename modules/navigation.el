@@ -39,18 +39,15 @@
 
 (setq display-line-numbers-type 'relative)
 
-;;; Switch window
-(use-package! switch-window
+;;; Ace window
+(use-package! ace-window
   :config
-  (setq switch-window-multiple-frames nil)
-  (setq switch-window-input-style 'minibuffer)
-  (setq switch-window-increase 4)
-  (setq switch-window-threshold 2)
-  (setq switch-window-shortcut-style 'qwerty)
-  (setq switch-window-qwerty-shortcuts
-	'("j" "k" "l" "a" "s" "d" "f")) ; ö does not work without pressing RET
+  (setq ace-window-display-mode t
+        aw-keys '(106 104 103 102 100 115 97 107 108)
+        aw-scope 'global)
+
   :bind
-  ([remap other-window] . switch-window))
+  ([remap other-window] . ace-window))
 
 ;;; Temporarily maximize current buffer
 (defun toggle-maximize-buffer () "Maximize buffer"
