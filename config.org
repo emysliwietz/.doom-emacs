@@ -1412,7 +1412,7 @@ Return a string suitable for insertion in `dired' buffer."
   (setq youtube-dl-arguments '())
   )
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
-(after-startup (require 'youtube-dl))
+(load-module 'youtube-dl)
 (setq youtube-dl-directory "~/elfeed-youtube"
       elfeed-enclosure-default-dir youtube-dl-directory
       youtube-dl-temp-directory "/tmp/elfeed-youtube"
@@ -1791,6 +1791,7 @@ Return a string suitable for insertion in `dired' buffer."
   (require 'exwm-config)
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
   (exwm-enable)
+  (fringe-mode -1)
   (require 'exwm-randr)
 
 (when (string= (system-name) "astaroth")
@@ -2892,9 +2893,8 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(unpin! vertico)
 (package! vertico)
- (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+(package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
                              :includes (vertico-indexed
                                         vertico-flat
                                         vertico-grid
@@ -5171,7 +5171,7 @@ javascript:location.href='org-protocol://capture?' +
 )
 
 (setq beancount-main-file "/media/user/keychain/finances/wallet.beancount"
-      beancount-local-file "~/dox/notes/wallet.org")
+      beancount-local-file "~/dox/notes/wallet.beancount")
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (setq org-capture-templates
@@ -5278,7 +5278,7 @@ javascript:location.href='org-protocol://capture?' +
 #+end_src
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+;(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/org-citations.el
@@ -5322,10 +5322,9 @@ javascript:location.href='org-protocol://capture?' +
     (maphash '(lambda (key value) (push value vlist)) hashtable)
     (flatten-list vlist)))
 
-(hash-table-to-value-list (citar-get-files "behrJohnTheologianHis2019"))
-
 ;; with this, you can exploit embark's multitarget actions, so that you can run `embark-act-all`
-(add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents)
+(after! embark
+  (add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents))
 
 (provide 'org-citations)
 #+end_src

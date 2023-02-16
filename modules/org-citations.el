@@ -38,9 +38,8 @@
     (maphash '(lambda (key value) (push value vlist)) hashtable)
     (flatten-list vlist)))
 
-(hash-table-to-value-list (citar-get-files "behrJohnTheologianHis2019"))
-
 ;; with this, you can exploit embark's multitarget actions, so that you can run `embark-act-all`
-(add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents)
+(after! embark
+  (add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents))
 
 (provide 'org-citations)
