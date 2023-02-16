@@ -138,6 +138,7 @@
 
 
 
+(package! switch-window)
 
 
 
@@ -145,7 +146,7 @@
 
 
 
-
+(package! swiper)
 ;; (package! vertico)
 ;; (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
 ;;                              :includes (vertico-indexed

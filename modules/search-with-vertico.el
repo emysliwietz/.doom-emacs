@@ -196,5 +196,5 @@ parses its input."
       `(orderless-flex . ,(substring pattern 0 -1))))
   )
 
-
+(global-set-key (kbd "C-s") 'consult-line)
 (provide 'search-with-vertico)
