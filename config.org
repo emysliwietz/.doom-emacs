@@ -2893,20 +2893,20 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(package! vertico)
-(package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
-                             :includes (vertico-indexed
-                                        vertico-flat
-                                        vertico-grid
-                                        vertico-mouse
-                                        vertico-quick
-                                        vertico-buffer
-                                        vertico-repeat
-                                        vertico-reverse
-                                        vertico-directory
-                                        vertico-multiform
-                                        vertico-unobtrusive
-                                        )))
+;; (package! vertico)
+;; (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+;;                              :includes (vertico-indexed
+;;                                         vertico-flat
+;;                                         vertico-grid
+;;                                         vertico-mouse
+;;                                         vertico-quick
+;;                                         vertico-buffer
+;;                                         vertico-repeat
+;;                                         vertico-reverse
+;;                                         vertico-directory
+;;                                         vertico-multiform
+;;                                         vertico-unobtrusive
+;;                                         )))
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/search-with-vertico.el
