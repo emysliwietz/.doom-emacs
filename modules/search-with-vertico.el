@@ -8,11 +8,6 @@
   :init
   (marginalia-mode))
 
-(use-package! all-the-icons-completion
-  :after (marginalia all-the-icons)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  :init
-  (all-the-icons-completion-mode))
 
 (global-set-key (kbd "C-ö") 'embark-act)
 
@@ -196,5 +191,31 @@ parses its input."
       `(orderless-flex . ,(substring pattern 0 -1))))
   )
 
-
+(global-set-key (kbd "C-s") 'consult-line)
 (provide 'search-with-vertico)
+
+(use-package! all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode))
+
+(defun all-the-icons-completion-get-buffer-icon (cand)
+  "Return the icon for the candidate CAND of completion category buffer."
+  (let* ((mode (buffer-local-value 'major-mode (get-buffer cand)))
+         (icon (all-the-icons-icon-for-mode mode))
+         (parent-icon (all-the-icons-icon-for-mode
+                       (get mode 'derived-mode-parent))))
+    (concat
+     (if (symbolp icon)
+         (if (symbolp parent-icon)
+             ;(all-the-icons-faicon "sticky-note-o")
+             ""
+           parent-icon)
+       icon)
+    (or
+     (all-the-icons-ivy--icon-for-firefox mode cand)
+     (all-the-icons-ivy--icon-for-tor mode cand)
+     (all-the-icons-ivy--icon-for-exwm mode cand)
+     (if (symbolp icon) (all-the-icons-faicon "sticky-note-o"))
+     )" ")))

@@ -387,7 +387,7 @@
   (setq youtube-dl-arguments '())
   )
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
-(after-startup (require 'youtube-dl))
+(load-module 'youtube-dl)
 (setq youtube-dl-directory "~/elfeed-youtube"
       elfeed-enclosure-default-dir youtube-dl-directory
       youtube-dl-temp-directory "/tmp/elfeed-youtube"

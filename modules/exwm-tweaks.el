@@ -7,6 +7,7 @@
   (require 'exwm-config)
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
   (exwm-enable)
+  (fringe-mode -1)
   (require 'exwm-randr)
 
 (when (string= (system-name) "astaroth")

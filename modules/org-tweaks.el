@@ -30,7 +30,7 @@
 )
 
 (setq beancount-main-file "/media/user/keychain/finances/wallet.beancount"
-      beancount-local-file "~/dox/notes/wallet.org")
+      beancount-local-file "~/dox/notes/wallet.beancount")
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (setq org-capture-templates

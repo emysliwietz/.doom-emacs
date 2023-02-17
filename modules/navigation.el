@@ -42,12 +42,28 @@
 ;;; Ace window
 (use-package! ace-window
   :config
-  (setq ace-window-display-mode t
+  (setq ace-window-display-mode nil
         aw-keys '(106 104 103 102 100 115 97 107 108)
         aw-scope 'global)
+ ; ace window does not work well with exwm, it draws keys underneath the window
+ ; :bind
+ ; ([remap other-window] . ace-window)
+  )
 
+;;; Switch window
+(use-package switch-window
+  :ensure t
+  :defer t
+  :config
+  (setq switch-window-multiple-frames nil)
+  (setq switch-window-input-style 'minibuffer)
+  (setq switch-window-increase 4)
+  (setq switch-window-threshold 2)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
+	'("j" "k" "l" "a" "s" "d" "f")) ; ö does not work without pressing RET
   :bind
-  ([remap other-window] . ace-window))
+  ([remap other-window] . switch-window))
 
 ;;; Temporarily maximize current buffer
 (defun toggle-maximize-buffer () "Maximize buffer"

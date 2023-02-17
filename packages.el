@@ -138,6 +138,7 @@
 
 
 
+(package! switch-window)
 
 
 
@@ -145,22 +146,21 @@
 
 
 
-
-(unpin! vertico)
-(package! vertico)
- (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
-                             :includes (vertico-indexed
-                                        vertico-flat
-                                        vertico-grid
-                                        vertico-mouse
-                                        vertico-quick
-                                        vertico-buffer
-                                        vertico-repeat
-                                        vertico-reverse
-                                        vertico-directory
-                                        vertico-multiform
-                                        vertico-unobtrusive
-                                        )))
+(package! swiper)
+;; (package! vertico)
+;; (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+;;                              :includes (vertico-indexed
+;;                                         vertico-flat
+;;                                         vertico-grid
+;;                                         vertico-mouse
+;;                                         vertico-quick
+;;                                         vertico-buffer
+;;                                         vertico-repeat
+;;                                         vertico-reverse
+;;                                         vertico-directory
+;;                                         vertico-multiform
+;;                                         vertico-unobtrusive
+;;                                         )))
 
 
 
@@ -186,7 +186,7 @@
 
 
 
-(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+;(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
 
 
 

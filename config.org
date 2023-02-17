@@ -1412,7 +1412,7 @@ Return a string suitable for insertion in `dired' buffer."
   (setq youtube-dl-arguments '())
   )
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
-(after-startup (require 'youtube-dl))
+(load-module 'youtube-dl)
 (setq youtube-dl-directory "~/elfeed-youtube"
       elfeed-enclosure-default-dir youtube-dl-directory
       youtube-dl-temp-directory "/tmp/elfeed-youtube"
@@ -1791,6 +1791,7 @@ Return a string suitable for insertion in `dired' buffer."
   (require 'exwm-config)
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
   (exwm-enable)
+  (fringe-mode -1)
   (require 'exwm-randr)
 
 (when (string= (system-name) "astaroth")
@@ -2280,7 +2281,7 @@ Return a string suitable for insertion in `dired' buffer."
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-
+(package! switch-window)
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/navigation.el
@@ -2328,12 +2329,28 @@ Return a string suitable for insertion in `dired' buffer."
 ;;; Ace window
 (use-package! ace-window
   :config
-  (setq ace-window-display-mode t
+  (setq ace-window-display-mode nil
         aw-keys '(106 104 103 102 100 115 97 107 108)
         aw-scope 'global)
+ ; ace window does not work well with exwm, it draws keys underneath the window
+ ; :bind
+ ; ([remap other-window] . ace-window)
+  )
 
+;;; Switch window
+(use-package switch-window
+  :ensure t
+  :defer t
+  :config
+  (setq switch-window-multiple-frames nil)
+  (setq switch-window-input-style 'minibuffer)
+  (setq switch-window-increase 4)
+  (setq switch-window-threshold 2)
+  (setq switch-window-shortcut-style 'qwerty)
+  (setq switch-window-qwerty-shortcuts
+	'("j" "k" "l" "a" "s" "d" "f")) ; ö does not work without pressing RET
   :bind
-  ([remap other-window] . ace-window))
+  ([remap other-window] . switch-window))
 
 ;;; Temporarily maximize current buffer
 (defun toggle-maximize-buffer () "Maximize buffer"
@@ -2751,7 +2768,7 @@ Return a string suitable for insertion in `dired' buffer."
 (provide 'config-visit)
 #+end_src
 
-** Legacy ivy functions
+** Legacy ivy functions, still needed for vertico icons
 #+begin_src emacs-lisp
 (load-module 'search-ivy)
 #+end_src
@@ -2892,21 +2909,21 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(unpin! vertico)
-(package! vertico)
- (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
-                             :includes (vertico-indexed
-                                        vertico-flat
-                                        vertico-grid
-                                        vertico-mouse
-                                        vertico-quick
-                                        vertico-buffer
-                                        vertico-repeat
-                                        vertico-reverse
-                                        vertico-directory
-                                        vertico-multiform
-                                        vertico-unobtrusive
-                                        )))
+(package! swiper)
+;; (package! vertico)
+;; (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
+;;                              :includes (vertico-indexed
+;;                                         vertico-flat
+;;                                         vertico-grid
+;;                                         vertico-mouse
+;;                                         vertico-quick
+;;                                         vertico-buffer
+;;                                         vertico-repeat
+;;                                         vertico-reverse
+;;                                         vertico-directory
+;;                                         vertico-multiform
+;;                                         vertico-unobtrusive
+;;                                         )))
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/search-with-vertico.el
@@ -2920,11 +2937,6 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
   :init
   (marginalia-mode))
 
-(use-package! all-the-icons-completion
-  :after (marginalia all-the-icons)
-  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-  :init
-  (all-the-icons-completion-mode))
 
 (global-set-key (kbd "C-ö") 'embark-act)
 
@@ -3108,8 +3120,38 @@ parses its input."
       `(orderless-flex . ,(substring pattern 0 -1))))
   )
 
-
+(global-set-key (kbd "C-s") 'consult-line)
 (provide 'search-with-vertico)
+#+end_src
+*** Icons
+#+begin_src emacs-lisp :tangle modules/search-with-vertico.el
+(use-package! all-the-icons-completion
+  :after (marginalia all-the-icons)
+  :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+  :init
+  (all-the-icons-completion-mode))
+
+(defun all-the-icons-completion-get-buffer-icon (cand)
+  "Return the icon for the candidate CAND of completion category buffer."
+  (let* ((mode (buffer-local-value 'major-mode (get-buffer cand)))
+         (icon (all-the-icons-icon-for-mode mode))
+         (parent-icon (all-the-icons-icon-for-mode
+                       (get mode 'derived-mode-parent))))
+    (concat
+     (if (symbolp icon)
+         (if (symbolp parent-icon)
+             ;(all-the-icons-faicon "sticky-note-o")
+             ""
+           parent-icon)
+       icon)
+    (or
+     (all-the-icons-ivy--icon-for-firefox mode cand)
+     (all-the-icons-ivy--icon-for-tor mode cand)
+     (all-the-icons-ivy--icon-for-exwm mode cand)
+     (if (symbolp icon) (all-the-icons-faicon "sticky-note-o"))
+     )" ")))
+
+
 #+end_src
 ** Read Aloud
 #+begin_src emacs-lisp
@@ -5171,7 +5213,7 @@ javascript:location.href='org-protocol://capture?' +
 )
 
 (setq beancount-main-file "/media/user/keychain/finances/wallet.beancount"
-      beancount-local-file "~/dox/notes/wallet.org")
+      beancount-local-file "~/dox/notes/wallet.beancount")
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (setq org-capture-templates
@@ -5278,7 +5320,7 @@ javascript:location.href='org-protocol://capture?' +
 #+end_src
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+;(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/org-citations.el
@@ -5322,10 +5364,9 @@ javascript:location.href='org-protocol://capture?' +
     (maphash '(lambda (key value) (push value vlist)) hashtable)
     (flatten-list vlist)))
 
-(hash-table-to-value-list (citar-get-files "behrJohnTheologianHis2019"))
-
 ;; with this, you can exploit embark's multitarget actions, so that you can run `embark-act-all`
-(add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents)
+(after! embark
+  (add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents))
 
 (provide 'org-citations)
 #+end_src
