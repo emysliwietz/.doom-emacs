@@ -1,6 +1,7 @@
 # -*- mode: snippet -*-
 # name: beancount
 # key: bc
+# mode: beancount
 # --
 ${1:`(format-time-string "%Y-%m-%d")`} "${2:Place}" "${3:Items}"
     Assets:${4:Wallet-Cash}  ${5:Amount} ${6:EUR}

@@ -495,6 +495,16 @@
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
   (async-shell-command (concat "mv " youtube-dl-directory "/* " youtube-dl-temp-directory "/")))
 
+(defun youtube-dl-failures-reset (item)
+  "Reset failures."
+  (interactive
+   (let* ((n (1- (line-number-at-pos))))
+     (list (nth n youtube-dl-items))))
+  (when item
+        (setf (youtube-dl-item-failures item) 0))
+          (youtube-dl--redisplay)
+          (youtube-dl--run))
+
 (use-package! elfeed-tube
   :after elfeed
   :demand t
