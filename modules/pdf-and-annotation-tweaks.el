@@ -1,4 +1,4 @@
-(use-package org-noter
+(use-package! org-noter
   :after (:any org pdf-view)
   :config
   (setq
@@ -12,7 +12,7 @@
    org-noter-doc-split-percentage '(0.7 . 0.3)
    org-noter-doc-split-fraction '(0.7 . 0.3)
    )
-  )
+ )
 
 (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 (provide 'pdf-and-annotation-tweaks)
