@@ -5282,9 +5282,10 @@ javascript:location.href='org-protocol://capture?' +
 **** Add text to any org headline
 #+begin_src emacs-lisp :tangle modules/org-functions.el
 (require 'counsel)
+(require 's)
 
-(defun org-get-headline (prompt)
-  "Select a headline in any open org file."
+(defun org-get-headline-path (prompt)
+  "Select a headline in any open org file and return marker to it."
   (let (entries)
     (dolist (b (buffer-list))
       (with-current-buffer b
@@ -5294,23 +5295,41 @@ javascript:location.href='org-protocol://capture?' +
                        (counsel-outline-candidates
                         (cdr (assq 'org-mode counsel-outline-settings))
                         (counsel-org-goto-all--outline-path-prefix)))))))
-     (completing-read prompt entries nil t nil
-              'counsel-org-goto-history
-              )))
+    (let*
+        ((sel
+          (completing-read prompt entries nil t nil
+                           'counsel-org-goto-history
+                           ))
+         (split (s-split-up-to " " sel 1))
+         (filename (car split))
+         (path (apply 's-split "/" (cdr split)))
+         )
+      (org-find-olp `(,filename ,@path))
+      )))
+
+(defun org-goto-headline ()
+  "Go to any open org headline."
+  (interactive)
+  (org-goto-marker-or-bmk (org-get-headline-path "Goto: ")))
+
 
 (defun org-insert-under-headline ()
   "Insert yanked text as last line under selected org headline."
   (interactive)
   (save-window-excursion
-  (org-goto-marker-or-bmk
-   (org-get-headline "Insert under: "))
-  (outline-next-heading)
-  (counsel-yank-pop)
-  (newline)))
+    (org-goto-marker-or-bmk
+     (org-get-headline-path "Insert under: "))
+    (outline-next-heading)
+    (counsel-yank-pop)
+    (newline)))
 
-(defun org-config-new-module ()
-  "Create a new code block beloning to specific module."
-  (interactive))
+(defun org-config-new-block ()
+  "Create a new code block belonging to specific module."
+  (interactive)
+  (let ((current-headline
+         (string-inflection-title-to-lisp-case-function (nth 4 (org-heading-components)))))
+    (insert (concat "*** Description\n#+begin_src emacs-lisp :tangle modules/" current-headline ".el\n\n#+end_src")))
+  (evil-previous-visual-line))
 
 (provide 'org-functions)
 #+end_src
