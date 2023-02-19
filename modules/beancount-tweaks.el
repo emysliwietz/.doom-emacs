@@ -20,4 +20,10 @@
         :n "TAB" #'beancount-align-to-previous-number
         :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
 
+(defun beancount-select-account ()
+  "Select and insert account from current buffer"
+  (interactive)
+  (insert
+   (completing-read "Account: " beancount-accounts)))
+
 (provide 'beancount-tweaks)

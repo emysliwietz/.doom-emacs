@@ -397,6 +397,12 @@ abort completely with `C-g'."
         :n "TAB" #'beancount-align-to-previous-number
         :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
 
+(defun beancount-select-account ()
+  "Select and insert account from current buffer"
+  (interactive)
+  (insert
+   (completing-read "Account: " beancount-accounts)))
+
 (provide 'beancount-tweaks)
 #+end_src
 ** Dired
@@ -5211,8 +5217,14 @@ javascript:location.href='org-protocol://capture?' +
   (add-hook 'org-mode-hook 'org-auto-tangle-mode)
 )
 
-(setq beancount-main-file "/media/user/keychain/finances/wallet.beancount"
+(setq beancount-remote-file "/media/user/keychain/finances/wallet.beancount"
       beancount-local-file "~/dox/notes/wallet.beancount")
+
+(defun beancount-open-local ()
+  "Open local beancount wallet."
+  (interactive)
+  (find-file beancount-local-file))
+
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (setq org-capture-templates
