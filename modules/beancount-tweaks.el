@@ -23,7 +23,8 @@
 (defun beancount-select-account ()
   "Select and insert account from current buffer"
   (interactive)
-  (insert
-   (completing-read "Account: " beancount-accounts)))
+  (with-temp-buffer
+    (beancount-open-local)
+   (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
 
 (provide 'beancount-tweaks)

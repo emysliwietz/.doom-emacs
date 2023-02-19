@@ -33,7 +33,12 @@
       ("convert -density %D -trim -antialias %f -quality 100 %O"))))
  '(package-selected-packages
    '(vertico ivy-youtube spell-fu all-the-icons-ivy notmuch cmake-mode))
- '(warning-suppress-types '((doom-first-buffer-hook) (emacs) (emacs) (defvaralias))))
+ '(warning-suppress-types
+   '(((yasnippet backquote-change))
+     (doom-first-buffer-hook)
+     (emacs)
+     (emacs)
+     (defvaralias))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
