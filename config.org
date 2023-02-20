@@ -1067,6 +1067,7 @@ Return a string suitable for insertion in `dired' buffer."
       :nm "-" #'elfeed-show-untag
       :nm "s" #'elfeed-show-new-live-search
       :nm "y" #'elfeed-show-yank)
+
 (map! :map elfeed-summary-mode-map
       :after elfeed-summary
       :n "L" #'youtube-dl-list
@@ -1561,6 +1562,28 @@ Return a string suitable for insertion in `dired' buffer."
 (provide 'elfeed-tweaks)
 #+end_src
 
+*** Async Update Script
+#+begin_src emacs-lisp :tangle ext/elfeed/update.el
+(setq doom-private-dir "~/.doom.d/")
+
+(setq rmh-elfeed-org-files (cons (expand-file-name "ext/elfeed/elfeed.org" doom-private-dir)())
+      elfeed-db-directory (expand-file-name "ext/elfeed/db/" doom-private-dir)
+      elfeed-thumbnail-dir "/tmp/elfeed-thumbnails/")
+
+(add-to-list 'load-path "~/.emacs.d/.local/straight/repos/elfeed/")
+(require 'elfeed)
+(message "%s" (elfeed-update))
+#+end_src
+#+begin_src emacs-lisp :tangle elfeed-tweaks.el
+(defun elfeed-summary-load-async-update ()
+  "Asynchronously update the database, load it and update summary buffer."
+  (interactive)
+  (async-start-process "Elfeed Update" "emacs" '(lambda (name)
+                                                  (elfeed-db-load)
+                                        ;(elfeed-summary-update)
+                                                  (message "-> %s completed!" name))
+                       "--script" (concat doom-user-dir "ext/elfeed/update.el")))
+#+end_src
 ** Interface
 #+begin_src emacs-lisp
 (load-module 'interface)

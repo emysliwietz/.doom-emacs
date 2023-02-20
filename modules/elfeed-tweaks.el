@@ -46,6 +46,7 @@
       :nm "-" #'elfeed-show-untag
       :nm "s" #'elfeed-show-new-live-search
       :nm "y" #'elfeed-show-yank)
+
 (map! :map elfeed-summary-mode-map
       :after elfeed-summary
       :n "L" #'youtube-dl-list
