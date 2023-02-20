@@ -5116,7 +5116,7 @@ javascript:location.href='org-protocol://capture?' +
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/org-roam-tweaks.el
-(setq org-roam-directory "~/dox/sync/org/roam")
+(setq org-roam-directory "~/sync/org/roam")
 (mkdir org-roam-directory t)
 (org-roam-db-autosync-mode 1)
 
@@ -6033,7 +6033,7 @@ This forces a complete recompilation of the document, even if the source
    org-noter-doc-split-percentage '(0.7 . 0.3)
    org-noter-doc-split-fraction '(0.7 . 0.3)
    )
- )
+ (evil-define-key 'normal pdf-view-mode-map "i" 'org-noter-insert-note))
 
 (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 (provide 'pdf-and-annotation-tweaks)

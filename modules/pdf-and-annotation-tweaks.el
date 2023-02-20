@@ -12,7 +12,7 @@
    org-noter-doc-split-percentage '(0.7 . 0.3)
    org-noter-doc-split-fraction '(0.7 . 0.3)
    )
- )
+ (evil-define-key 'normal pdf-view-mode-map "i" 'org-noter-insert-note))
 
 (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 (provide 'pdf-and-annotation-tweaks)
