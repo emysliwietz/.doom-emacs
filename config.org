@@ -397,19 +397,14 @@ abort completely with `C-g'."
         :n "TAB" #'beancount-align-to-previous-number
         :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
 
-; install via cargo install beancount-sort
-(defun beancount-sort ()
-  "Sort default beancount file"
+(defun beancount-select-account ()
+  "Select and insert account from current buffer"
   (interactive)
-  (let ((bf (expand-file-name (file-truename (buffer-file-name)))))
-    (message bf)
-    (when (s-ends-with? ".beancount" bf t)
-  (async-shell-command-no-window (format "%sext/bin/beancount-sort --file '%s' --out '%s'" doom-private-dir bf bf)))))
-
-
+  (with-temp-buffer
+    (beancount-open-local)
+   (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
 
 (provide 'beancount-tweaks)
-
 #+end_src
 ** Dired
 *** Dired Inline images
@@ -680,7 +675,8 @@ Return a string suitable for insertion in `dired' buffer."
       :n "L" #'dired-load-or-youtube-toggle)
 
 (map! :map youtube-dl-list-mode-map
-      :n "L" #'dired-load-or-youtube-toggle)
+      :n "L" #'dired-load-or-youtube-toggle
+      :n "r" #'youtube-dl-failures-reset)
 
 (provide 'dired-tweaks)
 #+end_src
@@ -1519,6 +1515,16 @@ Return a string suitable for insertion in `dired' buffer."
   (mkdir youtube-dl-temp-directory t)
   (add-to-list 'display-buffer-alist '("*Async Shell Command*" display-buffer-no-window (nil)))
   (async-shell-command (concat "mv " youtube-dl-directory "/* " youtube-dl-temp-directory "/")))
+
+(defun youtube-dl-failures-reset (item)
+  "Reset failures."
+  (interactive
+   (let* ((n (1- (line-number-at-pos))))
+     (list (nth n youtube-dl-items))))
+  (when item
+        (setf (youtube-dl-item-failures item) 0))
+          (youtube-dl--redisplay)
+          (youtube-dl--run))
 
 (use-package! elfeed-tube
   :after elfeed
@@ -5212,8 +5218,14 @@ javascript:location.href='org-protocol://capture?' +
   (add-hook 'org-mode-hook 'org-auto-tangle-mode)
 )
 
-(setq beancount-main-file "/media/user/keychain/finances/wallet.beancount"
+(setq beancount-remote-file "/media/user/keychain/finances/wallet.beancount"
       beancount-local-file "~/dox/notes/wallet.beancount")
+
+(defun beancount-open-local ()
+  "Open local beancount wallet."
+  (interactive)
+  (find-file beancount-local-file))
+
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (setq org-capture-templates
@@ -6033,7 +6045,12 @@ This forces a complete recompilation of the document, even if the source
    org-noter-doc-split-percentage '(0.7 . 0.3)
    org-noter-doc-split-fraction '(0.7 . 0.3)
    )
+<<<<<<< HEAD
  (evil-define-key 'normal pdf-view-mode-map "i" 'org-noter-insert-note))
+=======
+  (evil-define-key 'normal pdf-view-mode-map "i" 'org-noter-insert-note)
+ )
+>>>>>>> f1a7c6092d9551dd9f063dbe9c86b63ce2f788bf
 
 (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 (provide 'pdf-and-annotation-tweaks)

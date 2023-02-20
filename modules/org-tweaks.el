@@ -29,8 +29,14 @@
   (add-hook 'org-mode-hook 'org-auto-tangle-mode)
 )
 
-(setq beancount-main-file "/media/user/keychain/finances/wallet.beancount"
+(setq beancount-remote-file "/media/user/keychain/finances/wallet.beancount"
       beancount-local-file "~/dox/notes/wallet.beancount")
+
+(defun beancount-open-local ()
+  "Open local beancount wallet."
+  (interactive)
+  (find-file beancount-local-file))
+
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (setq org-capture-templates

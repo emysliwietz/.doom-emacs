@@ -20,15 +20,11 @@
         :n "TAB" #'beancount-align-to-previous-number
         :i "RET" (cmd! (newline-and-indent) (beancount-align-to-previous-number))))
 
-; install via cargo install beancount-sort
-(defun beancount-sort ()
-  "Sort default beancount file"
+(defun beancount-select-account ()
+  "Select and insert account from current buffer"
   (interactive)
-  (let ((bf (expand-file-name (file-truename (buffer-file-name)))))
-    (message bf)
-    (when (s-ends-with? ".beancount" bf t)
-  (async-shell-command-no-window (format "%sext/bin/beancount-sort --file '%s' --out '%s'" doom-private-dir bf bf)))))
-
-
+  (with-temp-buffer
+    (beancount-open-local)
+   (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
 
 (provide 'beancount-tweaks)

@@ -160,6 +160,7 @@
       :n "L" #'dired-load-or-youtube-toggle)
 
 (map! :map youtube-dl-list-mode-map
-      :n "L" #'dired-load-or-youtube-toggle)
+      :n "L" #'dired-load-or-youtube-toggle
+      :n "r" #'youtube-dl-failures-reset)
 
 (provide 'dired-tweaks)
