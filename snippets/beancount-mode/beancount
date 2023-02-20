@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: beancount
+# key: bc
+# mode: beancount
+# --
+`(message "")`
+${1:`(format-time-string "%Y-%m-%d")`} * "${2:Place}" "${3:Items}"
+Assets:${4:Brieftasche}  ${5:Amount} ${6:EUR}
+${7:`(beancount-select-account)`}
+$0
