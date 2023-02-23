@@ -32,23 +32,46 @@
            :unnarrowed t))))
 
 ;; Actually start using templates
- (after! org-capture
- ;; For browser capture
- (add-to-list 'org-capture-templates
- '("P" "Protocol" entry ; key, name, type
- (file+headline +org-capture-notes-file "Inbox") ; target
- "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?"
- :prepend t ; properties
- :kill-buffer t))
-(add-to-list 'org-capture-templates
-'("L" "Protocol Link" entry
-(file+headline +org-capture-notes-file "Inbox")
-"* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
-:prepend t
-:kill-buffer t))
-)
+(after! org-capture
+  ;; For browser capture
+  (add-to-list 'org-capture-templates
+               '("P" "Protocol" entry ; key, name, type
+                 (file+headline +org-capture-notes-file "Inbox") ; target
+                 "* %^{Title}\nSource: %u, %c\n #+BEGIN_QUOTE\n%i\n#+END_QUOTE\n\n\n%?"
+                 :prepend t ; properties
+                 :kill-buffer t))
+  (add-to-list 'org-capture-templates
+               '("L" "Protocol Link" entry
+                 (file+headline +org-capture-notes-file "Inbox")
+                 "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
+                 :prepend t
+                 :kill-buffer t))
+  )
 
 (use-package! org-roam-bibtex
   :after org-roam)
+
+(defun org-noter-roam-init (ref)
+  "Initialize org-roam notes file for org-noter use.
+  Insert citation, create notes headline, add org-noter document property"
+  (interactive (list (citar-select-ref)))
+  (end-of-buffer)
+  (let*
+      ((files
+        (citar-get-files
+         (list ref)))
+       (file
+        (car
+         (gethash ref files))))
+    (citar-insert-citation
+     (list ref))
+    (newline)
+    (insert "* Notes")
+    (newline)
+    (org-roam-ref-add
+     (concat "@" ref))
+    (org-set-property "NOTER_DOCUMENT" file)
+    (org-set-property "NOTER_PAGE" "1")
+    ))
 
 (provide 'org-roam-tweaks)
