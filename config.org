@@ -6005,21 +6005,22 @@ This forces a complete recompilation of the document, even if the source
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
 
-
+(setq deft-recursive t)
 (let* ((base-dir "/home/user/dox/bib/")
         (bibfile (concat base-dir "bib.bib"))
-      (notes-dir (concat base-dir "notes/"))
-      (lib-dir (concat base-dir "papers/")))
+        (notes-dir (concat base-dir "notes/"))
+        (roam-notes-dir (concat org-roam-directory "/"))
+        (lib-dir (concat base-dir "papers/")))
   (setq bibtex-completion-bibliography bibfile
         bibtex-completion-library-path `(,lib-dir)
-        bibtex-completion-notes-path notes-dir
+        bibtex-completion-notes-path roam-notes-dir
         bibtex-completion-pdf-field "file"
         citar-bibliography `(,bibfile)
         citar-library-paths `(,lib-dir)
-        citar-notes-paths `(,notes-dir)
-        deft-directory notes-dir
+        citar-notes-paths `(,roam-notes-dir)
+        deft-directory roam-notes-dir
         deft-default-extension "org"
-        org-noter-notes-search-path `(,notes-dir)
+        org-noter-notes-search-path `(,roam-notes-dir)
         org-cite-global-bibliography `(,bibfile)))
 
 (setq bibtex-completion-notes-template-multiple-files
@@ -6078,6 +6079,9 @@ This forces a complete recompilation of the document, even if the source
 
 (provide 'latex-tweaks)
 #+end_src
+
+#+RESULTS:
+: latex-tweaks
 
 ** PDF and Annotation Tweaks
 #+begin_src emacs-lisp
