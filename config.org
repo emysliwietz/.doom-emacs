@@ -6115,7 +6115,9 @@ This forces a complete recompilation of the document, even if the source
    (switch-window))
 
  (evil-define-key 'normal pdf-view-mode-map "i" 'org-noter-insert-short-note)
- (evil-define-key 'normal pdf-view-mode-map "I" 'org-noter-insert-note))
+ (evil-define-key 'normal pdf-view-mode-map "I" 'org-noter-insert-note)
+ (bind-key (kbd "C-s") 'pdf-occur pdf-view-mode-map)
+ (evil-define-key 'normal pdf-view-mode-map "r" 'pdf-view-rotate))
 
 (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 (provide 'pdf-and-annotation-tweaks)
