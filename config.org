@@ -5252,7 +5252,7 @@ javascript:location.href='org-protocol://capture?' +
                (setq org-directory dir))
   (ifdirexists "~/sync/agenda"
                (setq org-agenda-files (directory-files "~/sync/agenda/" t (rx ".org" eos))))
-  (setq org-todo-keywords '((sequence "TODO(t)" "LECT(l)" "EXAM(e)" "MEET(m)" "PROJ(p)" "LOOP(L)" "START(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "INPRO(n)" "OPT(o)" "READ(r)" "|" "DONE(d)" "KILL(k)")
+  (setq org-todo-keywords '((sequence "TODO(t)" "LECT(l)" "EXAM(e)" "MEET(m)" "PROJ(p)" "LOOP(L)" "START(s)" "WAIT(w)" "HOLD(h)" "IDEA(i)" "????(?)" "INPRO(n)" "OPT(o)" "READ(r)" "|" "DONE(d)" "KILL(k)")
                             (sequence "[ ](T)" "[-](S)" "[?](W)" "|" "[X](D)")
                             (sequence "|" "OKAY(O)" "YES(Y)" "NO(N)"))
         org-startup-folded t
