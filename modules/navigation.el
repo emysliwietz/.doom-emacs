@@ -185,22 +185,16 @@
 (exwm-input--update-global-prefix-keys)
 
 ;;; Winum mode for easy moving through windows
-(use-package! winum
-  :config
-  (setq winum-auto-setup-mode-line nil)
-  (winum-mode t)
-  :bind (
-	 ("s-=" . winum-select-window-0)
-	 ("s-!" . winum-select-window-1)
-	 ("s-\"" . winum-select-window-2)
-	 ("s-§" . winum-select-window-3)
-	 ("s-$" . winum-select-window-4)
-	 ("s-%" . winum-select-window-5)
-	 ("s-&" . winum-select-window-6)
-	 ("s-/" . winum-select-window-7)
-	 ("s-(" . winum-select-window-8)
-	 ("s-)" . winum-select-window-9)
-	 ("s-°" . winum-select-window-by-number))
-  )
+	 (bind-key "s-=" '+workspace/switch-to-9)
+	 (bind-key "s-!" '+workspace/switch-to-0)
+	 (bind-key "s-\"" '+workspace/switch-to-1)
+	 (bind-key "s-§" '+workspace/switch-to-2)
+	 (bind-key "s-$" '+workspace/switch-to-3)
+	 (bind-key "s-%" '+workspace/switch-to-4)
+	 (bind-key "s-&" '+workspace/switch-to-5)
+	 (bind-key "s-/" '+workspace/switch-to-6)
+	 (bind-key "s-(" '+workspace/switch-to-7)
+	 (bind-key "s-)" '+workspace/switch-to-8)
+
 
 (provide 'navigation)
