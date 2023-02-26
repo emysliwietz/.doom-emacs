@@ -16,8 +16,8 @@
   (defun org-noter-insert-short-note ()
     "Insert note and switch focus back to pdf."
     (interactive)
-    (org-noter-insert-note)
-    (switch-window))
+    (save-window-excursion
+    (org-noter-insert-note)))
 
   (defun pdf-view-theme-cycle ()
     "Cycle between emacs, midnight and white theme"
