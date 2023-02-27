@@ -101,7 +101,7 @@
     (shell-command "xdotool mousemove_relative -- -1920 0"))
 
 
-  (setq exwm-workspace-number 9
+  (setq exwm-workspace-number 1
         exwm-workspace-show-all-buffers t
         exwm-layout-show-all-buffers t
         exwm-manage-force-tiling t)
