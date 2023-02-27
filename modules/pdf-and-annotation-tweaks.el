@@ -36,7 +36,10 @@
           (pdf-view-themed-minor-mode 1)
           )))))
 
+<<<<<<< HEAD
 (require 'pdf-view)
+=======
+>>>>>>> bdf594c6b20e461c1d0b9c8edac5644b86882fc6
 (evil-define-key 'normal pdf-view-mode-map "n" 'org-noter-insert-short-note)
 (evil-define-key 'normal pdf-view-mode-map "N" 'org-noter-insert-note)
 (bind-key (kbd "C-s") 'pdf-occur pdf-view-mode-map)
