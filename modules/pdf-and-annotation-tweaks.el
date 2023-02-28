@@ -36,12 +36,15 @@
           (pdf-view-themed-minor-mode 1)
           )))))
 
-(after! pdf-view
-  (evil-define-key 'normal pdf-view-mode-map "n" 'org-noter-insert-short-note)
-  (evil-define-key 'normal pdf-view-mode-map "N" 'org-noter-insert-note)
-  (bind-key (kbd "C-s") 'pdf-occur pdf-view-mode-map)
-  (evil-define-key 'normal pdf-view-mode-map "r" 'pdf-view-rotate)
-  (evil-define-key 'normal pdf-view-mode-map "i" 'pdf-view-theme-cycle)
-  (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode))
+<<<<<<< HEAD
+(require 'pdf-view)
+=======
+>>>>>>> bdf594c6b20e461c1d0b9c8edac5644b86882fc6
+(evil-define-key 'normal pdf-view-mode-map "n" 'org-noter-insert-short-note)
+(evil-define-key 'normal pdf-view-mode-map "N" 'org-noter-insert-note)
+(bind-key (kbd "C-s") 'pdf-occur pdf-view-mode-map)
+(evil-define-key 'normal pdf-view-mode-map "r" 'pdf-view-rotate)
+(evil-define-key 'normal pdf-view-mode-map "i" 'pdf-view-theme-cycle)
+(add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
 
 (provide 'pdf-and-annotation-tweaks)
