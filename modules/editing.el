@@ -81,7 +81,7 @@
 
 
 
-(global-set-key (kbd "M-q") 'toggle-auto-fill)
+(global-set-key (kbd "M-q") 'evil-mc-make-cursor-move-next-line)
 
 (use-package! aas
   :commands aas-mode)

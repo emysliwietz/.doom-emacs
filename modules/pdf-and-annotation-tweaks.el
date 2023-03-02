@@ -36,12 +36,34 @@
           (pdf-view-themed-minor-mode 1)
           )))))
 
-(require 'pdf-view)
-(evil-define-key 'normal pdf-view-mode-map "n" 'org-noter-insert-short-note)
-(evil-define-key 'normal pdf-view-mode-map "N" 'org-noter-insert-note)
-(bind-key (kbd "C-s") 'pdf-occur pdf-view-mode-map)
-(evil-define-key 'normal pdf-view-mode-map "r" 'pdf-view-rotate)
-(evil-define-key 'normal pdf-view-mode-map "i" 'pdf-view-theme-cycle)
-(add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode)
+(map! :after pdf-view
+      :map pdf-view-mode-map
+      :n "n" 'org-noter-insert-short-note
+      :n "N" 'org-noter-insert-note
+      :n "r" 'pdf-view-rotate
+      :n "i" 'pdf-view-theme-cycle
+      :n "+" 'pdf-enlarge
+      :n "-" 'pdf-shrink)
+
+(setq pdf-view-resize-factor (/ 5 3.0))
+
+(defun pdf-shrink ()
+  "Shrink a pdf in pdf-view.
+I'm not sure why pdf-view-resize-factor isn't consistent in both directions, so I need two seperate factors."
+  (interactive)
+  (pdf-view-enlarge 0.6))
+
+(defun pdf-enlarge ()
+  "Enlarge a pdf in pdf-view.
+I'm not sure why pdf-view-resize-factor isn't consistent in both directions, so I need two seperate factors."
+  (interactive)
+  (pdf-view-enlarge 0.8))
+
+(after! pdf-view
+  (bind-key (kbd "C-s") 'pdf-occur pdf-view-mode-map)
+  (bind-key (kbd "<C-mouse-4>") 'pdf-enlarge pdf-view-mode-map)
+  (bind-key (kbd "<C-mouse-5>") 'pdf-shrink pdf-view-mode-map)
+
+  (add-hook 'pdf-view-hook 'pdf-view-themed-minor-mode))
 
 (provide 'pdf-and-annotation-tweaks)
