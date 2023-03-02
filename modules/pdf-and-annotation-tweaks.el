@@ -42,6 +42,7 @@
       :n "N" 'org-noter-insert-note
       :n "r" 'pdf-view-rotate
       :n "i" 'pdf-view-theme-cycle
+      :ne "<down-mouse-1>" 'ignore ; Because marking would reset rotation
       :n "+" 'pdf-enlarge
       :n "-" 'pdf-shrink)
 
