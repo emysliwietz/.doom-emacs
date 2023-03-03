@@ -19,6 +19,13 @@
     (save-window-excursion
     (org-noter-insert-note)))
 
+  (defun citar-noter-resume ()
+    "Open notes to a document and resume editing"
+    (interactive)
+    (call-interactively 'citar-open-notes)
+    (evil-goto-line)
+    (org-noter))
+
   (defun pdf-view-theme-cycle ()
     "Cycle between emacs, midnight and white theme"
     (interactive)
