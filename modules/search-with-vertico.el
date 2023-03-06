@@ -46,31 +46,30 @@
   :hook ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
          (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
          )
-  :custom
-  ;(vertico-count 13)
-  (vertico-resize t)
-  (vertico-cycle nil)
-  ;; Extensions
-  (vertico-grid-separator "       ")
-  (vertico-grid-lookahead 50)
-  (vertico-buffer-display-action '(display-buffer-reuse-window))
-  (vertico-multiform-categories
-   '((file reverse)
-     (consult-grep buffer)
-     (consult-location)
-     (imenu buffer)
-     (library reverse indexed)
-     (org-roam-node reverse indexed)
-     (t reverse)
-     ))
-  (vertico-multiform-commands
-   '(("flyspell-correct-*" grid reverse)
-     (org-refile grid reverse indexed)
-     (consult-yank-pop indexed)
-     (consult-flycheck)
-     (consult-lsp-diagnostics)
-     ))
   :init
+  ;(setq vertico-count 13)
+  (setq vertico-resize t)
+  (setq vertico-cycle nil)
+  ;; Extensions
+  (setq vertico-grid-separator "       ")
+  (setq vertico-grid-lookahead 50)
+  (setq vertico-buffer-display-action '(display-buffer-reuse-window))
+  ;(setq vertico-multiform-categories
+  ; '((file reverse)
+  ;   (consult-grep buffer)
+  ;   (consult-location)
+  ;   (imenu buffer)
+  ;   (library reverse indexed)
+  ;   (org-roam-node reverse indexed)
+  ;   (t reverse)
+  ;))
+  ;(setq vertico-multiform-commands
+  ; '(("flyspell-correct-*" grid reverse)
+  ;   (org-refile grid reverse indexed)
+  ;   (consult-yank-pop indexed)
+  ;   (consult-flycheck)
+  ;   (consult-lsp-diagnostics)
+  ;   ))
   (defun kb/vertico-multiform-indexed-toggle ()
     "Toggle between indexed and reverse."
     (interactive)
@@ -99,7 +98,7 @@
   :config
   (vertico-mode)
   ;; Extensions
-  (vertico-multiform-mode)
+  (vertico-multiform-mode nil)
   ;; Needed to move away from ido
   (setq completing-read-function 'completing-read-default)
 

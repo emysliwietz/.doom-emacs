@@ -1,5 +1,10 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
+;; Variable to determine how many modules are loaded, for debugging
+;; Any number is number of modules
+;; nil means all
+(setq debug-my-config nil)
+
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
@@ -73,11 +78,6 @@
 (setq use-package-verbose t)
 (async-bytecomp-package-mode 1)
 
-;; Variable to determine how many modules are loaded, for debugging
-;; Any number is number of modules
-;; nil means all
-(setq debug-my-config nil)
-
 (defmacro after-startup (&rest func)
   `(unless debug-my-config (add-hook! 'after-startup-hook
                              '(lambda () ,@func))))
@@ -103,8 +103,8 @@
              (time (car benchmark))
              (gbc (nth 1 benchmark))
              (gbt (nth 2 benchmark)))
-         (message "Loaded %s in %.06fs, using %s garbage collections in %.06fs."
-                  ,module time gbc gbt)))))
+         (message "%s - Loaded %s in %.06fs, using %s garbage collections in %.06fs."
+                  ,debug-my-config ,module time gbc gbt)))))
 
 ;; Load a module only if dependency could successfully be loaded
 (defmacro load-module-if (dependency module)
@@ -207,7 +207,8 @@
 
 (load-module 'accounting)
 
-(load-module 'popes)
+(when home?
+  (load-module 'popes))
 
 (load-module 'keycast-tweaks)
 
