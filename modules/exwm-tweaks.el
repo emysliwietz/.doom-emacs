@@ -68,39 +68,6 @@
       )))
 
 
-;;; Sometimes exwm fails to sets a buffer, so set it to scratch
-;;; with a button press
-(defun go-to-scratch ()
-  (interactive)
-  (message "%s" (selected-window))
-  (switch-to-buffer "*scratch*"))
-
-(defun go-to-scratch-other ()
-  (interactive)
-  (switch-to-buffer-other-frame "*scratch*"))
-
-(setq save-temp-location "~/dox/temp-save/")
-(defun save-buffer-temp ()
-  (interactive)
-  (let* ((s (buffer-string))
-         (ss (split-string s " "))
-         (nl (butlast ss (- (length ss) 5)))
-
-         )
-    (set-visited-file-name (concat save-temp-location (mapconcat '(lambda (x)  (format "%s" x))  nl " ") ".org"))
-    (save-buffer)
-    )
-  )
-
-  (defun switchmonitor-next ()
-    (interactive)
-    (shell-command "xdotool mousemove_relative 1920 0"))
-
-  (defun switchmonitor-prev ()
-    (interactive)
-    (shell-command "xdotool mousemove_relative -- -1920 0"))
-
-
   (setq exwm-workspace-number 1
         exwm-workspace-show-all-buffers t
         exwm-layout-show-all-buffers t
@@ -409,12 +376,6 @@
 (exwm-input--update-global-prefix-keys)
 
 ;; Wallpaper
-(defmacro ifdirexists (dir &rest actions)
-  "Execute functions taking dir as an argument if dir exists"
-  `(when (file-exists-p ,dir)
-     ((lambda (dir)
-       ,@actions) ,dir)))
-
 (ifdirexists "/home/user/dox/wallpapers"
              (setq wallpaper-cycle-directory dir)
              (wallpaper-set-wallpaper))
