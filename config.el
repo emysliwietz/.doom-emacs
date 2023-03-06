@@ -254,3 +254,5 @@
 (load-module 'latex-tweaks)
 
 (load-module 'pdf-and-annotation-tweaks)
+
+(load-module 'tolino)

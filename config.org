@@ -6158,3 +6158,27 @@ I'm not sure why pdf-view-resize-factor isn't consistent in both directions, so 
 
 (provide 'pdf-and-annotation-tweaks)
 #+end_src
+
+** Tolino
+#+begin_src emacs-lisp
+(load-module 'tolino)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/tolino.el
+
+(setq tolino-dir "/home/user/dox/tolino/")
+
+(defun citar-move-to-tolino (keys-entries &optional str)
+  "Search pdfs."
+  (interactive (list (citar-select-refs)))
+  (let ((files (hash-table-to-value-list
+                (citar-get-files
+                 keys-entries))))
+  (cl-map 'vector #'(lambda (f) (copy-file f tolino-dir 1 t)) files)))
+
+(provide 'tolino)
+#+end_src
