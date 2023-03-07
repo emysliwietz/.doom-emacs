@@ -16,9 +16,9 @@
   (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
 
   (add-hook 'exwm-randr-screen-change-hook
-	    (lambda ()
-	      (start-process-shell-command
-	       "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output HDMI-2 --mode 1920x1080 --pos 0x0 --rotate normal")))
+            (lambda ()
+              (start-process-shell-command
+               "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output HDMI-2 --mode 1920x1080 --pos 0x0 --rotate normal")))
 
   (exwm-randr-enable)
   (winner-mode t)
@@ -26,26 +26,26 @@
   (exwm-systemtray-enable)
   (define-key exwm-mode-map (kbd "C-c") nil)
   (setq exwm-input-simulation-keys
-	'(([?\C-b] . [left])
-	  ([?\C-f] . [right])
-	  ([?\C-p] . [up])
-	  ([?\C-n] . [down])
-	  ([?\C-a] . [home])
-	  ([?\C-e] . [end])
-	  ([?\M-a] . [C-a])
-	  ([?\M-v] . [prior])
-	  ([?\C-v] . [next])
-	  ([?\C-d] . [delete])
-	  ([?\C-k] . [S-end delete])
-	  ([?\C-w] . [?\C-x])
-	  ([?\M-w] . [?\C-c])
-	  ([?\C-y] . [?\C-v])
-	  ;; search
-	  ([?\C-s] . [?\C-f])
-	  ([?\M-s] . [?\C-s])))
+        '(([?\C-b] . [left])
+          ([?\C-f] . [right])
+          ([?\C-p] . [up])
+          ([?\C-n] . [down])
+          ([?\C-a] . [home])
+          ([?\C-e] . [end])
+          ([?\M-a] . [C-a])
+          ([?\M-v] . [prior])
+          ([?\C-v] . [next])
+          ([?\C-d] . [delete])
+          ([?\C-k] . [S-end delete])
+          ([?\C-w] . [?\C-x])
+          ([?\M-w] . [?\C-c])
+          ([?\C-y] . [?\C-v])
+          ;; search
+          ([?\C-s] . [?\C-f])
+          ([?\M-s] . [?\C-s])))
   (with-eval-after-load 'ediff-wind
   (setq ediff-control-frame-parameters
-	(cons '(unsplittable . t) ediff-control-frame-parameters)))
+        (cons '(unsplittable . t) ediff-control-frame-parameters)))
 
   (global-set-key (kbd "C-x C-c") 'save-buffers-kill-emacs)
 ;  (global-set-key (kbd "C-c m") 'toggle-maximize-buffer)
@@ -75,12 +75,12 @@
 
   (setq exwm-input-global-keys
         `(([?\s-f] . fullscreen)
-	  ([?\s-r] . exwm-reset)
-	  ([?\s-F] . toggle-maximize-buffer)
+          ([?\s-r] . exwm-reset)
+          ([?\s-F] . toggle-maximize-buffer)
           ([?\s-g] . toggle-float-buffer)
-	  ([?\s-q] . kill-curr-buffer)
-	([?\s-n] . switchmonitor-next)
-	([?\s-p] . switchmonitor-prev)
+          ([?\s-q] . kill-curr-buffer)
+          ([?\s-n] . switchmonitor-next)
+          ([?\s-p] . switchmonitor-prev)
         ;((kbd "s-<return>") . switchmonitor-prev)
         ,@(mapcar (lambda (i)
                     `(,(kbd (format "s-%d" i)) .
@@ -95,9 +95,9 @@
             (if (and exwm-class-name
                        (string= exwm-class-name "St"))
               (progn
-		(exwm-input-release-keyboard))
-	      (progn))
-	    (exwm-layout-hide-mode-line)))
+                (exwm-input-release-keyboard))
+              (progn))
+            (exwm-layout-hide-mode-line)))
 
 (setq exwm-input-prefix-keys
 '(?\C-x ?\C-u ?\C-h ?\M-x ?\M-` ?\M-& ?\M-:))
@@ -124,7 +124,7 @@
            floating-mode-line nil
 ;           width 0.4
 ;           height 0.4
-	   )
+           )
         ((equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
          floating t
          floating-mode-line nil)

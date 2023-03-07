@@ -203,6 +203,8 @@
 
 (load-module 'speed-read)
 
+(load-module 'bionic-reading)
+
 (load-module 'spaced-repetition)
 
 (load-module 'accounting)

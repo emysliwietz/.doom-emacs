@@ -1884,9 +1884,9 @@ Return a string suitable for insertion in `dired' buffer."
   (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
 
   (add-hook 'exwm-randr-screen-change-hook
-	    (lambda ()
-	      (start-process-shell-command
-	       "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output HDMI-2 --mode 1920x1080 --pos 0x0 --rotate normal")))
+            (lambda ()
+              (start-process-shell-command
+               "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output HDMI-2 --mode 1920x1080 --pos 0x0 --rotate normal")))
 
   (exwm-randr-enable)
   (winner-mode t)
@@ -1894,26 +1894,26 @@ Return a string suitable for insertion in `dired' buffer."
   (exwm-systemtray-enable)
   (define-key exwm-mode-map (kbd "C-c") nil)
   (setq exwm-input-simulation-keys
-	'(([?\C-b] . [left])
-	  ([?\C-f] . [right])
-	  ([?\C-p] . [up])
-	  ([?\C-n] . [down])
-	  ([?\C-a] . [home])
-	  ([?\C-e] . [end])
-	  ([?\M-a] . [C-a])
-	  ([?\M-v] . [prior])
-	  ([?\C-v] . [next])
-	  ([?\C-d] . [delete])
-	  ([?\C-k] . [S-end delete])
-	  ([?\C-w] . [?\C-x])
-	  ([?\M-w] . [?\C-c])
-	  ([?\C-y] . [?\C-v])
-	  ;; search
-	  ([?\C-s] . [?\C-f])
-	  ([?\M-s] . [?\C-s])))
+        '(([?\C-b] . [left])
+          ([?\C-f] . [right])
+          ([?\C-p] . [up])
+          ([?\C-n] . [down])
+          ([?\C-a] . [home])
+          ([?\C-e] . [end])
+          ([?\M-a] . [C-a])
+          ([?\M-v] . [prior])
+          ([?\C-v] . [next])
+          ([?\C-d] . [delete])
+          ([?\C-k] . [S-end delete])
+          ([?\C-w] . [?\C-x])
+          ([?\M-w] . [?\C-c])
+          ([?\C-y] . [?\C-v])
+          ;; search
+          ([?\C-s] . [?\C-f])
+          ([?\M-s] . [?\C-s])))
   (with-eval-after-load 'ediff-wind
   (setq ediff-control-frame-parameters
-	(cons '(unsplittable . t) ediff-control-frame-parameters)))
+        (cons '(unsplittable . t) ediff-control-frame-parameters)))
 
   (global-set-key (kbd "C-x C-c") 'save-buffers-kill-emacs)
 ;  (global-set-key (kbd "C-c m") 'toggle-maximize-buffer)
@@ -1943,12 +1943,12 @@ Return a string suitable for insertion in `dired' buffer."
 
   (setq exwm-input-global-keys
         `(([?\s-f] . fullscreen)
-	  ([?\s-r] . exwm-reset)
-	  ([?\s-F] . toggle-maximize-buffer)
+          ([?\s-r] . exwm-reset)
+          ([?\s-F] . toggle-maximize-buffer)
           ([?\s-g] . toggle-float-buffer)
-	  ([?\s-q] . kill-curr-buffer)
-	([?\s-n] . switchmonitor-next)
-	([?\s-p] . switchmonitor-prev)
+          ([?\s-q] . kill-curr-buffer)
+          ([?\s-n] . switchmonitor-next)
+          ([?\s-p] . switchmonitor-prev)
         ;((kbd "s-<return>") . switchmonitor-prev)
         ,@(mapcar (lambda (i)
                     `(,(kbd (format "s-%d" i)) .
@@ -1963,9 +1963,9 @@ Return a string suitable for insertion in `dired' buffer."
             (if (and exwm-class-name
                        (string= exwm-class-name "St"))
               (progn
-		(exwm-input-release-keyboard))
-	      (progn))
-	    (exwm-layout-hide-mode-line)))
+                (exwm-input-release-keyboard))
+              (progn))
+            (exwm-layout-hide-mode-line)))
 
 (setq exwm-input-prefix-keys
 '(?\C-x ?\C-u ?\C-h ?\M-x ?\M-` ?\M-& ?\M-:))
@@ -1992,7 +1992,7 @@ Return a string suitable for insertion in `dired' buffer."
            floating-mode-line nil
 ;           width 0.4
 ;           height 0.4
-	   )
+           )
         ((equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
          floating t
          floating-mode-line nil)
@@ -3191,15 +3191,16 @@ parses its input."
 
 
 #+end_src
-** Read Aloud
+** Reading
+*** Read Aloud
 #+begin_src emacs-lisp
 (load-module 'read-aloud)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/read-aloud.el
 ;;; read-aloud.el -*- lexical-binding: t; -*-
 
@@ -3542,15 +3543,15 @@ return (beg end word) or nil."
 (provide 'read-aloud)
 #+end_src
 
-** Speed Read
+*** Speed Read
 #+begin_src emacs-lisp
 (load-module 'speed-read)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/speed-read.el
 ;;; read-single.el -*- lexical-binding: t; -*-
 
@@ -3581,6 +3582,97 @@ return (beg end word) or nil."
 (provide 'speed-read)
 #+end_src
 
+*** Bionic Reading
+#+begin_src emacs-lisp
+(load-module 'bionic-reading)
+#+end_src
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/bionic-reading.el
+;;; bionic-reading.el --- Bionic reading             -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2022  ksqsf
+
+;; Author: ksqsf <i@ksqsf.moe>
+;; Keywords: convenience
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This package implements something similar to bionic reading in Emacs.
+;;
+;; Note that bionic reading is patented.
+
+;;; Code:
+
+(defcustom bionic-reading-face 'bold "Face to use for bionic reading highlight.
+Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-display")
+
+
+(defvar-local bionic-overlays nil
+  "The overlays for bionicification in the current buffer.")
+
+;;;###autoload
+(defun bionic-word ()
+  "Bionicify the word at point"
+  (interactive)
+  (let* ((bounds (bounds-of-thing-at-point 'word))
+         (beg (car bounds))
+         (end (cdr bounds))
+         (whole-len (- end beg)))
+    (cond
+     ((>= whole-len 2)
+      (let* ((half-len (/ whole-len 2))
+             (real-len (if (or (> whole-len 6) (= whole-len 3))
+                           (+ half-len 1)
+                         half-len))
+             (ov (make-overlay beg (+ beg real-len))))
+        (overlay-put ov 'face bionic-reading-face)
+        (push ov bionic-overlays)))
+     ((> (- end beg) 1)
+      (let ((ov (make-overlay beg (+ beg 1))))
+        (overlay-put ov 'face bionic-reading-face)
+        (push ov bionic-overlays)))
+     (t nil))))
+
+;;;###autoload
+(defun bionic-buffer ()
+  "Bionicify all the visible parts of the current buffer."
+  (interactive)
+  (if (not (null bionic-overlays))
+      (bionic-debuffer))
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (= (point) (point-max)))
+      (if (looking-at "\\w")
+          (bionic-word))
+      (forward-to-word 1))))
+
+;;;###autoload
+(defun bionic-debuffer ()
+  "Undo the bionicification."
+  (interactive)
+  (dolist (ov bionic-overlays)
+    (delete-overlay ov)))
+
+(provide 'bionic-reading)
+;;; bionic-reading.el ends here
+#+end_src
 ** Spaced Repetition
 #+begin_src emacs-lisp
 (load-module 'spaced-repetition)
