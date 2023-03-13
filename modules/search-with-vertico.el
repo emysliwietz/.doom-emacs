@@ -12,6 +12,14 @@
 (global-set-key (kbd "C-ö") 'embark-act)
 
 (require 'vertico)
+(defun consult-buffer-no-auxiliary ()
+  "Consult buffer without buffers starting with *"
+  (interactive)
+  (let ((consult-buffer-filter    (cons "\\*" consult-buffer-filter)))
+
+  (consult-buffer))
+  )
+
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately
   :general
@@ -42,7 +50,7 @@
   :bind (
          ("C-s" . consult-line)
          ("C-S" . consult-line-multi)
-         ("C-x C-b" . consult-buffer))
+         ("C-x C-b" . consult-buffer-no-auxiliary))
   :hook ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
          (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
          )

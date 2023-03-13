@@ -1955,7 +1955,8 @@ Return a string suitable for insertion in `dired' buffer."
                     `(,(kbd (format "s-%d" i)) .
                       (lambda ()
                         (interactive)
-                        (exwm-workspace-switch-create ,i))))
+                        (message i)
+                        (exwm-workspace-switch-create (- ,i 1)))))
                   (number-sequence 0 9))))
 
 
@@ -2981,6 +2982,14 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 (global-set-key (kbd "C-ö") 'embark-act)
 
 (require 'vertico)
+(defun consult-buffer-no-auxiliary ()
+  "Consult buffer without buffers starting with *"
+  (interactive)
+  (let ((consult-buffer-filter    (cons "\\*" consult-buffer-filter)))
+
+  (consult-buffer))
+  )
+
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately
   :general
@@ -3011,7 +3020,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
   :bind (
          ("C-s" . consult-line)
          ("C-S" . consult-line-multi)
-         ("C-x C-b" . consult-buffer))
+         ("C-x C-b" . consult-buffer-no-auxiliary))
   :hook ((rfn-eshadow-update-overlay . vertico-directory-tidy) ; Clean up file path when typing
          (minibuffer-setup . vertico-repeat-save) ; Make sure vertico state is saved
          )

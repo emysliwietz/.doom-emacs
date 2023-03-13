@@ -86,7 +86,8 @@
                     `(,(kbd (format "s-%d" i)) .
                       (lambda ()
                         (interactive)
-                        (exwm-workspace-switch-create ,i))))
+                        (message i)
+                        (exwm-workspace-switch-create (- ,i 1)))))
                   (number-sequence 0 9))))
 
 
