@@ -150,6 +150,7 @@
 (defun buffer-empty-p (&optional buffer)
   (= (buffer-size buffer) 0))
 
+;; Transparent mode
 (defvar transparent-mode t)
 (setq transparent-mode--opacity 90)
 (exwm-input-set-key (kbd "s-_") '(lambda () (interactive) (-- transparent-mode--opacity) (frame-trans-off)))
@@ -159,9 +160,6 @@
   "Toggle default transparency."
   :lighter ""
   :global t
-  (if transparent-mode
-      (setq transparent-mode nil)
-    (setq transparent-mode t))
   (force-mode-line-update))
 
 (defun frame-trans-on ()

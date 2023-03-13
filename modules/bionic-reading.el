@@ -26,10 +26,6 @@
 
 ;;; Code:
 
-(defcustom bionic-reading-face 'bold "Face to use for bionic reading highlight.
-Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-display")
-
-
 (defvar-local bionic-overlays nil
   "The overlays for bionicification in the current buffer.")
 
@@ -75,6 +71,21 @@ Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-displ
   (interactive)
   (dolist (ov bionic-overlays)
     (delete-overlay ov)))
+
+;;; Start of my own code
+;; Bionic reading minor mode
+(defvar bionic-reading-mode nil)
+(defcustom bionic-reading-face 'bold "Face to use for bionic reading highlight.
+Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-display")
+
+(define-minor-mode bionic-reading-mode
+  "Makes first half of words bold to facilitate faster reading."
+  :lighter "Ⓑ"
+  :global t
+  (if bionic-reading-mode
+      (bionic-buffer)
+    (bionic-debuffer))
+  (force-mode-line-update))
 
 (provide 'bionic-reading)
 ;;; bionic-reading.el ends here

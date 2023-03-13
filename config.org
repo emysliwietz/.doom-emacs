@@ -1806,6 +1806,7 @@ Return a string suitable for insertion in `dired' buffer."
 (defun buffer-empty-p (&optional buffer)
   (= (buffer-size buffer) 0))
 
+;; Transparent mode
 (defvar transparent-mode t)
 (setq transparent-mode--opacity 90)
 (exwm-input-set-key (kbd "s-_") '(lambda () (interactive) (-- transparent-mode--opacity) (frame-trans-off)))
@@ -1815,9 +1816,6 @@ Return a string suitable for insertion in `dired' buffer."
   "Toggle default transparency."
   :lighter ""
   :global t
-  (if transparent-mode
-      (setq transparent-mode nil)
-    (setq transparent-mode t))
   (force-mode-line-update))
 
 (defun frame-trans-on ()
@@ -1855,6 +1853,9 @@ Return a string suitable for insertion in `dired' buffer."
     (async-shell-command command)))
 (provide 'interface)
 #+end_src
+
+#+RESULTS:
+: interface
 
 ** EXWM Tweaks
 #+begin_src emacs-lisp
@@ -3620,10 +3621,6 @@ return (beg end word) or nil."
 
 ;;; Code:
 
-(defcustom bionic-reading-face 'bold "Face to use for bionic reading highlight.
-Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-display")
-
-
 (defvar-local bionic-overlays nil
   "The overlays for bionicification in the current buffer.")
 
@@ -3669,6 +3666,21 @@ Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-displ
   (interactive)
   (dolist (ov bionic-overlays)
     (delete-overlay ov)))
+
+;;; Start of my own code
+;; Bionic reading minor mode
+(defvar bionic-reading-mode nil)
+(defcustom bionic-reading-face 'bold "Face to use for bionic reading highlight.
+Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-display")
+
+(define-minor-mode bionic-reading-mode
+  "Makes first half of words bold to facilitate faster reading."
+  :lighter "Ⓑ"
+  :global t
+  (if bionic-reading-mode
+      (bionic-buffer)
+    (bionic-debuffer))
+  (force-mode-line-update))
 
 (provide 'bionic-reading)
 ;;; bionic-reading.el ends here
