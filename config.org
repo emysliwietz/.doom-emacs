@@ -6116,7 +6116,8 @@ This forces a complete recompilation of the document, even if the source
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
 
-(setq deft-recursive t)
+(setq deft-recursive t
+      deft-use-filename-as-title t)
 (let* ((base-dir "/home/user/dox/bib/")
         (bibfile (concat base-dir "bib.bib"))
         (notes-dir (concat base-dir "notes/"))
@@ -6256,8 +6257,8 @@ This forces a complete recompilation of the document, even if the source
       :n "r" 'pdf-view-rotate
       :n "i" 'pdf-view-theme-cycle
       :ne "<down-mouse-1>" 'ignore ; Because marking would reset rotation
-      :n "+" 'pdf-enlarge
-      :n "-" 'pdf-shrink)
+      :n "+" 'pdf-view-enlarge
+      :n "-" 'pdf-view-shrink)
 
 (setq pdf-view-resize-factor (/ 5 3.0))
 

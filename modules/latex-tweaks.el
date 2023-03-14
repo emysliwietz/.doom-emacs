@@ -93,7 +93,8 @@ This forces a complete recompilation of the document, even if the source
 (require 'ox-extra)
 (ox-extras-activate '(ignore-headlines))
 
-(setq deft-recursive t)
+(setq deft-recursive t
+      deft-use-filename-as-title t)
 (let* ((base-dir "/home/user/dox/bib/")
         (bibfile (concat base-dir "bib.bib"))
         (notes-dir (concat base-dir "notes/"))

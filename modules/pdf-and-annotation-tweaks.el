@@ -50,8 +50,8 @@
       :n "r" 'pdf-view-rotate
       :n "i" 'pdf-view-theme-cycle
       :ne "<down-mouse-1>" 'ignore ; Because marking would reset rotation
-      :n "+" 'pdf-enlarge
-      :n "-" 'pdf-shrink)
+      :n "+" 'pdf-view-enlarge
+      :n "-" 'pdf-view-shrink)
 
 (setq pdf-view-resize-factor (/ 5 3.0))
 
