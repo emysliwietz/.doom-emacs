@@ -24,7 +24,8 @@
     (interactive)
     (call-interactively 'citar-open-notes)
     (evil-goto-line)
-    (org-noter))
+    (org-noter)
+    (pdf-view-noter-keymap-load))
 
   (defun pdf-view-theme-cycle ()
     "Cycle between emacs, midnight and white theme"
@@ -43,15 +44,20 @@
           (pdf-view-themed-minor-mode 1)
           )))))
 
-(map! :after pdf-view
-      :map pdf-view-mode-map
-      :n "n" 'org-noter-insert-short-note
-      :n "N" 'org-noter-insert-note
-      :n "r" 'pdf-view-rotate
-      :n "i" 'pdf-view-theme-cycle
-      :ne "<down-mouse-1>" 'ignore ; Because marking would reset rotation
-      :n "+" 'pdf-view-enlarge
-      :n "-" 'pdf-view-shrink)
+(defun pdf-view-noter-keymap-load ()
+  "Load org noter keymap for pdf-view"
+  (interactive)
+  (map! :after pdf-view
+       :map pdf-view-mode-map
+       :n "n" 'org-noter-insert-short-note
+       :n "N" 'org-noter-insert-note
+       :n "r" 'pdf-view-rotate
+       :n "i" 'pdf-view-theme-cycle
+       :ne "<down-mouse-1>" 'ignore ; Because marking would reset rotation
+       :n "+" 'pdf-view-enlarge
+       :n "-" 'pdf-view-shrink))
+
+(pdf-view-noter-keymap-load)
 
 (setq pdf-view-resize-factor (/ 5 3.0))
 
