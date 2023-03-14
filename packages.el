@@ -207,3 +207,5 @@
 (package! org-noter)
 
 
+
+(package! gptel :recipe (:host github :repo "karthink/gptel"))

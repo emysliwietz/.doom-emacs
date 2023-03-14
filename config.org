@@ -2985,10 +2985,11 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 (defun consult-buffer-no-auxiliary ()
   "Consult buffer without buffers starting with *"
   (interactive)
-  (let ((consult-buffer-filter    (cons "\\*" consult-buffer-filter)))
-
-  (consult-buffer))
-  )
+  ; consult-buffer-filter might not be loaded at startup yet
+  (if (boundp 'consult-buffer-filter)
+      (let ((consult-buffer-filter    (cons "\\*"       consult-buffer-filter)))
+        (consult-buffer))
+    (consult-buffer)))
 
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately
@@ -6307,3 +6308,22 @@ I'm not sure why pdf-view-resize-factor isn't consistent in both directions, so 
 
 (provide 'tolino)
 #+end_src
+
+** Chat GPT
+#+begin_src emacs-lisp
+(load-module 'chat-gpt)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! gptel :recipe (:host github :repo "karthink/gptel"))
+#+end_src
+*** Code :crypt:
+-----BEGIN PGP MESSAGE-----
+
+jA0ECQMCbQi2vUcs1Ez/0sAKAfYQimenlJAY4BeqbRXz2URr2wNAuFzHESBeLAc4
++JKZlL3FxnX/RuXMobzG5SF5Zvh01osodyGBT8b5KYCxIggpGce2/GzaTg/I9LGv
+mog/YH+2oCwh+Uentar3zUVfRkc2hj1yjqKhD7UUoCXPxkm+kw7w9c3YYyynd8pI
+C1KiLm+YHaEvDZLQKmmsq59+zgjcJwXv0vP7aAX+E+QbBWh9IZ4LYWIlh0Nbp5Gy
+LGtSNtq6Z9ls6m7Tm9ZINr2GMGFXFPvRwWBIkg==
+=p6iA
+-----END PGP MESSAGE-----

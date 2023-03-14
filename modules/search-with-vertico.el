@@ -15,10 +15,11 @@
 (defun consult-buffer-no-auxiliary ()
   "Consult buffer without buffers starting with *"
   (interactive)
-  (let ((consult-buffer-filter    (cons "\\*" consult-buffer-filter)))
-
-  (consult-buffer))
-  )
+  ; consult-buffer-filter might not be loaded at startup yet
+  (if (boundp 'consult-buffer-filter)
+      (let ((consult-buffer-filter    (cons "\\*"       consult-buffer-filter)))
+        (consult-buffer))
+    (consult-buffer)))
 
 (use-package! vertico
   :demand t                             ; Otherwise won't get loaded immediately

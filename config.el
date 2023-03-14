@@ -259,3 +259,5 @@
 (load-module 'pdf-and-annotation-tweaks)
 
 (load-module 'tolino)
+
+(load-module 'chat-gpt)
