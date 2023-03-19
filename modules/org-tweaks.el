@@ -30,7 +30,7 @@
 )
 
 (setq beancount-remote-file "/media/user/keychain/finances/wallet.beancount"
-      beancount-local-file "~/dox/notes/wallet.beancount")
+      beancount-local-file "~/dox/finances/wallet.beancount")
 
 (defun beancount-open-local ()
   "Open local beancount wallet."

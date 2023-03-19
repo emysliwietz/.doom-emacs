@@ -445,7 +445,42 @@ abort completely with `C-g'."
   (interactive)
   (with-temp-buffer
     (beancount-open-local)
-   (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
+    (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
+
+(defun beancount-imported-transaction-change-unknown-account ()
+  "Change the Unknown:account field in an imported beancount entry."
+  (interactive)
+  (save-excursion
+    (beancount-goto-transaction-begin)
+    (let ((ba (beancount-select-account)))
+      (re-search-forward "Unknown:account")
+      (replace-match ba)
+      ))
+  (beancount-finalize-transaction)
+  (beancount-goto-next-transaction)
+  )
+
+(defun beancount-imported-credit-transaction-change-unknown-account ()
+  "Change the Unknown:account field in an imported VR-Visa-Gold beancount entry."
+  (interactive)
+  (save-excursion
+    (beancount-goto-transaction-begin)
+    (re-search-forward "Assets:VR-Giro")
+    (replace-match "Assets:VR-Credit-Gold")
+    )
+  (beancount-imported-transaction-change-unknown-account)
+  )
+
+(defun beancount-finalize-transaction ()
+  "Change transaction marked with * into *"
+  (interactive)
+  (save-excursion
+    (beancount-goto-transaction-begin)
+    (re-search-forward "!")
+    (replace-match "*")
+
+    )
+  )
 
 (provide 'beancount-tweaks)
 #+end_src
@@ -5389,7 +5424,7 @@ javascript:location.href='org-protocol://capture?' +
 )
 
 (setq beancount-remote-file "/media/user/keychain/finances/wallet.beancount"
-      beancount-local-file "~/dox/notes/wallet.beancount")
+      beancount-local-file "~/dox/finances/wallet.beancount")
 
 (defun beancount-open-local ()
   "Open local beancount wallet."
@@ -6326,10 +6361,10 @@ I'm not sure why pdf-view-resize-factor isn't consistent in both directions, so 
 *** Code :crypt:
 -----BEGIN PGP MESSAGE-----
 
-jA0ECQMCbQi2vUcs1Ez/0sAKAfYQimenlJAY4BeqbRXz2URr2wNAuFzHESBeLAc4
-+JKZlL3FxnX/RuXMobzG5SF5Zvh01osodyGBT8b5KYCxIggpGce2/GzaTg/I9LGv
-mog/YH+2oCwh+Uentar3zUVfRkc2hj1yjqKhD7UUoCXPxkm+kw7w9c3YYyynd8pI
-C1KiLm+YHaEvDZLQKmmsq59+zgjcJwXv0vP7aAX+E+QbBWh9IZ4LYWIlh0Nbp5Gy
-LGtSNtq6Z9ls6m7Tm9ZINr2GMGFXFPvRwWBIkg==
-=p6iA
+jA0ECQMCL52RYTJSlYf90sAeAc8UhSfDUU0XsNLAGhRK8DkFM6/UVAoFqRk+yjWJ
+mCth91nElYHCyiNO/Ev5GzOpi7zfbX5cgpIhjAda0A6+oNz/LOvuSUNTuFR8JrLj
+17lBokYxF+ka8OGCwzkiAZCDF5/N9KRjlt6sdfhpDzWIhCDno/eo/YNBFlOIFO7m
+2A6pPiUGi+h5Y6REEgRQVyn3JhqpIxOoKWkkCjcLxOt+mg9U7NPNUJHZawHtPl7l
+ayHENmAfcmZ8Yx6TK4iVDq5WXTkr9lZ3Tp1CzQGnPScLNPTY3YSTTKw5300scvCI
+=q2F+
 -----END PGP MESSAGE-----

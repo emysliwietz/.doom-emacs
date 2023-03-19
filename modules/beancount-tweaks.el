@@ -25,6 +25,41 @@
   (interactive)
   (with-temp-buffer
     (beancount-open-local)
-   (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
+    (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
+
+(defun beancount-imported-transaction-change-unknown-account ()
+  "Change the Unknown:account field in an imported beancount entry."
+  (interactive)
+  (save-excursion
+    (beancount-goto-transaction-begin)
+    (let ((ba (beancount-select-account)))
+      (re-search-forward "Unknown:account")
+      (replace-match ba)
+      ))
+  (beancount-finalize-transaction)
+  (beancount-goto-next-transaction)
+  )
+
+(defun beancount-imported-credit-transaction-change-unknown-account ()
+  "Change the Unknown:account field in an imported VR-Visa-Gold beancount entry."
+  (interactive)
+  (save-excursion
+    (beancount-goto-transaction-begin)
+    (re-search-forward "Assets:VR-Giro")
+    (replace-match "Assets:VR-Credit-Gold")
+    )
+  (beancount-imported-transaction-change-unknown-account)
+  )
+
+(defun beancount-finalize-transaction ()
+  "Change transaction marked with * into *"
+  (interactive)
+  (save-excursion
+    (beancount-goto-transaction-begin)
+    (re-search-forward "!")
+    (replace-match "*")
+
+    )
+  )
 
 (provide 'beancount-tweaks)
