@@ -145,6 +145,38 @@
                        (async-shell-command (format "convert \"%s\" -rotate 90 \"%s\"" file file)))
                       ))) (dired-get-marked-files)))
 
+;; Rotate pdf file
+(defun dired-rotate-pdf ()
+  "Rotate a pdf file in-place"
+  (interactive)
+  (cl-map 'nil '(lambda (file)
+                   (let ((ext (file-name-extension file))
+                         (base-name-sans-ext (file-name-sans-extension (file-name-nondirectory file))))
+                     (when (string-equal "pdf" ext )
+                       (message file)
+                       (async-shell-command-no-window
+                        (format "mutool draw -R90 -o \"%s\" \"%s\"" file file))
+                       )
+                )) (dired-get-marked-files)))
+
+
+;; Verticallz split pdf file
+(defun dired-split-pdf-vertical ()
+  "Vertically split a pdf file in-place"
+  (interactive)
+  (cl-map 'nil '(lambda (file)
+                   (let ((ext (file-name-extension file))
+                         (base-name-sans-ext (file-name-sans-extension (file-name-nondirectory file))))
+                     (when (string-equal "pdf" ext )
+                       (message file)
+                       (async-shell-command-no-window
+                        (format "mutool poster -x2 \"%s\" \"%s\"" file file))
+                       )
+                )) (dired-get-marked-files)))
+
+
+
+
 ;; Toggle youtube-dl-list if in elfeed-youtube buffer, else perform regular load
 (defun dired-load-or-youtube-toggle ()
   (interactive)
