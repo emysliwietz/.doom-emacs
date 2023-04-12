@@ -4,7 +4,7 @@
 # mode: beancount
 # --
 `(message "")`
-${1:`(format-time-string "%Y-%m-%d")`} * "${2:Place}" "${3:Items}"
-Assets:${4:Brieftasche}
-${7:`(beancount-select-account)`} ${5:Amount} ${6:EUR}
+${1:`(format-time-string "%Y")`}-${2:`(format-time-string "%m")`}-${3:`(format-time-string "%d")`} * "${4:Place}" "${5:Items}"
+Assets:${6:Brieftasche}
+${9:`(beancount-select-account)`} ${7:Amount} ${8:EUR}
 $0

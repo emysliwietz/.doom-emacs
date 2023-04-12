@@ -46,7 +46,7 @@
   (save-excursion
     (beancount-goto-transaction-begin)
     (re-search-forward "Assets:VR-Giro")
-    (replace-match "Assets:VR-Credit-Gold")
+    (replace-match "Assets:VR-Visa-Gold")
     )
   (beancount-imported-transaction-change-unknown-account)
   )
@@ -58,8 +58,14 @@
     (beancount-goto-transaction-begin)
     (re-search-forward "!")
     (replace-match "*")
-
     )
+  )
+
+(defun beancount-transaction-align ()
+  "Align beancount transaction."
+  (interactive)
+  (beancount-align-to-previous-number)
+  (beancount-goto-next-transaction)
   )
 
 (provide 'beancount-tweaks)
