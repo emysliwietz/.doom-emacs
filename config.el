@@ -261,3 +261,5 @@
 (load-module 'tolino)
 
 (load-module 'chat-gpt)
+
+(load-module 'calendar-tweaks)
