@@ -56,6 +56,7 @@
 	;;(holiday-float 11 3 1 "Buß- und Bettag" 16)
 	(holiday-float 11 0 1 "Totensonntag" 20)))
 
+<<<<<<< HEAD
 (defun ifndef (var value)
      (unless (boundp var)
        (set var value)
@@ -64,6 +65,17 @@
 (ifndef 'local-holidays ())
 (ifndef 'other-holidays ())
 (ifndef 'solar-holidays ())
+=======
+(defmacro ifndef (var)
+  (unless (boundp 'var)
+    (setq var ())))
+
+(ifndef f)
+
+(setq local-holidays ())
+(setq other-holidays ())
+(setq solar-holidays ())
+>>>>>>> e61cfd568fabad61980029a0f16cb0d0862a32d4
 (setq calendar-holidays
       (append general-holidays local-holidays other-holidays
 	      solar-holidays christian-holidays))
