@@ -56,8 +56,14 @@
 	;;(holiday-float 11 3 1 "Buß- und Bettag" 16)
 	(holiday-float 11 0 1 "Totensonntag" 20)))
 
-(setq local-holidays ())
-(setq other-holidays ())
+(defun ifndef (var value)
+     (unless (boundp var)
+       (set var value)
+     ))
+
+(ifndef 'local-holidays ())
+(ifndef 'other-holidays ())
+(ifndef 'solar-holidays ())
 (setq calendar-holidays
       (append general-holidays local-holidays other-holidays
 	      solar-holidays christian-holidays))
