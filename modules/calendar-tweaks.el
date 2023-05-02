@@ -56,8 +56,15 @@
 	;;(holiday-float 11 3 1 "Buß- und Bettag" 16)
 	(holiday-float 11 0 1 "Totensonntag" 20)))
 
+(defmacro ifndef (var)
+  (unless (boundp 'var)
+    (setq var ())))
+
+(ifndef f)
+
 (setq local-holidays ())
 (setq other-holidays ())
+(setq solar-holidays ())
 (setq calendar-holidays
       (append general-holidays local-holidays other-holidays
 	      solar-holidays christian-holidays))
