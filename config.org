@@ -5734,6 +5734,12 @@ javascript:location.href='org-protocol://capture?' +
 #+begin_src emacs-lisp :tangle modules/languages.el
 ;;; languages.el -*- lexical-binding: t; -*-
 
+;; CANoe/CAPL
+(define-derived-mode capl-mode
+  c-mode "CAPL"
+  "Major mode for CANoe/CAPL."
+  (flycheck-mode 0))
+
 ;; Rust
 (setq rustic-format-trigger 'on-save
       rustic-format-on-save t)
@@ -6279,10 +6285,6 @@ This forces a complete recompilation of the document, even if the source
 
 (provide 'latex-tweaks)
 #+end_src
-
-#+RESULTS:
-: latex-tweaks
-
 ** PDF and Annotation Tweaks
 #+begin_src emacs-lisp
 (load-module 'pdf-and-annotation-tweaks)
