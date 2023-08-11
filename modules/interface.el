@@ -152,7 +152,7 @@
 
 ;; Transparent mode
 (defvar transparent-mode t)
-(setq transparent-mode--opacity 90)
+(setq transparent-mode--opacity 80)
 (exwm-input-set-key (kbd "s-_") '(lambda () (interactive) (-- transparent-mode--opacity) (frame-trans-off)))
 (exwm-input-set-key (kbd "s-*") '(lambda () (interactive) (++ transparent-mode--opacity) (frame-trans-off)))
 
@@ -164,13 +164,13 @@
 
 (defun frame-trans-on ()
   (interactive)
-  (set-frame-parameter (selected-frame) 'alpha '(0 0)))
+  (set-frame-parameter (selected-frame) 'alpha-background 0))
 
 (defun frame-trans-off ()
   (interactive)
   (if transparent-mode
-      (set-frame-parameter (selected-frame) 'alpha `(,transparent-mode--opacity ,transparent-mode--opacity))
-  (set-frame-parameter (selected-frame) 'alpha '(100 100))))
+      (set-frame-parameter (selected-frame) 'alpha-background transparent-mode--opacity)
+  (set-frame-parameter (selected-frame) 'alpha-background 100)))
 
 (defun scratch-trans ()
   (setq my-buffer (get-buffer "*scratch*"))

@@ -10,21 +10,35 @@
   (fringe-mode -1)
   (require 'exwm-randr)
 
-(when (string= (system-name) "astaroth")
-  (setq exwm-randr-workspace-output-plist '(1 "DP-2-1" 2 "HDMI-2" 3 "DP-2-2" 4 "eDP-1")))
-(when (string= (system-name) "jarvis")
-  (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
+;; (when (string= (system-name) "astaroth")
+;;   (setq exwm-randr-workspace-output-plist '(1 "DP-2-1" 2 "HDMI-2" 3 "DP-2-2" 4 "eDP-1")))
+;; (when (string= (system-name) "jarvis")
+;;   (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
 
-  ;(add-hook 'exwm-randr-screen-change-hook
-  ;          (lambda ()
-  ;            (start-process-shell-command
-  ;             "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 1920x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output DP-2-1 --mode 1920x1080 --pos 0x0 --rotate normal")))
+;;   (add-hook 'exwm-randr-screen-change-hook
+;;             (lambda ()
+;;               (start-process-shell-command
+;;                "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output DP-2-1 --mode 1920x1080 --pos 1920x0 --rotate normal")))
+
+  (setq exwm-randr-workspace-output-plist
+        '(0 "eDP-1" 1 "DP-2-1" 2 "HDMI-1" 3 "HDMI-2" 4 "DP-2-2"))
+
+ ; (add-hook 'exwm-randr-screen-change-hook
+ ;     (lambda ()
+ ;       (start-process-shell-command
+ ;        "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 ;--rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off ;--output HDMI-2 --off --output DP-2-1 --mode 1920x1080 --pos 1920x0 --rotate ;normal --output DP-2-2 --off --output DP-2-3 --off")))
+
+  ;(setq exwm-randr-screen-change-hook nil)
 
   (exwm-randr-enable)
   (winner-mode t)
   (require 'exwm-systemtray)
-  (exwm-systemtray-enable)
+  ;(exwm-systemtray-enable) Systray handled by polybar
+
+  ; Normal copy-pasting
   (define-key exwm-mode-map (kbd "C-c") nil)
+  (define-key exwm-mode-map (kbd "C-v") nil)
+
   (setq exwm-input-simulation-keys
         '(([?\C-b] . [left])
           ([?\C-f] . [right])
@@ -34,7 +48,7 @@
           ([?\C-e] . [end])
           ([?\M-a] . [C-a])
           ([?\M-v] . [prior])
-          ([?\C-v] . [next])
+          ;([?\C-v] . [next])
           ([?\C-d] . [delete])
           ([?\C-k] . [S-end delete])
           ([?\C-w] . [?\C-x])
@@ -43,6 +57,9 @@
           ;; search
           ([?\C-s] . [?\C-f])
           ([?\M-s] . [?\C-s])))
+
+  (add-hook 'exwm-manage-finish-hook (lambda () (when (eq major-mode 'exwm-mode) (evil-local-mode -1))))
+
   (with-eval-after-load 'ediff-wind
   (setq ediff-control-frame-parameters
         (cons '(unsplittable . t) ediff-control-frame-parameters)))
@@ -83,12 +100,11 @@
           ([?\s-p] . switchmonitor-prev)
         ;((kbd "s-<return>") . switchmonitor-prev)
         ,@(mapcar (lambda (i)
-                    `(,(kbd (format "s-%d" i)) .
+                    `(,(kbd (format "s-%d" (+ i 1))) .
                       (lambda ()
                         (interactive)
-                        (message i)
-                        (exwm-workspace-switch-create (- ,i 1)))))
-                  (number-sequence 0 9))))
+                        (exwm-workspace-switch-create ,i))))
+                  (number-sequence 0 8))))
 
 
   (add-hook 'exwm-manage-finish-hook
@@ -129,6 +145,9 @@
         ((equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
          floating t
          floating-mode-line nil)
+       ((or (string-equal exwm-class-name "kdeconnect.daemon"))
+        floating t
+        fullscreen t)
         ))
 
 (defun exwm-floating--set-floating (id)

@@ -260,4 +260,6 @@
 
 (load-module 'tolino)
 
+(load-module 'secret-service-tweaks)
+
 (load-module 'chat-gpt)
