@@ -1,5 +1,11 @@
 ;;; languages.el -*- lexical-binding: t; -*-
 
+;; CANoe/CAPL
+(define-derived-mode capl-mode
+  c-mode "CAPL"
+  "Major mode for CANoe/CAPL."
+  (flycheck-mode 0))
+
 ;; Rust
 (setq rustic-format-trigger 'on-save
       rustic-format-on-save t)

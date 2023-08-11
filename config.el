@@ -263,3 +263,5 @@
 (load-module 'secret-service-tweaks)
 
 (load-module 'chat-gpt)
+
+(load-module 'calendar-tweaks)
