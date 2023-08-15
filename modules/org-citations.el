@@ -42,4 +42,6 @@
 (after! embark
   (add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents))
 
+(setq zotra-cli-command '("node" "/home/user/dox/install/zotra-cli/index.js"))
+
 (provide 'org-citations)

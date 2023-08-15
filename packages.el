@@ -189,6 +189,7 @@
 
 
 ;(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+(package! zotra)
 
 
 

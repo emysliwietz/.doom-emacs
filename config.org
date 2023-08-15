@@ -3285,8 +3285,28 @@ parses its input."
   :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
   :init
   (all-the-icons-completion-mode))
+; Legacy
+;(defun all-the-icons-completion-get-icon (cand)
+;  "Return the icon for the candidate CAND of completion category buffer."
+;  (let* ((mode (buffer-local-value 'major-mode (get-buffer cand)))
+;         (icon (all-the-icons-icon-for-mode mode))
+;         (parent-icon (all-the-icons-icon-for-mode
+;                       (get mode 'derived-mode-parent))))
+;    (concat
+;     (if (symbolp icon)
+;         (if (symbolp parent-icon)
+;             ;(all-the-icons-faicon "sticky-note-o")
+;             ""
+;           parent-icon)
+;       icon)
+;    (or
+;     (all-the-icons-ivy--icon-for-firefox mode cand)
+;     (all-the-icons-ivy--icon-for-tor mode cand)
+;     (all-the-icons-ivy--icon-for-exwm mode cand)
+;     (if (symbolp icon) (all-the-icons-faicon "sticky-note-o"))
+;     )" ")))
 
-(defun all-the-icons-completion-get-buffer-icon (cand)
+(cl-defmethod all-the-icons-completion-get-icon (cand (_cat (eql buffer)))
   "Return the icon for the candidate CAND of completion category buffer."
   (let* ((mode (buffer-local-value 'major-mode (get-buffer cand)))
          (icon (all-the-icons-icon-for-mode mode))
@@ -3299,13 +3319,12 @@ parses its input."
              ""
            parent-icon)
        icon)
-    (or
+ (or
      (all-the-icons-ivy--icon-for-firefox mode cand)
      (all-the-icons-ivy--icon-for-tor mode cand)
      (all-the-icons-ivy--icon-for-exwm mode cand)
      (if (symbolp icon) (all-the-icons-faicon "sticky-note-o"))
      )" ")))
-
 
 #+end_src
 ** Reading
@@ -5628,6 +5647,7 @@ javascript:location.href='org-protocol://capture?' +
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 ;(package! citar-capf :recipe (:host github :repo "mclear-tools/citar-capf"))
+(package! zotra)
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/org-citations.el
@@ -5674,6 +5694,8 @@ javascript:location.href='org-protocol://capture?' +
 ;; with this, you can exploit embark's multitarget actions, so that you can run `embark-act-all`
 (after! embark
   (add-to-list 'embark-multitarget-actions #'ex/search-pdf-contents))
+
+(setq zotra-cli-command '("node" "/home/user/dox/install/zotra-cli/index.js"))
 
 (provide 'org-citations)
 #+end_src
