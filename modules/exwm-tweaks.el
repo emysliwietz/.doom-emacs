@@ -8,20 +8,21 @@
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
   (exwm-enable)
   (fringe-mode -1)
-  (require 'exwm-randr)
+  ;(require 'exwm-randr)
 
 ;; (when (string= (system-name) "astaroth")
-;;   (setq exwm-randr-workspace-output-plist '(1 "DP-2-1" 2 "HDMI-2" 3 "DP-2-2" 4 "eDP-1")))
-;; (when (string= (system-name) "jarvis")
-;;   (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
+;;    (setq exwm-randr-workspace-monitor-plist '(1 "eDP-1" 2 "DP-2-1" 3 "HDMI-2" 3 "DP-2-2")))
+;;  (when (string= (system-name) "jarvis")
+;;    (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
 
-;;   (add-hook 'exwm-randr-screen-change-hook
-;;             (lambda ()
-;;               (start-process-shell-command
-;;                "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output DP-2-1 --mode 1920x1080 --pos 1920x0 --rotate normal")))
+   ;; (add-hook 'exwm-randr-screen-change-hook
+   ;;           (lambda ()
+   ;;             (start-process-shell-command
+   ;;              "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output DP-2-1 --mode 1920x1080 --pos 1920x0 --rotate normal")))
 
-  (setq exwm-randr-workspace-output-plist
-        '(0 "eDP-1" 1 "DP-2-1" 2 "HDMI-1" 3 "HDMI-2" 4 "DP-2-2"))
+  ;(setq exwm-randr-workspace-monitor-plist
+  ;      '(0 "eDP-1" 1 "DP-2-2"))
+
 
  ; (add-hook 'exwm-randr-screen-change-hook
  ;     (lambda ()
@@ -30,7 +31,7 @@
 
   ;(setq exwm-randr-screen-change-hook nil)
 
-  (exwm-randr-enable)
+  ;(exwm-randr-enable)
   (winner-mode t)
   (require 'exwm-systemtray)
   ;(exwm-systemtray-enable) Systray handled by polybar
@@ -136,7 +137,10 @@
       '(((or (string-equal exwm-class-name "Nm-applet")
              (string-equal exwm-class-name "Surf")
              (string-equal exwm-class-name "Steam")
-             (not (message exwm-class-name)))
+             (string-equal exwm-instance-name "Toplevel")
+             (not (progn
+                    (message (format "Class: %s" exwm-class-name))
+                    (message (format "Title: %s" exwm-instance-name)))))
            floating t
            floating-mode-line nil
 ;           width 0.4
