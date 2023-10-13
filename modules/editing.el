@@ -136,4 +136,10 @@
 (setq global-visual-line-mode t
  evil-respect-visual-line-mode t)
 
+(use-package treesit-auto
+  :demand t
+  :config
+  (setq treesit-auto-install 'prompt)
+  (global-treesit-auto-mode))
+
 (provide 'editing)

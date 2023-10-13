@@ -8,7 +8,10 @@
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
   (exwm-enable)
   (fringe-mode -1)
-  ;(require 'exwm-randr)
+  (require 'exwm-randr)
+  (setq exwm-randr-workspace-monitor-plist '(0 "eDP-1" 1 "DP-2-1" 2 "DP-2-2"))
+
+  (exwm-randr-enable)
 
 ;; (when (string= (system-name) "astaroth")
 ;;    (setq exwm-randr-workspace-monitor-plist '(1 "eDP-1" 2 "DP-2-1" 3 "HDMI-2" 3 "DP-2-2")))
@@ -20,8 +23,6 @@
    ;;             (start-process-shell-command
    ;;              "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output DP-2-1 --mode 1920x1080 --pos 1920x0 --rotate normal")))
 
-  ;(setq exwm-randr-workspace-monitor-plist
-  ;      '(0 "eDP-1" 1 "DP-2-2"))
 
 
  ; (add-hook 'exwm-randr-screen-change-hook
@@ -31,7 +32,6 @@
 
   ;(setq exwm-randr-screen-change-hook nil)
 
-  ;(exwm-randr-enable)
   (winner-mode t)
   (require 'exwm-systemtray)
   ;(exwm-systemtray-enable) Systray handled by polybar
@@ -137,7 +137,16 @@
       '(((or (string-equal exwm-class-name "Nm-applet")
              (string-equal exwm-class-name "Surf")
              (string-equal exwm-class-name "Steam")
+             (string-equal exwm-class-name "SshAskpass")
              (string-equal exwm-instance-name "Toplevel")
+             (and (string-equal exwm-class-name "Thunar")
+                  (or (string-equal exwm-title "File Operation Progress")
+                      (string-equal exwm-title "Attention")
+                      ))
+             (and (string-equal exwm-class-name "Firefox")
+                  (string-equal exwm-title "Save Image"))
+             (and (string-equal exwm-class-name "KeePassXC")
+                  (string-equal exwm-title "KeePassXC -  Access Request"))
              (not (progn
                     (message (format "Class: %s" exwm-class-name))
                     (message (format "Title: %s" exwm-instance-name)))))

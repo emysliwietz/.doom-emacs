@@ -11,6 +11,9 @@
 (defun go-to-scratch ()
   (interactive)
   (message "%s" (selected-window))
+  (message (format "Class: %s" exwm-class-name))
+  (message (format "Instance: %s" exwm-instance-name))
+  (message (format "Title: %s" exwm-title))
   ;(message "%s" (exwm-class-name (selected-window)))
   (switch-to-buffer "*scratch*"))
 

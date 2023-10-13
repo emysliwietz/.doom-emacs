@@ -11,15 +11,15 @@
 
 (setq display-time-day-and-date t
       display-time-24hr-format t)
-(display-time-mode 1)                             ; Enable time in the mode-line
-(display-battery-mode 1)
+      (display-time-mode 0)                             ; Enable time in the mode-line
+      (display-battery-mode 0)
 
 ;;; Unicode emojis
 (if (>= emacs-major-version 27)
     (set-fontset-font t '(#x1f000 . #x1faff)
                       (font-spec :family "Noto Color Emoji")))
 (set-face-attribute
- 'default nil :stipple nil :height 120 :width 'normal :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'normal :foundry "outline" :family "Source Code Pro for Powerline")
+ 'default nil :stipple nil :height 100 :width 'normal :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'normal :foundry "outline" :family "Source Code Pro for Powerline")
 ;;;; setting up composition functions for emoji modifiers
 ;;(dolist (items `(((?🇦 . ?🇿) [".[🇦-🇿]+" 0 font-shape-gstring])
 ;                 ((?🏳 . ?🏴) [".[️‍🌈⚧☠󠀠-󠁿]*" 0 font-shape-gstring])
@@ -42,6 +42,8 @@
 ;   (list (cadr items))))
 
 (setq emojify-emoji-set "twemoji-v2")
+
+(set-fontset-font t nil (font-spec :size 16 :name "Symbols Nerd Font"))
 
 (defun emojify--replace-text-with-emoji (orig-fn emoji text buffer start end &optional target)
   "Modify `emojify--propertize-text-for-emoji' to replace ascii/github emoticons with unicode emojis, on the fly."

@@ -262,6 +262,8 @@
 
 (load-module 'secret-service-tweaks)
 
-(load-module 'chat-gpt)
+;(load-module 'chat-gpt)
+
+(load-module 'ai-assistant)
 
 (load-module 'calendar-tweaks)
