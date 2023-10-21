@@ -40,46 +40,36 @@ This function is intended for use with `ivy-ignore-buffers'."
 
 ;(use-package! all-the-icons-ibuffer
 ;  :init (all-the-icons-ibuffer-mode 1))
+(all-the-icons-completion-mode -1)
 
-(defun ivy-icon-switch-buffer ()
-  "ivy-switch-buffer with icons"
-  (interactive)
-  (condition-case nil
-      (all-the-icons-ivy-setup))
-
-(defun all-the-icons-ivy--buffer-transformer (b s)
-  "Return a candidate string for buffer B named S preceded by an icon.
-Try to find the icon for the buffer's B `major-mode'.
-If that fails look for an icon for the mode that the `major-mode' is derived from."
-  (let ((mode (buffer-local-value 'major-mode b))
-	(buffname (replace-regexp-in-string "<.*>$" "" s)))
-    (format (concat "%s" all-the-icons-spacer "%s")
-            (propertize "\t" 'display (or
-                                       (all-the-icons-ivy--icon-for-mode mode)
-                                       (all-the-icons-ivy--icon-for-mode (get mode 'derived-mode-parent))
-				       (all-the-icons-ivy--icon-for-firefox mode buffname)
-				       (all-the-icons-ivy--icon-for-tor mode buffname)
-				       (all-the-icons-ivy--icon-for-exwm mode buffname)
-                                       (funcall
-                                        all-the-icons-ivy-family-fallback-for-buffer
-                                        all-the-icons-ivy-name-fallback-for-buffer)))
-            (all-the-icons-ivy--buffer-propertize b s))))
-
-
-  (ivy-switch-buffer))
-
-(setq all-the-icons-ivy-file-commands '(counsel-find-file counsel-file-jump counsel-recentf counsel-projectile-find-file counsel-projectile-find-dir))
+(cl-defmethod nerd-icons-completion-get-icon (cand (_cat (eql buffer)))
+  "Return the icon for the candidate CAND of completion category buffer."
+  (let* ((mode (buffer-local-value 'major-mode (get-buffer cand)))
+         (buffname (buffer-name (get-buffer cand)))
+         (icon (nerd-icons-icon-for-mode mode))
+         (parent-icon (nerd-icons-icon-for-mode
+                       (get mode 'derived-mode-parent))))
+    (concat
+             (or
+              (nerd-icons--icon-for-firefox mode buffname)
+	      (all-the-icons-ivy--icon-for-tor mode buffname)
+	      (all-the-icons-ivy--icon-for-exwm mode buffname)
+              icon
+              parent-icon
+             (nerd-icons-faicon "nf-fa-sticky_note_o"))
+     " "))
+   )
 
 ;; Overwrite some stuff for exwm and icons in Firefox
-(defun all-the-icons-ivy--icon-for-firefox (mode buffname)
-  "Apply `all-the-icons-icon-for-url' on Firefox window in exwm-mode.
+(defun nerd-icons--icon-for-firefox (mode buffname)
+  "Get icon for Firefox window in exwm-mode.
 Assuming that url is in title like in Keepass Helper extension."
   (if (string-equal (format "%s" mode) "exwm-mode")
       (let ((bnl (split-string buffname " - "))
 	    (fnl (split-string buffname " — ")))
 	    (let ((browser (format "%s" (last fnl))))
       (if (or (string-equal browser "(Mozilla Firefox)") (string-equal browser "(Mozilla Firefox (Private Browsing))"))
-	  (all-the-icons-faicon "firefox" :face 'all-the-icons-red)
+	  (nerd-icons-faicon "nf-fa-firefox" :foreground 'red)
 	)))))
 
 ;; Overwrite some stuff for exwm and icons in Tor Browser
@@ -90,7 +80,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
       (let ((bnl (split-string buffname " - ")))
 	(if (string-equal (format "%s" (last bnl)) "(Tor Browser)")
 	    (if (string-equal (format "%s" (last bnl 2)) "(YouTube Tor Browser)")
-		(all-the-icons-icon-for-url "youtube.com" :face 'all-the-icons-red)
+		(nerd-icons-icon-for-url "youtube.com")
 	      (all-the-icons-faicon "user-secret" :face 'all-the-icons-red)
 	      )))))
 
