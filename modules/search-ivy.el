@@ -69,7 +69,7 @@ Assuming that url is in title like in Keepass Helper extension."
 	    (fnl (split-string buffname " — ")))
 	    (let ((browser (format "%s" (last fnl))))
       (if (or (string-equal browser "(Mozilla Firefox)") (string-equal browser "(Mozilla Firefox (Private Browsing))"))
-	  (nerd-icons-faicon "nf-fa-firefox" :foreground 'red)
+          (propertize (nerd-icons-faicon "nf-fa-firefox") 'face '(:foreground "red"))
 	)))))
 
 ;; Overwrite some stuff for exwm and icons in Tor Browser
@@ -101,7 +101,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 	    ((file-directory-p buffname)
 	     (all-the-icons-faicon "folder-open" :face 'all-the-icons-yellow))
 	    ((string-suffix-p " - mpv" buffname)
-	     (all-the-icons-faicon "play" :face 'all-the-icons-orange))
+             (propertize (nerd-icons-faicon "nf-fa-play") 'face '(:foreground "orange")))
             ((string-match-p " - Thunar" buffname)
 	     (all-the-icons-faicon "folder-open-o" :face 'all-the-icons-blue))
 	    ((string-suffix-p "\.java" buffname)
