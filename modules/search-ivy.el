@@ -112,7 +112,10 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
              (propertize (nerd-icons-faicon "nf-fa-folder_open") 'face '(:foreground "yellow")))
             ((string-suffix-p "\.pdf" buffname)
             (propertize (nerd-icons-faicon "nf-fa-file_pdf_o") 'face '(:foreground "red")))
-	    ((or(string-equal "st" buffname) (string-prefix-p (concat (user-login-name) "@") buffname) (string-prefix-p "root@" buffname))
+	    ((or (string-equal "st" buffname)
+                 (string-prefix-p (concat (user-login-name) "@") buffname)
+                 (string-prefix-p "root@" buffname)
+                 (string-match "st<[0-9]+>" buffname))
              (propertize (nerd-icons-octicon "nf-oct-terminal") 'face '(:foreground "green")))
 	    )))
 
