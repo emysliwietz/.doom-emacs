@@ -40,7 +40,6 @@ This function is intended for use with `ivy-ignore-buffers'."
 
                                         ;(use-package! all-the-icons-ibuffer
                                         ;  :init (all-the-icons-ibuffer-mode 1))
-(all-the-icons-completion-mode -1)
 
 (after! consult
   (cl-defmethod nerd-icons-completion-get-icon (cand (_cat (eql buffer)))
