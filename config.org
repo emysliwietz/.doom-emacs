@@ -413,6 +413,25 @@ abort completely with `C-g'."
 (setq save-abbrevs 'silently)
 (setq-default abbrev-mode t)
 
+(setq ispell-abbrev-local nil)
+(defun ispell-abbrev-advice (ispell-func &rest args)
+  "Advice for `ispell-word'. Creates an abbrev for the correction made.
+Unless ispell-abbrev-local, abbrev will be global.
+ISPELL-FUNC passed as adviced function."
+  (let ((before (downcase (or (thing-at-point 'word) "")))
+        after
+        (res (apply ispell-func args)))
+
+    (setq after (downcase (or (thing-at-point 'word) "")))
+    (unless (string= after before)
+      (define-abbrev
+        (if ispell-abbrev-local local-abbrev-table global-abbrev-table) before after))
+    (message "\"%s\" now expands to \"%s\" %sally."
+               before after (if ispell-abbrev-local "loc" "glob"))
+    res))
+
+(advice-add 'ispell-word :around #'ispell-abbrev-advice)
+
 (provide 'auto-correct)
 #+end_src
 
@@ -666,34 +685,6 @@ Return a string suitable for insertion in `dired' buffer."
 (use-package! diredful
   :config (diredful-mode 1))
 
-; I don't like colors that much, icons already do everything
-;(use-package dired-rainbow
-;
-;  :defer t
-;  :config
-;  (progn
-;    (dired-rainbow-define-chmod directory "#6cb2eb" "d.*")
-;    (dired-rainbow-define html "#eb5286" ("css" "less" "sass" "scss" "htm" "html" "jhtm" "mht" "eml" "mustache" "xhtml"))
-;    (dired-rainbow-define xml "#f2d024" ("xml" "xsd" "xsl" "xslt" "wsdl" "bib" "json" "msg" "pgn" "rss" "yaml" "yml" "rdata"))
-;    (dired-rainbow-define document "#9561e2" ("docm" "doc" "docx" "odb" "odt" "pdb" "pdf" "ps" "rtf" "djvu" "epub" "odp" "ppt" "pptx"))
-;    (dired-rainbow-define markdown "#ffed4a" ("org" "etx" "info" "markdown" "md" "mkd" "nfo" "pod" "rst" "tex" "textfile" "txt"))
-;    (dired-rainbow-define database "#6574cd" ("xlsx" "xls" "csv" "accdb" "db" "mdb" "sqlite" "nc"))
-;    (dired-rainbow-define media "#de751f" ("mp3" "mp4" "MP3" "MP4" "avi" "mpeg" "mpg" "flv" "ogg" "mov" "mid" "midi" "wav" "aiff" "flac"))
-;    (dired-rainbow-define image "#f66d9b" ("tiff" "tif" "cdr" "gif" "ico" "jpeg" "jpg" "png" "psd" "eps" "svg"))
-;    (dired-rainbow-define log "#c17d11" ("log"))
-;    (dired-rainbow-define shell "#f6993f" ("awk" "bash" "bat" "sed" "sh" "zsh" "vim"))
-;    (dired-rainbow-define interpreted "#38c172" ("py" "ipynb" "rb" "pl" "t" "msql" "mysql" "pgsql" "sql" "r" "clj" "cljs" "scala" "js"))
-;    (dired-rainbow-define compiled "#4dc0b5" ("asm" "cl" "lisp" "el" "c" "h" "c++" "h++" "hpp" "hxx" "m" "cc" "cs" "cp" "cpp" "go" "f" "for" "ftn" "f90" "f95" "f03" "f08" "s" "rs" "hi" "hs" "pyc" ".java"))
-;    (dired-rainbow-define executable "#8cc4ff" ("exe" "msi"))
-;    (dired-rainbow-define compressed "#51d88a" ("7z" "zip" "bz2" "tgz" "txz" "gz" "xz" "z" "Z" "jar" "war" "ear" "rar" "sar" "xpi" "apk" "xz" "tar"))
-;    (dired-rainbow-define packaged "#faad63" ("deb" "rpm" "apk" "jad" "jar" "cab" "pak" "pk3" "vdf" "vpk" "bsp"))
-;    (dired-rainbow-define encrypted "#ffed4a" ("gpg" "pgp" "asc" "bfe" "enc" "signature" "sig" "p12" "pem"))
-;    (dired-rainbow-define fonts "#6cb2eb" ("afm" "fon" "fnt" "pfb" "pfm" "ttf" "otf"))
-;    (dired-rainbow-define partition "#e3342f" ("dmg" "iso" "bin" "nrg" "qcow" "toast" "vcd" "vmdk" "bak"))
-;    (dired-rainbow-define vc "#0074d9" ("git" "gitignore" "gitattributes" "gitmodules"))
-;    (dired-rainbow-define-chmod executable-unix "#38c172" "-.*x.*")
-;    ))
-
 (use-package! dired-git-info
   :config
   (setq dgi-auto-hide-details-p nil)
@@ -810,6 +801,9 @@ Return a string suitable for insertion in `dired' buffer."
 (map! :map youtube-dl-list-mode-map
       :n "L" #'dired-load-or-youtube-toggle
       :n "r" #'youtube-dl-failures-reset)
+
+; Allow dragging files from dired to other applications
+(setq dired-mouse-drag-files t)
 
 (provide 'dired-tweaks)
 #+end_src
@@ -1617,15 +1611,30 @@ Return a string suitable for insertion in `dired' buffer."
   (setq elfeed-summary--current-pos pos)
   (elfeed-summary--action pos event)
   )
+(defun image-shrink (img-path dimensions callback)
+  "Shrink an image to dimensions (string 'WxH') aync, then execute callback"
+  (let ((output-path (s-replace ".jpg" ".small.jpg" img-path)))
+    (if (file-exists-p output-path)
+        (funcall callback output-path)
+      (let ((process
+             (start-process "image-shrinking-proc" "*img-shrnk-buf*" "convert" img-path "-resize" dimensions output-path)))
+        (set-process-sentinel process (lambda (_process _event) (funcall callback output-path)))))))
 
+(defun get-max-minibuffer-height-px ()
+    "Return maximum height of echo area and minibuffer in pixels"
+    (if (floatp max-mini-window-height) ;height is percentage of frame height if float, else number of lines
+        (truncate (* max-mini-window-height (frame-pixel-height)))
+      (* max-mini-window-height (frame-char-height))
+      ))
 
-
-(defun image-tooltip (img-path)
-  "Display image at img-path as tooltip"
-  (tooltip-mode 1)
-  (tooltip-show
-    (propertize "Look in minbuffer"
-                'display (create-image img-path))))
+(defun image-popup (img-path)
+  "Display image at output-path as popup"
+  (tooltip-mode 1) ;; tooltip-show doesn't always work
+  (image-shrink img-path (format "x%s" (get-max-minibuffer-height-px))
+  '(lambda (img-path) (message
+   (propertize "Look in minbuffer"
+               'display (create-image img-path))))
+                             ))
 
 (defun elfeed-search-thumbnail ()
   "Display the thumbnail of the currently selected video"
@@ -1635,13 +1644,15 @@ Return a string suitable for insertion in `dired' buffer."
         (entries (elfeed-search-selected)))
     (cl-loop for entry in entries
              when (elfeed-entry-link entry)
-             do (let ((title (concat elfeed-thumbnail-dir (secure-hash 'sha224 (elfeed-entry-title entry)))))
-                  (if (file-exists-p (concat title ".jpg"))
-                      (image-tooltip (concat title ".jpg"))
-                    (youtube-dl-get-video-thumbnail it title (lambda (a) (image-tooltip (concat title ".jpg"))))))
+             do (let* ((title (concat elfeed-thumbnail-dir (secure-hash 'sha224 (elfeed-entry-title entry))))
+                       (img-path (concat title ".jpg"))
+                       (callback (lambda (&rest _args) (image-popup img-path))))
+                  (if (file-exists-p img-path)
+                      (funcall callback)
+                    (youtube-dl-get-video-thumbnail it title callback))))
     (with-current-buffer buffer
       (mapc #'elfeed-search-update-entry entries)
-      (unless (or elfeed-search-remain-on-entry (use-region-p)))))))
+      (unless (or elfeed-search-remain-on-entry (use-region-p))))))
 
 (defun elfeed-wget-url ()
   "Wgets URL at point to elfeed video dir"
@@ -3060,6 +3071,8 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
              (propertize (nerd-icons-faicon "nf-fa-folder_open") 'face '(:foreground "yellow")))
 	    ((string-suffix-p " - mpv" buffname)
              (propertize (nerd-icons-faicon "nf-fa-play") 'face '(:foreground "orange")))
+            ((string-suffix-p " - Mozilla Thunderbird" buffname)
+             (propertize (nerd-icons-mdicon "nf-md-email") 'face '(:foreground "sky blue")))
             ((string-match-p " - Thunar" buffname)
              (propertize (nerd-icons-faicon "nf-fa-folder_open") 'face '(:foreground "yellow")))
             ((string-suffix-p "\.pdf" buffname)
@@ -6471,17 +6484,17 @@ I'm not sure why pdf-view-resize-factor isn't consistent in both directions, so 
 *** Chat GPT
 No longer useful because of API limits
 #+begin_src emacs-lisp
-;(load-module 'chat-gpt)
+(load-module 'chat-gpt)
 #+end_src
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-;(package! gptel :recipe (:host github :repo "karthink/gptel"))
+(package! gptel :recipe (:host github :repo "karthink/gptel"))
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/chat-gpt.el
-;; (setq gptel-api-key (secrets-get-secret "Passwords" "ChatGPT API Key"))
-;; (setq gptel--system-message "")
-;; (provide 'chat-gpt)
+(setq gptel-api-key (secrets-get-secret "Passwords" "ChatGPT API Key"))
+(setq gptel--system-message "")
+(provide 'chat-gpt)
 #+end_src
 *** AI Chat (Bing and ChatGPT)
 #+begin_src emacs-lisp

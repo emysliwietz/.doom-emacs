@@ -108,6 +108,8 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
              (propertize (nerd-icons-faicon "nf-fa-folder_open") 'face '(:foreground "yellow")))
 	    ((string-suffix-p " - mpv" buffname)
              (propertize (nerd-icons-faicon "nf-fa-play") 'face '(:foreground "orange")))
+            ((string-suffix-p " - Mozilla Thunderbird" buffname)
+             (propertize (nerd-icons-mdicon "nf-md-email") 'face '(:foreground "sky blue")))
             ((string-match-p " - Thunar" buffname)
              (propertize (nerd-icons-faicon "nf-fa-folder_open") 'face '(:foreground "yellow")))
             ((string-suffix-p "\.pdf" buffname)

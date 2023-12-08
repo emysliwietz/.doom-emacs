@@ -210,7 +210,7 @@
 
 
 
-;(package! gptel :recipe (:host github :repo "karthink/gptel"))
+(package! gptel :recipe (:host github :repo "karthink/gptel"))
 
 (package! async-await)
 (package! aichat :recipe (:host github :repo "xhcoding/emacs-aichat"))

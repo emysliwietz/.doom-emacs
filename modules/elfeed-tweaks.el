@@ -456,15 +456,30 @@
   (setq elfeed-summary--current-pos pos)
   (elfeed-summary--action pos event)
   )
+(defun image-shrink (img-path dimensions callback)
+  "Shrink an image to dimensions (string 'WxH') aync, then execute callback"
+  (let ((output-path (s-replace ".jpg" ".small.jpg" img-path)))
+    (if (file-exists-p output-path)
+        (funcall callback output-path)
+      (let ((process
+             (start-process "image-shrinking-proc" "*img-shrnk-buf*" "convert" img-path "-resize" dimensions output-path)))
+        (set-process-sentinel process (lambda (_process _event) (funcall callback output-path)))))))
 
+(defun get-max-minibuffer-height-px ()
+    "Return maximum height of echo area and minibuffer in pixels"
+    (if (floatp max-mini-window-height) ;height is percentage of frame height if float, else number of lines
+        (truncate (* max-mini-window-height (frame-pixel-height)))
+      (* max-mini-window-height (frame-char-height))
+      ))
 
-
-(defun image-tooltip (img-path)
-  "Display image at img-path as tooltip"
-  (tooltip-mode 1)
-  (tooltip-show
-    (propertize "Look in minbuffer"
-                'display (create-image img-path))))
+(defun image-popup (img-path)
+  "Display image at output-path as popup"
+  (tooltip-mode 1) ;; tooltip-show doesn't always work
+  (image-shrink img-path (format "x%s" (get-max-minibuffer-height-px))
+  '(lambda (img-path) (message
+   (propertize "Look in minbuffer"
+               'display (create-image img-path))))
+                             ))
 
 (defun elfeed-search-thumbnail ()
   "Display the thumbnail of the currently selected video"
@@ -474,13 +489,15 @@
         (entries (elfeed-search-selected)))
     (cl-loop for entry in entries
              when (elfeed-entry-link entry)
-             do (let ((title (concat elfeed-thumbnail-dir (secure-hash 'sha224 (elfeed-entry-title entry)))))
-                  (if (file-exists-p (concat title ".jpg"))
-                      (image-tooltip (concat title ".jpg"))
-                    (youtube-dl-get-video-thumbnail it title (lambda (a) (image-tooltip (concat title ".jpg"))))))
+             do (let* ((title (concat elfeed-thumbnail-dir (secure-hash 'sha224 (elfeed-entry-title entry))))
+                       (img-path (concat title ".jpg"))
+                       (callback (lambda (&rest _args) (image-popup img-path))))
+                  (if (file-exists-p img-path)
+                      (funcall callback)
+                    (youtube-dl-get-video-thumbnail it title callback))))
     (with-current-buffer buffer
       (mapc #'elfeed-search-update-entry entries)
-      (unless (or elfeed-search-remain-on-entry (use-region-p)))))))
+      (unless (or elfeed-search-remain-on-entry (use-region-p))))))
 
 (defun elfeed-wget-url ()
   "Wgets URL at point to elfeed video dir"
