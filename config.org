@@ -6596,8 +6596,12 @@ No longer useful because of API limits
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/chat-gpt.el
-(setq gptel-api-key (secrets-get-secret "Passwords" "ChatGPT API Key"))
-(setq gptel--system-message "")
+(use-package! gptel
+  :defer t
+  :config
+    (setq gptel-api-key (secrets-get-secret "Passwords" "ChatGPT API Key")
+       gptel--system-message "")
+  )
 (provide 'chat-gpt)
 #+end_src
 *** AI Chat (Bing and ChatGPT)
