@@ -207,9 +207,9 @@ display purposes anyway."
         (let* ((directory (youtube-dl-item-directory item))
                (destination (youtube-dl-item-destination item))
                (default-directory
-                 (if directory
-                     (concat (directory-file-name directory) "/")
-                   (concat (directory-file-name youtube-dl-directory) "/")))
+                (if directory
+                    (concat (directory-file-name directory) "/")
+                  (concat (directory-file-name youtube-dl-directory) "/")))
                (url (youtube-dl-item-url item))
                (slow-p (youtube-dl-item-slow-p item))
                (proc (progn
@@ -270,7 +270,7 @@ display purposes anyway."
                                "--dump-json"
                                "--flat-playlist"
                                playlist))
-      (setf (point) (point-min))
+      (goto-char (point-min))
       (cl-loop with json-object-type = 'plist
                for index upfrom 1
                for video = (ignore-errors (json-read))
@@ -349,7 +349,7 @@ of reversed playlists.
     (let ((save-point (point))
           (window (get-buffer-window (current-buffer))))
       (youtube-dl--fill-listing)
-      (setf (point) save-point)
+      (goto-char save-point)
       (when window
         (set-window-point window save-point))
       (when hl-line-mode
@@ -395,7 +395,7 @@ of reversed playlists.
         (if (fboundp 'gui-set-selection)
             (gui-set-selection nil url)     ; >= Emacs 25
           (with-no-warnings
-           (x-set-selection 'PRIMARY url))) ; <= Emacs 24
+            (x-set-selection 'PRIMARY url))) ; <= Emacs 24
         (message "Yanked %s" url)))))
 
 (defun youtube-dl-list-kill ()

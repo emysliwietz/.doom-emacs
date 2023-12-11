@@ -13,7 +13,8 @@
 ;; clients, file templates and snippets.
 (setq user-full-name "Egidius Mysliwietz"
       user-mail-address "egidius@mysliwietz.de"
-      auth-sources '("~/.authinfo")
+      ;auth-sources '(default "secrets:Passwords" "~/.authinfo.gpg")
+      auth-sources '(default "~/.authinfo")
       auth-source-cache-expiry nil)
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
@@ -66,6 +67,14 @@
 
 (add-to-list 'load-path "~/.doom.d/modules")
 
+; Make sure compile warnings are shown immediately even if init is incomplete to preserve knowledge of files and location
+(defun dont-delay-compile-warnings (fun type &rest args)
+  (if (eq type 'bytecomp)
+      (let ((after-init-time t))
+        (apply fun type args))
+    (apply fun type args)))
+(advice-add 'display-warning :around #'dont-delay-compile-warnings)
+
 (defmacro -- (var)
   `(when ,var
     (setq ,var (- ,var 1))))
@@ -114,10 +123,7 @@
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'private-config)
 ;(load-module '(require 'bible))
-(when (require 'mu4e nil 'noerror)
-  (load-module 'email)
-  (load-module 'email-config)
-  (load-module 'email-accounts))
+
 ; Unsorted
 (setq doom-modeline-enable-word-count t)
 ;(doom/quickload-session)

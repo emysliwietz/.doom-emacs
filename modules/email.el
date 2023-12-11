@@ -55,4 +55,7 @@ Prevents a series of redisplays from being called (when set to an appropriate va
           (run-at-time (* 1.1 mu4e-reindex-request-min-seperation) nil
                        #'mu4e-reindex-maybe))))))
 
+(after! mu4e-alert
+  (mu4e-alert-enable-notifications)
+  (mu4e-update-mail-and-index 1)) ; fetch emails in background)
 (provide 'email)

@@ -14,6 +14,7 @@
       mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
       mu4e-headers-auto-update t
       mu4e-compose-format-flowed t
+      message-send-mail-function 'smtpmail-send-it
       smtpmail-stream-type 'starttls
       mu4e-view-show-addresses t
       mu4e-split-view 'single-window ;; horizontal (default), vertical

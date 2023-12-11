@@ -18,7 +18,8 @@
 ;; clients, file templates and snippets.
 (setq user-full-name "Egidius Mysliwietz"
       user-mail-address "egidius@mysliwietz.de"
-      auth-sources '("~/.authinfo")
+      ;auth-sources '(default "secrets:Passwords" "~/.authinfo.gpg")
+      auth-sources '(default "~/.authinfo")
       auth-source-cache-expiry nil)
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
@@ -71,6 +72,14 @@
 
 (add-to-list 'load-path "~/.doom.d/modules")
 
+; Make sure compile warnings are shown immediately even if init is incomplete to preserve knowledge of files and location
+(defun dont-delay-compile-warnings (fun type &rest args)
+  (if (eq type 'bytecomp)
+      (let ((after-init-time t))
+        (apply fun type args))
+    (apply fun type args)))
+(advice-add 'display-warning :around #'dont-delay-compile-warnings)
+
 (defmacro -- (var)
   `(when ,var
     (setq ,var (- ,var 1))))
@@ -119,10 +128,7 @@
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'private-config)
 ;(load-module '(require 'bible))
-(when (require 'mu4e nil 'noerror)
-  (load-module 'email)
-  (load-module 'email-config)
-  (load-module 'email-accounts))
+
 ; Unsorted
 (setq doom-modeline-enable-word-count t)
 ;(doom/quickload-session)
@@ -5904,6 +5910,9 @@ Prevents a series of redisplays from being called (when set to an appropriate va
           (run-at-time (* 1.1 mu4e-reindex-request-min-seperation) nil
                        #'mu4e-reindex-maybe))))))
 
+(after! mu4e-alert
+  (mu4e-alert-enable-notifications)
+  (mu4e-update-mail-and-index 1)) ; fetch emails in background)
 (provide 'email)
 #+end_src
 
@@ -5933,6 +5942,7 @@ Prevents a series of redisplays from being called (when set to an appropriate va
       mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
       mu4e-headers-auto-update t
       mu4e-compose-format-flowed t
+      message-send-mail-function 'smtpmail-send-it
       smtpmail-stream-type 'starttls
       mu4e-view-show-addresses t
       mu4e-split-view 'single-window ;; horizontal (default), vertical
@@ -6030,7 +6040,7 @@ html-images)))
 		  ( user-mail-address	         . "e.p.mysliwietz@gmail.com" )
                   ( smtpmail-mail-address        . "e.p.mysliwietz@gmail.com")
 		  ( smtpmail-smtp-user           . "e.p.mysliwietz@gmail.com")
-		  ( mu4e-drafts-folder           . "/gmail/[Gmail]/Entwürfe" )
+		  ( mu4e-drafts-folder           . "/gmail/[Gmail]/Entw&APw-rfe" )
                   ( mu4e-sent-folder             . "/gmail/[Gmail]/Gesendet" )
 		  ( mu4e-trash-folder            . "/gmail/[Gmail]/Papierkorb" )
 		  ( mu4e-refile-folder           . gmail-refile )
@@ -6039,26 +6049,26 @@ html-images)))
 		  ( smtpmail-local-domain        . "gmail.com" )
                   ( smtpmail-smtp-service        . 587 )
 		  ))
-        ,(make-mu4e-context
-	  :name "emysliwietz"
-	  :enter-func (lambda () (mu4e-message "Switching to egidius context"))
-          :leave-func (lambda () (mu4e-message "Leaving egidius context"))
-	  ;; we match based on the contact-fields of the message
-	  :vars '(
-		  ( user-full-name               . "Egidius Mysliwietz" )
-		  ( user-mail-address	         . "egidius@mysliwietz.de"  )
-                  ( smtpmail-mail-address        . "egidius@mysliwietz.de")
-		  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
-		  ( mu4e-archive-folder          . "/egidius/Archive" )
-		  ( mu4e-drafts-folder           . "/egidius/Drafts" )
-                  ( mu4e-sent-folder             . "/egidius/Sent" )
-		  ( mu4e-trash-folder            . "/egidius/Trash" )
-		  ( mu4e-refile-folder           . gmail-refile )
-                  ( smtpmail-default-smtp-server . "smtp.strato.de" )
-                  ( smtpmail-smtp-server         . "smtp.strato.de" )
-		  ( smtpmail-local-domain        . "strato.de" )
-                  ( smtpmail-smtp-service        . 465 )
-		  ))
+        ;; ,(make-mu4e-context
+	;;   :name "emysliwietz"
+	;;   :enter-func (lambda () (mu4e-message "Switching to egidius context"))
+        ;;   :leave-func (lambda () (mu4e-message "Leaving egidius context"))
+	;;   ;; we match based on the contact-fields of the message
+	;;   :vars '(
+	;; 	  ( user-full-name               . "Egidius Mysliwietz" )
+	;; 	  ( user-mail-address	         . "egidius@mysliwietz.de"  )
+        ;;           ( smtpmail-mail-address        . "egidius@mysliwietz.de")
+	;; 	  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
+	;; 	  ( mu4e-archive-folder          . "/egidius/Archive" )
+	;; 	  ( mu4e-drafts-folder           . "/egidius/Drafts" )
+        ;;           ( mu4e-sent-folder             . "/egidius/Sent" )
+	;; 	  ( mu4e-trash-folder            . "/egidius/Trash" )
+	;; 	  ( mu4e-refile-folder           . gmail-refile )
+        ;;           ( smtpmail-default-smtp-server . "smtp.strato.de" )
+        ;;           ( smtpmail-smtp-server         . "smtp.strato.de" )
+	;; 	  ( smtpmail-local-domain        . "strato.de" )
+        ;;           ( smtpmail-smtp-service        . 465 )
+	;; 	  ))
       ;,(make-mu4e-context
 	  ;:name "xgmx"
 	  ;:enter-func (lambda () (mu4e-message "Switching to gmx context"))
@@ -6132,10 +6142,104 @@ html-images)))
 		  ;))
        ))
 
-
 (provide 'email-accounts)
 #+end_src
 
+*** mbsync config
+**** RU
+#+begin_src shell :tangle ~/.mbsyncrc
+# ###########################################
+
+# IMAPAccount radboud
+# Host outlook.office365.com
+# User egidius.mysliwietz@ru.nl
+# PassCmd "secret-tool lookup mail radboud"
+# Port 993
+# SSLType IMAPS
+# AuthMechs XOAUTH2
+# CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+# IMAPStore radboud-remote
+# Account radboud
+
+# MaildirStore radboud-local
+# Path ~/mail/ru/
+# Inbox ~/mail/ru/INBOX
+# Subfolders Verbatim
+
+# Channel radboud
+# Far :radboud-remote:
+# Near :radboud-local:
+# Create Both
+# Expunge Both
+# Sync All
+# Patterns *
+
+# ###########################################
+#+end_src
+**** Strato
+#+begin_src shell :tangle ~/.mbsyncrc
+# ###########################################
+
+# IMAPAccount emysliwietz
+# Host imap.strato.de
+# User egidius@mysliwietz.de
+# PassCmd "secret-tool lookup mail emysliwietz"
+# #Port 993
+# SSLType IMAPS
+# AuthMechs Login
+# CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+# IMAPStore emysliwietz-remote
+# Account emysliwietz
+
+# MaildirStore emysliwietz-local
+# Path ~/mail/emysliwietz/
+# Inbox ~/mail/emysliwietz/INBOX
+# Subfolders Verbatim
+
+# Channel emysliwietz
+# Far :emysliwietz-remote:
+# Near :emysliwietz-local:
+# Create Both
+# Expunge Both
+# Sync All
+# Patterns *
+# SyncState *
+
+# ###########################################
+#+end_src
+**** gmail
+#+begin_src shell :tangle ~/.mbsyncrc
+# ############################################
+IMAPAccount gmail
+Host imap.gmail.com
+User e.p.mysliwietz@gmail.com
+PassCmd "secret-tool lookup mail-mbsync gmail"
+Port 993
+SSLType IMAPS
+AuthMechs Login
+CertificateFile /etc/ssl/certs/ca-certificates.crt
+
+IMAPStore gmail-remote
+Account gmail
+
+MaildirStore gmail-local
+Path ~/mail/gmail/
+Inbox ~/mail/gmail/INBOX
+Subfolders Verbatim
+
+Channel gmail
+Far :gmail-remote:
+Near :gmail-local:
+Create Both
+Expunge Both
+Sync All
+Patterns *
+SyncState *
+
+# ###########################################
+#+end_src
 ** Latex Tweaks
 #+begin_src emacs-lisp
 (load-module 'latex-tweaks)
