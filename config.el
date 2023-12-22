@@ -273,3 +273,5 @@
 (load-module 'ai-assistant)
 
 (load-module 'calendar-tweaks)
+
+(load-module 'thinkpad-tweaks)

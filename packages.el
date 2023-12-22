@@ -146,6 +146,7 @@
 
 
 (package! swiper)
+(package! vertico-posframe)
 ;; (package! vertico)
 ;; (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
 ;;                              :includes (vertico-indexed
@@ -214,5 +215,7 @@
 
 (package! async-await)
 (package! aichat :recipe (:host github :repo "xhcoding/emacs-aichat"))
+
+
 
 

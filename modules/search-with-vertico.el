@@ -200,4 +200,7 @@ parses its input."
   )
 
 (global-set-key (kbd "C-s") 'consult-line)
+
+; Global vertico posframe mode
+(vertico-posframe-mode 1)
 (provide 'search-with-vertico)

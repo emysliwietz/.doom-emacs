@@ -3102,6 +3102,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 (package! swiper)
+(package! vertico-posframe)
 ;; (package! vertico)
 ;; (package! vertico :recipe (:files (:defaults "extensions/*") ; Special recipe to load extensions conveniently
 ;;                              :includes (vertico-indexed
@@ -3321,6 +3322,9 @@ parses its input."
   )
 
 (global-set-key (kbd "C-s") 'consult-line)
+
+; Global vertico posframe mode
+(vertico-posframe-mode 1)
 (provide 'search-with-vertico)
 #+end_src
 ** Reading
@@ -5912,6 +5916,7 @@ Prevents a series of redisplays from being called (when set to an appropriate va
 
 (after! mu4e-alert
   (mu4e-alert-enable-notifications)
+  (mu4e-alert-set-default-style 'libnotify)
   (mu4e-update-mail-and-index 1)) ; fetch emails in background)
 (provide 'email)
 #+end_src
@@ -5962,8 +5967,8 @@ Prevents a series of redisplays from being called (when set to an appropriate va
 (defun mu4e--view-quit-and-back ()
   "Quit mu4e view buffer and go back to mu4e"
   (interactive)
-  (mu4e~view-quit-buffer)
-  (=mu4e))
+  (mu4e-view-quit)
+  (mu4e--goto-inbox))
 
 (defun mu4e--goto-inbox ()
   "Goto mu4e inbox"
@@ -5978,6 +5983,10 @@ Prevents a series of redisplays from being called (when set to an appropriate va
 
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
+
+; Make sure doom doesn't move mu4e article buffer into popup
+; Show it in same window
+(set-popup-rule! "*mu4e-article*" :ignore 1)
 
 ;(require 'org-mu4e)
 ;(setq org-mu4e-convert-to-html t
@@ -6010,6 +6019,11 @@ html-images)))
 
 (add-to-list 'mu4e-view-actions
 '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+; Ignore popup rules to make sure emails are shown in same window
+(after! mu4e
+  (set-popup-rule! "^\\*mu4e-headers\\*" :ignore t)
+  (set-popup-rule! "^\\*mu4e-view\\*" :ignore t))
 
 
 (provide 'email-config)
@@ -6049,26 +6063,26 @@ html-images)))
 		  ( smtpmail-local-domain        . "gmail.com" )
                   ( smtpmail-smtp-service        . 587 )
 		  ))
-        ;; ,(make-mu4e-context
-	;;   :name "emysliwietz"
-	;;   :enter-func (lambda () (mu4e-message "Switching to egidius context"))
-        ;;   :leave-func (lambda () (mu4e-message "Leaving egidius context"))
-	;;   ;; we match based on the contact-fields of the message
-	;;   :vars '(
-	;; 	  ( user-full-name               . "Egidius Mysliwietz" )
-	;; 	  ( user-mail-address	         . "egidius@mysliwietz.de"  )
-        ;;           ( smtpmail-mail-address        . "egidius@mysliwietz.de")
-	;; 	  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
-	;; 	  ( mu4e-archive-folder          . "/egidius/Archive" )
-	;; 	  ( mu4e-drafts-folder           . "/egidius/Drafts" )
-        ;;           ( mu4e-sent-folder             . "/egidius/Sent" )
-	;; 	  ( mu4e-trash-folder            . "/egidius/Trash" )
-	;; 	  ( mu4e-refile-folder           . gmail-refile )
-        ;;           ( smtpmail-default-smtp-server . "smtp.strato.de" )
-        ;;           ( smtpmail-smtp-server         . "smtp.strato.de" )
-	;; 	  ( smtpmail-local-domain        . "strato.de" )
-        ;;           ( smtpmail-smtp-service        . 465 )
-	;; 	  ))
+        ,(make-mu4e-context
+	  :name "emysliwietz"
+	  :enter-func (lambda () (mu4e-message "Switching to egidius context"))
+          :leave-func (lambda () (mu4e-message "Leaving egidius context"))
+	  ;; we match based on the contact-fields of the message
+	  :vars '(
+		  ( user-full-name               . "Egidius Mysliwietz" )
+		  ( user-mail-address	         . "egidius@mysliwietz.de"  )
+                  ( smtpmail-mail-address        . "egidius@mysliwietz.de")
+		  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
+		  ( mu4e-archive-folder          . "/emysliwietz/Archive" )
+		  ( mu4e-drafts-folder           . "/emysliwietz/Drafts" )
+                  ( mu4e-sent-folder             . "/emysliwietz/Sent" )
+		  ( mu4e-trash-folder            . "/emysliwietz/Trash" )
+		  ( mu4e-refile-folder           . gmail-refile )
+                  ( smtpmail-default-smtp-server . "smtp.strato.de" )
+                  ( smtpmail-smtp-server         . "smtp.strato.de" )
+		  ( smtpmail-local-domain        . "strato.de" )
+                  ( smtpmail-smtp-service        . 465 )
+		  ))
       ;,(make-mu4e-context
 	  ;:name "xgmx"
 	  ;:enter-func (lambda () (mu4e-message "Switching to gmx context"))
@@ -6179,35 +6193,35 @@ html-images)))
 #+end_src
 **** Strato
 #+begin_src shell :tangle ~/.mbsyncrc
-# ###########################################
+###########################################
 
-# IMAPAccount emysliwietz
-# Host imap.strato.de
-# User egidius@mysliwietz.de
-# PassCmd "secret-tool lookup mail emysliwietz"
-# #Port 993
-# SSLType IMAPS
-# AuthMechs Login
-# CertificateFile /etc/ssl/certs/ca-certificates.crt
+IMAPAccount emysliwietz
+Host imap.strato.de
+User egidius@mysliwietz.de
+PassCmd "secret-tool lookup mail-mbsync emysliwietz"
+#Port 993
+SSLType IMAPS
+AuthMechs Login
+CertificateFile /etc/ssl/certs/ca-certificates.crt
 
-# IMAPStore emysliwietz-remote
-# Account emysliwietz
+IMAPStore emysliwietz-remote
+Account emysliwietz
 
-# MaildirStore emysliwietz-local
-# Path ~/mail/emysliwietz/
-# Inbox ~/mail/emysliwietz/INBOX
-# Subfolders Verbatim
+MaildirStore emysliwietz-local
+Path ~/mail/emysliwietz/
+Inbox ~/mail/emysliwietz/INBOX
+Subfolders Verbatim
 
-# Channel emysliwietz
-# Far :emysliwietz-remote:
-# Near :emysliwietz-local:
-# Create Both
-# Expunge Both
-# Sync All
-# Patterns *
-# SyncState *
+Channel emysliwietz
+Far :emysliwietz-remote:
+Near :emysliwietz-local:
+Create Both
+Expunge Both
+Sync All
+Patterns *
+SyncState *
 
-# ###########################################
+###########################################
 #+end_src
 **** gmail
 #+begin_src shell :tangle ~/.mbsyncrc
@@ -6239,6 +6253,45 @@ Patterns *
 SyncState *
 
 # ###########################################
+#+end_src
+**** mu init
+#+begin_src shell :tangle no
+mu init --maildir ~/mail --my-address="e.p.mysliwietz@gmail.com" --my-address="egidius@mysliwietz.de" --my-address="egidius.mysliwietz@gmx.de"
+mu index
+#+end_src
+*** msmtprc - Sending mails
+**** default settings
+#+begin_src shell :tangle ~/.config/msmtp/config
+defaults
+auth	on
+tls	on
+tls_trust_file	/etc/ssl/certs/ca-certificates.crt
+logfile /home/user/.config/msmtp/msmtp.log
+
+#+end_src
+**** gmail
+#+begin_src shell :tangle ~/.config/msmtp/config
+account gmail
+host smtp.gmail.com
+from e.p.mysliwietz@gmail.com
+user e.p.mysliwietz@gmail.com
+passwordeval "secret-tool lookup mail-mbsync gmail"
+
+#+end_src
+
+**** strato
+#+begin_src shell :tangle ~/.config/msmtp/config
+account emysliwietz
+host smtp.strato.de
+port 587
+from egidius@mysliwietz.de
+user egidius@mysliwietz.de
+passwordeval "secret-tool lookup mail-mbsync emysliwietz"
+
+#+end_src
+**** default account
+#+begin_src shell :tangle ~/.config/msmtp/config
+account default : emysliwietz
 #+end_src
 ** Latex Tweaks
 #+begin_src emacs-lisp
@@ -6703,4 +6756,54 @@ No longer useful because of API limits
 (setq org-agenda-include-diary t)
 
 (provide 'calendar-tweaks)
+#+end_src
+
+** Thinkpad Tweaks
+#+begin_src emacs-lisp
+(load-module 'thinkpad-tweaks)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/thinkpad-tweaks.el
+(provide 'thinkpad-tweaks)
+#+end_src
+*** /etc/systemd/system/battery-threshold.service
+#+begin_src conf :tangle no
+[Unit]
+Description=Set battery charge control start and end thresholds
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '[ -d /sys/class/power_supply/BAT0 ] && echo 40 > /sys/class/power_supply/BAT0/charge_control_start_threshold'
+ExecStart=/bin/bash -c '[ -d /sys/class/power_supply/BAT0 ] && echo 60 > /sys/class/power_supply/BAT0/charge_control_end_threshold'
+ExecStart=/bin/bash -c '[ -d /sys/class/power_supply/BAT1 ] && echo 40 > /sys/class/power_supply/BAT1/charge_control_start_threshold'
+ExecStart=/bin/bash -c '[ -d /sys/class/power_supply/BAT1 ] && echo 60 > /sys/class/power_supply/BAT1/charge_control_end_threshold'
+User=root
+#+end_src
+*** /etc/systemd/system/battery-threshold.timer
+#+begin_src conf :tangle no
+[Unit]
+Description=Run battery-threshold at startup
+
+[Timer]
+OnStartupSec=5min
+
+[Install]
+WantedBy=timers.target
+#+end_src
+
+*** Full Battery script
+Charges battery to 100% full by undoing service, active until restart
+#+begin_src shell :tangle ~/.scripts/battery-full.sh
+#!/bin/env sh
+# Undoes battery-threshold.service and charges battery to 100% until restart
+# Run as root
+
+/bin/bash -c '[ -d /sys/class/power_supply/BAT0 ] && echo 0 > /sys/class/power_supply/BAT0/charge_control_start_threshold'
+/bin/bash -c '[ -d /sys/class/power_supply/BAT0 ] && echo 100 > /sys/class/power_supply/BAT0/charge_control_end_threshold'
+/bin/bash -c '[ -d /sys/class/power_supply/BAT1 ] && echo 0 > /sys/class/power_supply/BAT1/charge_control_start_threshold'
+/bin/bash -c '[ -d /sys/class/power_supply/BAT1 ] && echo 100 > /sys/class/power_supply/BAT1/charge_control_end_threshold'
 #+end_src

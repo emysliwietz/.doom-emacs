@@ -57,5 +57,6 @@ Prevents a series of redisplays from being called (when set to an appropriate va
 
 (after! mu4e-alert
   (mu4e-alert-enable-notifications)
+  (mu4e-alert-set-default-style 'libnotify)
   (mu4e-update-mail-and-index 1)) ; fetch emails in background)
 (provide 'email)

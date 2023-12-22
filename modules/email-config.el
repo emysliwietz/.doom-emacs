@@ -34,8 +34,8 @@
 (defun mu4e--view-quit-and-back ()
   "Quit mu4e view buffer and go back to mu4e"
   (interactive)
-  (mu4e~view-quit-buffer)
-  (=mu4e))
+  (mu4e-view-quit)
+  (mu4e--goto-inbox))
 
 (defun mu4e--goto-inbox ()
   "Goto mu4e inbox"
@@ -50,6 +50,10 @@
 
 (when (fboundp 'imagemagick-register-types)
   (imagemagick-register-types))
+
+; Make sure doom doesn't move mu4e article buffer into popup
+; Show it in same window
+(set-popup-rule! "*mu4e-article*" :ignore 1)
 
 ;(require 'org-mu4e)
 ;(setq org-mu4e-convert-to-html t
@@ -82,6 +86,11 @@ html-images)))
 
 (add-to-list 'mu4e-view-actions
 '("ViewInBrowser" . mu4e-action-view-in-browser) t)
+
+; Ignore popup rules to make sure emails are shown in same window
+(after! mu4e
+  (set-popup-rule! "^\\*mu4e-headers\\*" :ignore t)
+  (set-popup-rule! "^\\*mu4e-view\\*" :ignore t))
 
 
 (provide 'email-config)

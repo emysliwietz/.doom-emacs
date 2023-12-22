@@ -22,26 +22,26 @@
 		  ( smtpmail-local-domain        . "gmail.com" )
                   ( smtpmail-smtp-service        . 587 )
 		  ))
-        ;; ,(make-mu4e-context
-	;;   :name "emysliwietz"
-	;;   :enter-func (lambda () (mu4e-message "Switching to egidius context"))
-        ;;   :leave-func (lambda () (mu4e-message "Leaving egidius context"))
-	;;   ;; we match based on the contact-fields of the message
-	;;   :vars '(
-	;; 	  ( user-full-name               . "Egidius Mysliwietz" )
-	;; 	  ( user-mail-address	         . "egidius@mysliwietz.de"  )
-        ;;           ( smtpmail-mail-address        . "egidius@mysliwietz.de")
-	;; 	  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
-	;; 	  ( mu4e-archive-folder          . "/egidius/Archive" )
-	;; 	  ( mu4e-drafts-folder           . "/egidius/Drafts" )
-        ;;           ( mu4e-sent-folder             . "/egidius/Sent" )
-	;; 	  ( mu4e-trash-folder            . "/egidius/Trash" )
-	;; 	  ( mu4e-refile-folder           . gmail-refile )
-        ;;           ( smtpmail-default-smtp-server . "smtp.strato.de" )
-        ;;           ( smtpmail-smtp-server         . "smtp.strato.de" )
-	;; 	  ( smtpmail-local-domain        . "strato.de" )
-        ;;           ( smtpmail-smtp-service        . 465 )
-	;; 	  ))
+        ,(make-mu4e-context
+	  :name "emysliwietz"
+	  :enter-func (lambda () (mu4e-message "Switching to egidius context"))
+          :leave-func (lambda () (mu4e-message "Leaving egidius context"))
+	  ;; we match based on the contact-fields of the message
+	  :vars '(
+		  ( user-full-name               . "Egidius Mysliwietz" )
+		  ( user-mail-address	         . "egidius@mysliwietz.de"  )
+                  ( smtpmail-mail-address        . "egidius@mysliwietz.de")
+		  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
+		  ( mu4e-archive-folder          . "/emysliwietz/Archive" )
+		  ( mu4e-drafts-folder           . "/emysliwietz/Drafts" )
+                  ( mu4e-sent-folder             . "/emysliwietz/Sent" )
+		  ( mu4e-trash-folder            . "/emysliwietz/Trash" )
+		  ( mu4e-refile-folder           . gmail-refile )
+                  ( smtpmail-default-smtp-server . "smtp.strato.de" )
+                  ( smtpmail-smtp-server         . "smtp.strato.de" )
+		  ( smtpmail-local-domain        . "strato.de" )
+                  ( smtpmail-smtp-service        . 465 )
+		  ))
       ;,(make-mu4e-context
 	  ;:name "xgmx"
 	  ;:enter-func (lambda () (mu4e-message "Switching to gmx context"))
