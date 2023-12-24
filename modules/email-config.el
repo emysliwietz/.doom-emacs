@@ -14,8 +14,12 @@
       mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
       mu4e-headers-auto-update t
       mu4e-compose-format-flowed t
-      message-send-mail-function 'smtpmail-send-it
+      sendmail-program "/usr/bin/msmtp"
       smtpmail-stream-type 'starttls
+      message-sendmail-f-is-evil t
+      message-sendmail-extra-arguments '("--read-envelope-from")
+;      message-send-mail-function 'smtpmail-send-it
+      message-send-mail-function 'message-send-mail-with-sendmail
       mu4e-view-show-addresses t
       mu4e-split-view 'single-window ;; horizontal (default), vertical
       mu4e-attachment-dir "~/Downloads"

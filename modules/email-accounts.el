@@ -9,38 +9,26 @@
 	  :enter-func (lambda () (mu4e-message "Switching to gmail context"))
 	  :leave-func (lambda () (mu4e-message "Leaving gmail context"))
 	  :vars '(
-		  ( user-full-name	         . "Egidius Mysliwietz" )
+		  ( user-full-name	             . "Egidius Mysliwietz" )
 		  ( user-mail-address	         . "e.p.mysliwietz@gmail.com" )
-                  ( smtpmail-mail-address        . "e.p.mysliwietz@gmail.com")
-		  ( smtpmail-smtp-user           . "e.p.mysliwietz@gmail.com")
 		  ( mu4e-drafts-folder           . "/gmail/[Gmail]/Entw&APw-rfe" )
                   ( mu4e-sent-folder             . "/gmail/[Gmail]/Gesendet" )
 		  ( mu4e-trash-folder            . "/gmail/[Gmail]/Papierkorb" )
 		  ( mu4e-refile-folder           . gmail-refile )
-                  ( smtpmail-default-smtp-server . "smtp.gmail.com" )
-                  ( smtpmail-smtp-server         . "smtp.gmail.com" )
-		  ( smtpmail-local-domain        . "gmail.com" )
-                  ( smtpmail-smtp-service        . 587 )
 		  ))
         ,(make-mu4e-context
 	  :name "emysliwietz"
-	  :enter-func (lambda () (mu4e-message "Switching to egidius context"))
-          :leave-func (lambda () (mu4e-message "Leaving egidius context"))
+	  :enter-func (lambda () (mu4e-message "Switching to emysliwietz context"))
+          :leave-func (lambda () (mu4e-message "Leaving emysliwietz context"))
 	  ;; we match based on the contact-fields of the message
 	  :vars '(
 		  ( user-full-name               . "Egidius Mysliwietz" )
 		  ( user-mail-address	         . "egidius@mysliwietz.de"  )
-                  ( smtpmail-mail-address        . "egidius@mysliwietz.de")
-		  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
 		  ( mu4e-archive-folder          . "/emysliwietz/Archive" )
 		  ( mu4e-drafts-folder           . "/emysliwietz/Drafts" )
                   ( mu4e-sent-folder             . "/emysliwietz/Sent" )
 		  ( mu4e-trash-folder            . "/emysliwietz/Trash" )
 		  ( mu4e-refile-folder           . gmail-refile )
-                  ( smtpmail-default-smtp-server . "smtp.strato.de" )
-                  ( smtpmail-smtp-server         . "smtp.strato.de" )
-		  ( smtpmail-local-domain        . "strato.de" )
-                  ( smtpmail-smtp-service        . 465 )
 		  ))
       ;,(make-mu4e-context
 	  ;:name "xgmx"
@@ -60,23 +48,18 @@
 		  ;( smtpmail-local-domain        . "gmx.net" )
                   ;( smtpmail-smtp-service        . 465 )
 		  ;))
-       ;,(make-mu4e-context
-	  ;:name "radboud"
-	  ;:enter-func (lambda () (mu4e-message "Switch to radboud context"))
-	  ;:leave-func (lambda () (mu4e-message "Leaving radboud context"))
-	  ;:vars '(
-		  ;( user-full-name	         . "Egidius Mysliwietz" )
-		  ;( user-mail-address	         . "e.mysliwietz@student.ru.nl" )
-                  ;( smtpmail-mail-address        . "e.mysliwietz@student.ru.nl")
-		  ;( smtpmail-smtp-user           . "s1000796")
-		  ;( mu4e-drafts-folder           . "/radboud/Drafts" )
-                  ;( mu4e-sent-folder             . "/radboud/Sent Items" )
-		  ;( mu4e-trash-folder            . "/radboud/Trash" )
-                  ;( smtpmail-default-smtp-server . "smtp-auth.ru.nl" )
-                  ;( smtpmail-smtp-server         . "smtp-auth.ru.nl" )
-		  ;( smtpmail-local-domain        . "ru.nl" )
-                  ;( smtpmail-smtp-service        . 587 )
-		  ;))
+       ,(make-mu4e-context
+	  :name "ru"
+	  :enter-func (lambda () (mu4e-message "Switch to ru context"))
+	  :leave-func (lambda () (mu4e-message "Leaving ru context"))
+	  :vars '(
+		  ( user-full-name	             . "Egidius Mysliwietz" )
+		  ( user-mail-address	         . "egidius.mysliwietz@ru.nl" )
+		  ( mu4e-drafts-folder           . "/ru/Drafts" )
+                  ( mu4e-sent-folder             . "/ru/Sent Items" )
+		  ( mu4e-trash-folder            . "/ru/Deleted Items" )
+          		  ( mu4e-archive-folder          . "/ru/Archive" )
+		  ))
        ;,(make-mu4e-context
 	  ;:name "eindhoven"
 	  ;:enter-func (lambda () (mu4e-message "Switch to eindhoven context"))

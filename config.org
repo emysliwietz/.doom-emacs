@@ -5914,13 +5914,29 @@ Prevents a series of redisplays from being called (when set to an appropriate va
           (run-at-time (* 1.1 mu4e-reindex-request-min-seperation) nil
                        #'mu4e-reindex-maybe))))))
 
+(setq mu4e-notification-support t)
 (after! mu4e-alert
   (mu4e-alert-enable-notifications)
   (mu4e-alert-set-default-style 'libnotify)
+  (setq +mu4e-alert-bell-cmd '("mail-alert.sh"))
   (mu4e-update-mail-and-index 1)) ; fetch emails in background)
 (provide 'email)
 #+end_src
+**** mail-alert.sh
+#+begin_src shell :tangle ~/.scripts/mail-alert.sh
+#!/bin/env sh
 
+#paplay "/usr/share/sounds/freedesktop/stereo/message.oga"
+
+mu_find_cmd() {
+    mu find --sortfield=date --reverse --maxnum=1 --fields \"$1\" flag:unread | tr -d '"'
+}
+
+SENDER=$(mu_find_cmd "f")
+SUBJECT=$(mu_find_cmd "s")
+
+dunstify -h string:x-dunst-stack-tag:email -i "/home/user/dox/icons/mail-unread-symbolic.svg" "$SENDER" "$SUBJECT"
+#+end_src
 *** Email Config
 #+begin_src emacs-lisp
 (load-module-if 'mu4e 'email-config)
@@ -5947,8 +5963,12 @@ Prevents a series of redisplays from being called (when set to an appropriate va
       mu4e-html2text-command "iconv -c -t utf-8 | pandoc -f html -t plain"
       mu4e-headers-auto-update t
       mu4e-compose-format-flowed t
-      message-send-mail-function 'smtpmail-send-it
+      sendmail-program "/usr/bin/msmtp"
       smtpmail-stream-type 'starttls
+      message-sendmail-f-is-evil t
+      message-sendmail-extra-arguments '("--read-envelope-from")
+;      message-send-mail-function 'smtpmail-send-it
+      message-send-mail-function 'message-send-mail-with-sendmail
       mu4e-view-show-addresses t
       mu4e-split-view 'single-window ;; horizontal (default), vertical
       mu4e-attachment-dir "~/Downloads"
@@ -6050,38 +6070,26 @@ html-images)))
 	  :enter-func (lambda () (mu4e-message "Switching to gmail context"))
 	  :leave-func (lambda () (mu4e-message "Leaving gmail context"))
 	  :vars '(
-		  ( user-full-name	         . "Egidius Mysliwietz" )
+		  ( user-full-name	             . "Egidius Mysliwietz" )
 		  ( user-mail-address	         . "e.p.mysliwietz@gmail.com" )
-                  ( smtpmail-mail-address        . "e.p.mysliwietz@gmail.com")
-		  ( smtpmail-smtp-user           . "e.p.mysliwietz@gmail.com")
 		  ( mu4e-drafts-folder           . "/gmail/[Gmail]/Entw&APw-rfe" )
                   ( mu4e-sent-folder             . "/gmail/[Gmail]/Gesendet" )
 		  ( mu4e-trash-folder            . "/gmail/[Gmail]/Papierkorb" )
 		  ( mu4e-refile-folder           . gmail-refile )
-                  ( smtpmail-default-smtp-server . "smtp.gmail.com" )
-                  ( smtpmail-smtp-server         . "smtp.gmail.com" )
-		  ( smtpmail-local-domain        . "gmail.com" )
-                  ( smtpmail-smtp-service        . 587 )
 		  ))
         ,(make-mu4e-context
 	  :name "emysliwietz"
-	  :enter-func (lambda () (mu4e-message "Switching to egidius context"))
-          :leave-func (lambda () (mu4e-message "Leaving egidius context"))
+	  :enter-func (lambda () (mu4e-message "Switching to emysliwietz context"))
+          :leave-func (lambda () (mu4e-message "Leaving emysliwietz context"))
 	  ;; we match based on the contact-fields of the message
 	  :vars '(
 		  ( user-full-name               . "Egidius Mysliwietz" )
 		  ( user-mail-address	         . "egidius@mysliwietz.de"  )
-                  ( smtpmail-mail-address        . "egidius@mysliwietz.de")
-		  ( smtpmail-smtp-user           . "egidius@mysliwietz.de")
 		  ( mu4e-archive-folder          . "/emysliwietz/Archive" )
 		  ( mu4e-drafts-folder           . "/emysliwietz/Drafts" )
                   ( mu4e-sent-folder             . "/emysliwietz/Sent" )
 		  ( mu4e-trash-folder            . "/emysliwietz/Trash" )
 		  ( mu4e-refile-folder           . gmail-refile )
-                  ( smtpmail-default-smtp-server . "smtp.strato.de" )
-                  ( smtpmail-smtp-server         . "smtp.strato.de" )
-		  ( smtpmail-local-domain        . "strato.de" )
-                  ( smtpmail-smtp-service        . 465 )
 		  ))
       ;,(make-mu4e-context
 	  ;:name "xgmx"
@@ -6101,23 +6109,18 @@ html-images)))
 		  ;( smtpmail-local-domain        . "gmx.net" )
                   ;( smtpmail-smtp-service        . 465 )
 		  ;))
-       ;,(make-mu4e-context
-	  ;:name "radboud"
-	  ;:enter-func (lambda () (mu4e-message "Switch to radboud context"))
-	  ;:leave-func (lambda () (mu4e-message "Leaving radboud context"))
-	  ;:vars '(
-		  ;( user-full-name	         . "Egidius Mysliwietz" )
-		  ;( user-mail-address	         . "e.mysliwietz@student.ru.nl" )
-                  ;( smtpmail-mail-address        . "e.mysliwietz@student.ru.nl")
-		  ;( smtpmail-smtp-user           . "s1000796")
-		  ;( mu4e-drafts-folder           . "/radboud/Drafts" )
-                  ;( mu4e-sent-folder             . "/radboud/Sent Items" )
-		  ;( mu4e-trash-folder            . "/radboud/Trash" )
-                  ;( smtpmail-default-smtp-server . "smtp-auth.ru.nl" )
-                  ;( smtpmail-smtp-server         . "smtp-auth.ru.nl" )
-		  ;( smtpmail-local-domain        . "ru.nl" )
-                  ;( smtpmail-smtp-service        . 587 )
-		  ;))
+       ,(make-mu4e-context
+	  :name "ru"
+	  :enter-func (lambda () (mu4e-message "Switch to ru context"))
+	  :leave-func (lambda () (mu4e-message "Leaving ru context"))
+	  :vars '(
+		  ( user-full-name	             . "Egidius Mysliwietz" )
+		  ( user-mail-address	         . "egidius.mysliwietz@ru.nl" )
+		  ( mu4e-drafts-folder           . "/ru/Drafts" )
+                  ( mu4e-sent-folder             . "/ru/Sent Items" )
+		  ( mu4e-trash-folder            . "/ru/Deleted Items" )
+          		  ( mu4e-archive-folder          . "/ru/Archive" )
+		  ))
        ;,(make-mu4e-context
 	  ;:name "eindhoven"
 	  ;:enter-func (lambda () (mu4e-message "Switch to eindhoven context"))
@@ -6162,32 +6165,32 @@ html-images)))
 *** mbsync config
 **** RU
 #+begin_src shell :tangle ~/.mbsyncrc
-# ###########################################
 
-# IMAPAccount radboud
-# Host outlook.office365.com
-# User egidius.mysliwietz@ru.nl
-# PassCmd "secret-tool lookup mail radboud"
-# Port 993
-# SSLType IMAPS
-# AuthMechs XOAUTH2
-# CertificateFile /etc/ssl/certs/ca-certificates.crt
+IMAPAccount ru
+Host smtp.office365.com
+User egidius.mysliwietz@ru.nl
+PassCmd "secret-tool lookup mail-mbsync ru"
+Port 993
+SSLType IMAPS
+AuthMechs XOAUTH2
+CertificateFile /etc/ssl/certs/ca-certificates.crt
 
-# IMAPStore radboud-remote
-# Account radboud
+IMAPStore ru-remote
+Account ru
 
-# MaildirStore radboud-local
-# Path ~/mail/ru/
-# Inbox ~/mail/ru/INBOX
-# Subfolders Verbatim
+MaildirStore ru-local
+Path ~/mail/ru/
+Inbox ~/mail/ru/INBOX
+Subfolders Verbatim
 
-# Channel radboud
-# Far :radboud-remote:
-# Near :radboud-local:
-# Create Both
-# Expunge Both
-# Sync All
-# Patterns *
+Channel ru
+Far :ru-remote:
+Near :ru-local:
+Create Both
+Expunge Both
+Sync All
+Patterns *
+SyncState *
 
 # ###########################################
 #+end_src
@@ -6765,10 +6768,6 @@ No longer useful because of API limits
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
-#+end_src
-*** Code
-#+begin_src emacs-lisp :tangle modules/thinkpad-tweaks.el
-(provide 'thinkpad-tweaks)
 #+end_src
 *** /etc/systemd/system/battery-threshold.service
 #+begin_src conf :tangle no
