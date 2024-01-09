@@ -274,4 +274,4 @@
 
 (load-module 'calendar-tweaks)
 
-(load-module 'thinkpad-tweaks)
+;(load-module 'thinkpad-tweaks)

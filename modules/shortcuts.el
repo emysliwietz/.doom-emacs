@@ -165,6 +165,9 @@
 (global-set-key (kbd "C-c 2") (lambda () (interactive) (insert "́")))
 (global-set-key (kbd "C-c 3") (lambda () (interactive) (insert "̌")))
 (global-set-key (kbd "C-c 4") (lambda () (interactive) (insert "̀")))
+;;; Devanagari anusvara
+(global-set-key (kbd "C-c 5") (lambda () (interactive) (insert "̇")))
+(global-set-key (kbd "C-c 6") (lambda () (interactive) (insert "̣")))
 
 ;;; Rectangle mark mode
 (global-set-key (kbd "C-ü") (lambda () (interactive) (rectangle-mark-mode)))

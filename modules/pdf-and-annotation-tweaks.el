@@ -27,6 +27,23 @@
     (org-noter)
     (pdf-view-noter-keymap-load))
 
+  (defun pdf-view-high-contrast-theme ()
+    "Sets black and white high contrast theme"
+    (interactive)
+    (pdf-view-themed-minor-mode -1)
+    (setq old-pdf-view-midnight-colors pdf-view-midnight-colors)
+    (setq pdf-view-midnight-colors '("#ffeeee" . "#000000"))
+    (pdf-view-midnight-minor-mode 1))
+
+  (defun pdf-view-undo-high-contrast-theme ()
+    "Unsets black and white high contrast theme"
+    (interactive)
+    (pdf-view-themed-minor-mode -1)
+    (setq pdf-view-midnight-colors old-pdf-view-midnight-colors)
+    (pdf-view-midnight-minor-mode 1))
+
+
+
   (defun pdf-view-theme-cycle ()
     "Cycle between emacs, midnight and white theme"
     (interactive)

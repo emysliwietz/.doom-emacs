@@ -2858,6 +2858,9 @@ Return a string suitable for insertion in `dired' buffer."
 (global-set-key (kbd "C-c 2") (lambda () (interactive) (insert "́")))
 (global-set-key (kbd "C-c 3") (lambda () (interactive) (insert "̌")))
 (global-set-key (kbd "C-c 4") (lambda () (interactive) (insert "̀")))
+;;; Devanagari anusvara
+(global-set-key (kbd "C-c 5") (lambda () (interactive) (insert "̇")))
+(global-set-key (kbd "C-c 6") (lambda () (interactive) (insert "̣")))
 
 ;;; Rectangle mark mode
 (global-set-key (kbd "C-ü") (lambda () (interactive) (rectangle-mark-mode)))
@@ -6006,7 +6009,8 @@ dunstify -h string:x-dunst-stack-tag:email -i "/home/user/dox/icons/mail-unread-
 
 ; Make sure doom doesn't move mu4e article buffer into popup
 ; Show it in same window
-(set-popup-rule! "*mu4e-article*" :ignore 1)
+(after! mu4e
+  (set-popup-rule! "*mu4e-article*" :ignore 1))
 
 ;(require 'org-mu4e)
 ;(setq org-mu4e-convert-to-html t
@@ -6292,6 +6296,18 @@ user egidius@mysliwietz.de
 passwordeval "secret-tool lookup mail-mbsync emysliwietz"
 
 #+end_src
+**** ru
+#+begin_src shell :tangle ~/.config/msmtp/config
+account ru
+host smtp.office365.com
+port 587
+auth xoauth2
+from egidius.mysliwietz@ru.nl
+user egidius.mysliwietz@ru.nl
+passwordeval "secret-tool lookup mail-mbsync ru"
+
+#+end_src
+
 **** default account
 #+begin_src shell :tangle ~/.config/msmtp/config
 account default : emysliwietz
@@ -6514,6 +6530,23 @@ This forces a complete recompilation of the document, even if the source
     (evil-goto-line)
     (org-noter)
     (pdf-view-noter-keymap-load))
+
+  (defun pdf-view-high-contrast-theme ()
+    "Sets black and white high contrast theme"
+    (interactive)
+    (pdf-view-themed-minor-mode -1)
+    (setq old-pdf-view-midnight-colors pdf-view-midnight-colors)
+    (setq pdf-view-midnight-colors '("#ffeeee" . "#000000"))
+    (pdf-view-midnight-minor-mode 1))
+
+  (defun pdf-view-undo-high-contrast-theme ()
+    "Unsets black and white high contrast theme"
+    (interactive)
+    (pdf-view-themed-minor-mode -1)
+    (setq pdf-view-midnight-colors old-pdf-view-midnight-colors)
+    (pdf-view-midnight-minor-mode 1))
+
+
 
   (defun pdf-view-theme-cycle ()
     "Cycle between emacs, midnight and white theme"
@@ -6763,7 +6796,7 @@ No longer useful because of API limits
 
 ** Thinkpad Tweaks
 #+begin_src emacs-lisp
-(load-module 'thinkpad-tweaks)
+;(load-module 'thinkpad-tweaks)
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el

@@ -57,7 +57,8 @@
 
 ; Make sure doom doesn't move mu4e article buffer into popup
 ; Show it in same window
-(set-popup-rule! "*mu4e-article*" :ignore 1)
+(after! mu4e
+  (set-popup-rule! "*mu4e-article*" :ignore 1))
 
 ;(require 'org-mu4e)
 ;(setq org-mu4e-convert-to-html t
