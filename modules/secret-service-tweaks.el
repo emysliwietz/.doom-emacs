@@ -1,4 +1,4 @@
-  ;; Load and patch secrets
+;; Load and patch secrets
   (use-package! secrets
     :commands (secrets-search-items
                secrets-get-secret
