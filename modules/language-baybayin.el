@@ -146,7 +146,9 @@
  ("ze" ["ᜎᜒ"])
  ("zi" ["ᜎᜒ"])
  ("zu" ["ᜎᜓ"])
- ("zo" ["ᜎᜓ"]))
+ ("zo" ["ᜎᜓ"])
+ ("," ["᜵"])
+ ("." ["᜶"]))
 
 ;;(set-fontset-font "fontset-default" 'tagalog (font-spec :family "Tagalog Doctrina 1593"))
 (set-fontset-font "fontset-default" 'tagalog (font-spec :family "Noto Sans Tagalog"))

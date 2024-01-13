@@ -3825,6 +3825,7 @@ Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-displ
 #+end_src
 ** Spaced Repetition
 #+begin_src emacs-lisp
+(load-module 'pamparam)
 (load-module 'spaced-repetition)
 #+end_src
 *** Requirements
@@ -3832,9 +3833,7 @@ Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-displ
 
 #+end_src
 *** Code
-#+begin_src emacs-lisp :tangle modules/spaced-repetition.el
-;;; pamparam.el -*- lexical-binding: t; -*-
-
+#+begin_src emacs-lisp :tangle modules/pamparam.el
 ;;; pamparam.el --- Simple and fast flashcards. -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2016-2020 Oleh Krehel
@@ -3870,6 +3869,8 @@ Option: 'bold, 'error, 'warning, 'highlight or any value of M-x list-faces-displ
 
 ;;* Requires
 (require 'worf)
+(require 'lispy)
+(require 'hydra)
 (require 'ivy)
 
 (defgroup pamparam nil
@@ -4559,7 +4560,6 @@ repository, while the new card will start with empty metadata."
              (length updated-cards)
              (length processed-headings))))
 
-
 (defun pamparam--card-info ()
   (let* ((bnd (worf--bounds-subtree))
          (str (lispy--string-dwim bnd))
@@ -4961,9 +4961,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
           (pamparam-card-answer))
       (pamparam-card-mode -1))))
 
-(lispy-mode t)
 (lispy-raise-minor-mode 'pamparam-card-mode)
 
+(provide 'pamparam)
+
+;;; pamparam.el ends here
+
+#+end_src
+*** Tweaks
+#+begin_src emacs-lisp :tangle modules/spaced-repetition.el
 (defun pamparam-latin ()
   (interactive)
   (find-file "~/dox/pamparam/latin/Latin.org"))
@@ -4993,6 +4999,9 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
   (async-shell-command "cd ~/dox/pamparam/ && ~/dox/pamparam/update.sh")
   )
 
+(add-to-list 'recentf-exclude "pamparam.*/cards")
+(add-to-list 'recentf-exclude "/pamparam/")
+
 ;;* `hydra-pamparam'
 (defhydra hydra-pamparam (:exit t)
   "pam"
@@ -5014,15 +5023,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'spaced-repetition)
 #+end_src
 
-*** Accounting
+** Accounting
 #+begin_src emacs-lisp
 (load-module 'accounting)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/accounting.el
 ;;; beancount.el -*- lexical-binding: t; -*-
 
@@ -5049,16 +5058,16 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'accounting)
 #+end_src
 
-*** Popes
+** Popes
 #+begin_src emacs-lisp
 (when home?
   (load-module 'popes))
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/popes.el
 ;;; popes.el -*- lexical-binding: t; -*-
 
@@ -5137,15 +5146,15 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
 (provide 'popes)
 #+end_src
 
-*** Keycast Tweaks
+** Keycast Tweaks
 #+begin_src emacs-lisp
 (load-module 'keycast-tweaks)
 #+end_src
-**** Requirements
+*** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-**** Code
+*** Code
 #+begin_src emacs-lisp :tangle modules/keycast-tweaks.el
 ;;; keycast.el -*- lexical-binding: t; -*-
 
@@ -6009,7 +6018,9 @@ javascript:location.href='org-protocol://capture?' +
  ("ze" ["ᜎᜒ"])
  ("zi" ["ᜎᜒ"])
  ("zu" ["ᜎᜓ"])
- ("zo" ["ᜎᜓ"]))
+ ("zo" ["ᜎᜓ"])
+ ("," ["᜵"])
+ ("." ["᜶"]))
 
 ;;(set-fontset-font "fontset-default" 'tagalog (font-spec :family "Tagalog Doctrina 1593"))
 (set-fontset-font "fontset-default" 'tagalog (font-spec :family "Noto Sans Tagalog"))
@@ -6509,12 +6520,15 @@ This forces a complete recompilation of the document, even if the source
   (TeX-command-sequence t t))
 
 (defun auto-async-export ()
-  (when (and (eq major-mode 'org-mode)
-             (string-equal "t" (pop (cdr (car (org-collect-keywords '("auto_async_export")))))))
-    (message "Exporting to pdf...")
-    (org-latex-export-to-pdf t)
-    (when (eq major-mode 'latex-mode)
-      (force-compile))
+  (let ((keywords (org-collect-keywords '("auto_async_export"))))
+    (when (and keywords
+               (eq major-mode 'org-mode)
+               (string-equal "t" (pop (cdr (car keywords)))))
+      (message "Exporting to pdf...")
+      (org-latex-export-to-pdf t)
+      (when (eq major-mode 'latex-mode)
+        (force-compile))
+      )
     )
   )
 

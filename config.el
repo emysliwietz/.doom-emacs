@@ -211,6 +211,7 @@
 
 (load-module 'bionic-reading)
 
+(load-module 'pamparam)
 (load-module 'spaced-repetition)
 
 (load-module 'accounting)

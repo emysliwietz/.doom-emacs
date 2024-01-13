@@ -17,12 +17,15 @@ This forces a complete recompilation of the document, even if the source
   (TeX-command-sequence t t))
 
 (defun auto-async-export ()
-  (when (and (eq major-mode 'org-mode)
-             (string-equal "t" (pop (cdr (car (org-collect-keywords '("auto_async_export")))))))
-    (message "Exporting to pdf...")
-    (org-latex-export-to-pdf t)
-    (when (eq major-mode 'latex-mode)
-      (force-compile))
+  (let ((keywords (org-collect-keywords '("auto_async_export"))))
+    (when (and keywords
+               (eq major-mode 'org-mode)
+               (string-equal "t" (pop (cdr (car keywords)))))
+      (message "Exporting to pdf...")
+      (org-latex-export-to-pdf t)
+      (when (eq major-mode 'latex-mode)
+        (force-compile))
+      )
     )
   )
 
