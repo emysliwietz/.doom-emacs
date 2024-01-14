@@ -27,8 +27,9 @@
   (async-shell-command "cd ~/dox/pamparam/ && ~/dox/pamparam/update.sh")
   )
 
-(add-to-list 'recentf-exclude "pamparam.*/cards")
-(add-to-list 'recentf-exclude "/pamparam/")
+(after! recentf
+  (add-to-list 'recentf-exclude "pamparam.*/cards")
+  (add-to-list 'recentf-exclude "/pamparam/"))
 
 ;;* `hydra-pamparam'
 (defhydra hydra-pamparam (:exit t)

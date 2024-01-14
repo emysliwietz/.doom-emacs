@@ -10,6 +10,7 @@
                                         ;[remap kill-this-buffer] "q"
                                         ;[remap kill-buffer] "q"
       :n doom-leader-key nil
+      :n "DEL" #'elfeed-summary
       :n "q" #'elfeed-save-summary
       :n "e" #'elfeed-update
       :n "r" #'elfeed-search-untag-all-unread

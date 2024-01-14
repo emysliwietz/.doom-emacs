@@ -1171,6 +1171,7 @@ Return a string suitable for insertion in `dired' buffer."
                                         ;[remap kill-this-buffer] "q"
                                         ;[remap kill-buffer] "q"
       :n doom-leader-key nil
+      :n "DEL" #'elfeed-summary
       :n "q" #'elfeed-save-summary
       :n "e" #'elfeed-update
       :n "r" #'elfeed-search-untag-all-unread
@@ -4999,8 +5000,9 @@ If you have no more cards scheduled for today, use `pamparam-pull'."
   (async-shell-command "cd ~/dox/pamparam/ && ~/dox/pamparam/update.sh")
   )
 
-(add-to-list 'recentf-exclude "pamparam.*/cards")
-(add-to-list 'recentf-exclude "/pamparam/")
+(after! recentf
+  (add-to-list 'recentf-exclude "pamparam.*/cards")
+  (add-to-list 'recentf-exclude "/pamparam/"))
 
 ;;* `hydra-pamparam'
 (defhydra hydra-pamparam (:exit t)
