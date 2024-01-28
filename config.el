@@ -214,8 +214,6 @@
 (load-module 'pamparam)
 (load-module 'spaced-repetition)
 
-(load-module 'accounting)
-
 (when home?
   (load-module 'popes))
 

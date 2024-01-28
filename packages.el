@@ -116,6 +116,8 @@
 
 (unpin! magit)
 
+
+
 (package! dired-subtree)
 
 (package! dired-narrow)
@@ -161,8 +163,6 @@
 ;;                                         vertico-multiform
 ;;                                         vertico-unobtrusive
 ;;                                         )))
-
-
 
 
 
