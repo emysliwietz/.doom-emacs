@@ -516,6 +516,78 @@ ISPELL-FUNC passed as adviced function."
   (beancount-goto-next-transaction)
   )
 
+(defun end-of-buffer-p ()
+  "Check if cursor is at the end of the buffer."
+  (interactive)
+  (= (point) (point-max)))
+
+(defun +beancount--navigate-next-transaction ()
+  "Move point to beginning of next transaction."
+  (interactive)
+  ;; make sure we actually move to the next xact, even if we are the beginning
+  ;; of one now.
+  (if (looking-at +beancount--payee-any-status-regex)
+      (forward-line))
+  (if (re-search-forward  +beancount--payee-any-status-regex nil t)
+      (goto-char (match-beginning 0))
+    (goto-char (point-max)))
+  (if (not (or (string-equal (beancount-get-transaction-type) "*")
+               (end-of-buffer-p)))
+      (+beancount--navigate-next-transaction)
+))
+
+(defun beancount-get-transaction-type ()
+  "Get the type of the current transaction."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (if (looking-at "^\\([0-9]\\{4\\}\\)-\\([0-9]\\{2\\}\\)-\\([0-9]\\{2\\}\\) \\([a-z\\*\\!]+\\)")
+        (match-string 4)
+      )))
+
+(defun +beancount/sort-region (beg end &optional reverse)
+  "Sort the transactions inside BEG and END.
+If REVERSE (the prefix arg) is non-nil, sort the transactions in reverst order."
+  (interactive
+   (list (region-beginning)
+         (region-end)
+         (and current-prefix-arg t)))
+  (let* ((new-beg beg)
+         (new-end end)
+         (bounds (save-excursion
+                   (list (+beancount--navigate-beginning-of-xact)
+                         (+beancount--navigate-end-of-xact))))
+         (point-delta (- (point) (car bounds)))
+         (target-xact (buffer-substring (car bounds) (cadr bounds)))
+         (inhibit-modification-hooks t))
+    (save-excursion
+      (save-restriction
+        (goto-char beg)
+        ;; make sure beg of region is at the beginning of a line
+        (beginning-of-line)
+        ;; make sure point is at the beginning of a xact
+        (unless (looking-at +beancount--payee-any-status-regex)
+          (+beancount--navigate-next-transaction))
+        (setq new-beg (point))
+        (goto-char end)
+        (+beancount--navigate-next-transaction)
+        ;; make sure end of region is at the beginning of next record after the
+        ;; region
+        (setq new-end (point))
+        (narrow-to-region new-beg new-end)
+        (goto-char new-beg)
+        (let ((inhibit-field-text-motion t))
+          (sort-subr
+           reverse
+           #'+beancount--navigate-next-xact
+           #'+beancount--navigate-end-of-xact
+           #'+beancount--sort-startkey))))
+    (goto-char (point-min))
+    (re-search-forward (regexp-quote target-xact))
+    (goto-char (+ (match-beginning 0) point-delta))))
+
+
+
 (provide 'beancount-tweaks)
 #+end_src
 ** Dired
