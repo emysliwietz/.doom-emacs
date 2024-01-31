@@ -536,7 +536,55 @@ ISPELL-FUNC passed as adviced function."
 (advice-add '+beancount/next-transaction :after #'recenter-middle)
 (advice-add '+beancount/previous-transaction :after #'recenter-middle)
 
+(defun beancount-cleanup-whitespace-in-quotes (str)
+  "Replace multiple spaces in STR with a single space, but only between quotes."
+  (let ((start 0)
+        (res ""))
+    (while (string-match "\\(\"[^\"]*\"\\)" str start)
+      (let ((match (match-string 0 str)))
+        (setq res (concat res
+                          (substring str start (match-beginning 0))
+                          (replace-regexp-in-string "[[:space:]]\\{2,\\}" " " match)))
+        (setq start (match-end 0))))
+    (concat res (substring str start))))
 
+(defun beancount-cleanup-buffer ()
+  "Cleanup whitespace in the current buffer."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (eobp))
+      (let* ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+             (clean-line (beancount-cleanup-whitespace-in-quotes line)))
+        (delete-region (line-beginning-position) (line-end-position))
+        (insert clean-line)
+        (forward-line 1)))))
+
+(defun beancount-cleanup-hook ()
+  "Add `beancount-cleanup-buffer` to `before-save-hook` in Beancount mode."
+  (when (eq major-mode 'beancount-mode)
+    (add-hook 'before-save-hook #'beancount-cleanup-buffer nil t)))
+
+(add-hook 'beancount-mode-hook #'beancount-cleanup-hook)
+
+
+  (defun beancount-note-processing-date ()
+  "Adds the date the transaction was filed/processed on as note."
+  (interactive)
+  (save-excursion
+    (beancount-goto-transaction-begin)
+    (let ((start (point)))
+      (evil-forward-WORD-end)
+      (forward-char)
+      (let ((end (point)))
+        (let ((word (buffer-substring start end)))
+          (beancount-goto-transaction-end)
+          (insert "  processed: \"")
+          (insert word)
+          (insert "\"\n")
+          )))))
+
+(after! beancount
 (defun +beancount--navigate-next-transaction ()
   "Move point to beginning of next transaction."
   (interactive)
@@ -550,7 +598,7 @@ ISPELL-FUNC passed as adviced function."
   (if (not (or (string-equal (beancount-get-transaction-type) "*")
                (end-of-buffer-p)))
       (+beancount--navigate-next-transaction)
-))
+)))
 
 (defun beancount-get-transaction-type ()
   "Get the type of the current transaction."
