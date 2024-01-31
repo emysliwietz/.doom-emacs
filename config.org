@@ -609,6 +609,7 @@ ISPELL-FUNC passed as adviced function."
         (match-string 4)
       )))
 
+(after! beancount
 (defun +beancount/sort-region (beg end &optional reverse)
   "Sort the transactions inside BEG and END.
 If REVERSE (the prefix arg) is non-nil, sort the transactions in reverst order."
@@ -649,7 +650,7 @@ If REVERSE (the prefix arg) is non-nil, sort the transactions in reverst order."
     (goto-char (point-min))
     (re-search-forward (regexp-quote target-xact))
     (goto-char (+ (match-beginning 0) point-delta))))
-
+)
 
 
 (provide 'beancount-tweaks)
