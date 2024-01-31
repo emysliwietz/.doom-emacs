@@ -526,6 +526,17 @@ ISPELL-FUNC passed as adviced function."
   (interactive)
   (= (point) (point-max)))
 
+
+(defun recenter-middle ()
+  "Like recenter-top-bottom, but only centers in middle"
+  (interactive)
+  (recenter nil t))
+
+; Center screen when going to next or prev transaction
+(advice-add '+beancount/next-transaction :after #'recenter-middle)
+(advice-add '+beancount/previous-transaction :after #'recenter-middle)
+
+
 (defun +beancount--navigate-next-transaction ()
   "Move point to beginning of next transaction."
   (interactive)
@@ -5904,15 +5915,15 @@ javascript:location.href='org-protocol://capture?' +
 #+end_src
 
 ** Human languages
-** Language Baybayin
+*** Language Baybayin
 #+begin_src emacs-lisp
 (load-module 'language-baybayin)
 #+end_src
-*** Requirements
+**** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 
 #+end_src
-*** Code
+**** Code
 #+begin_src emacs-lisp :tangle modules/language-baybayin.el
 (quail-define-package
  "baybayin" "UTF-8" "ᜊ" t

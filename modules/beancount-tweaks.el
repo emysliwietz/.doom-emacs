@@ -73,6 +73,17 @@
   (interactive)
   (= (point) (point-max)))
 
+
+(defun recenter-middle ()
+  "Like recenter-top-bottom, but only centers in middle"
+  (interactive)
+  (recenter nil t))
+
+; Center screen when going to next or prev transaction
+(advice-add '+beancount/next-transaction :after #'recenter-middle)
+(advice-add '+beancount/previous-transaction :after #'recenter-middle)
+
+
 (defun +beancount--navigate-next-transaction ()
   "Move point to beginning of next transaction."
   (interactive)
