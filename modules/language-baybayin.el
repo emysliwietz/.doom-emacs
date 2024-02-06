@@ -150,7 +150,16 @@
  ("," ["᜵"])
  ("." ["᜶"]))
 
-;;(set-fontset-font "fontset-default" 'tagalog (font-spec :family "Tagalog Doctrina 1593"))
+(defvar tagalog-font-doctrina nil "Whether Doctrina 1593 Tagalog font is used")
+
+(defun toggle-tagalog-font-doctrina ()
+  "Set Tagalog font to Doctrina 1593"
+  (interactive)
+  (setq tagalog-font-doctrina (not tagalog-font-doctrina))
+  (if tagalog-font-doctrina
+    (set-fontset-font "fontset-default" 'tagalog (font-spec :family "Tagalog Doctrina 1593"))
+    (set-fontset-font "fontset-default" 'tagalog (font-spec :family "Noto Sans Tagalog"))))
+
 (set-fontset-font "fontset-default" 'tagalog (font-spec :family "Noto Sans Tagalog"))
 ;; ᜀ is for some reason not in Source Code Pro Semibold
 ;; (set-fontset-font "fontset-default" '(#x1700 . #x1700) (font-spec :family "Tagalog Doctrina 159"))
