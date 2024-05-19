@@ -182,13 +182,23 @@
     (message (format "%s" dedication))
     (set-window-dedicated-p (selected-window) dedication)))
 
-(global-set-key (kbd "s-<return>") (lambda () (interactive) (+vterm/toggle nil)))
+(global-set-key (kbd "s-S-<return>") (lambda () (interactive) (+vterm/toggle nil)))
 
                                         ; Org agenda
 
 (defun agenda-folder ()
   (interactive)
   (find-file "/home/user/sync/agenda/"))
+
+(defun agenda-daily ()
+  (find-file "/home/user/sync/agenda/daily.org"))
+
+(defun agenda-show-daily-habits ()
+  "Open daily habits document as org column"
+  (interactive)
+  (agenda-daily)
+  (org-columns)
+  (org-modern-mode -1))
 
 (defun agenda-uni ()
   (interactive)
@@ -201,6 +211,7 @@
 (global-set-key (kbd "C-c a a") 'agenda-folder)
 (global-set-key (kbd "C-c a u") 'agenda-uni)
 (global-set-key (kbd "C-c a p") 'agenda-personal)
+(global-set-key (kbd "s-t") 'agenda-show-daily-habits)
 
                                         ; Books
 

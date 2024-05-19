@@ -1,0 +1,6 @@
+(setq display-pixels-per-inch (getenv "XFT_DPI"))
+(provide 'dpi-scaling-tweaks)
+(if (string= (getenv "XFT_DPI") "192")
+    (setq exwm-systemtray--icon-min-size 32)
+  (setq exwm-systemtray--icon-min-size 16)
+  )

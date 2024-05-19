@@ -4,6 +4,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(citar-org-styles-format 'short)
+ '(custom-safe-themes
+   '("88f7ee5594021c60a4a6a1c275614103de8c1435d6d08cc58882f920e0cec65e" default))
  '(magit-todos-insert-after '(bottom) nil nil "Changed by setter of obsolete option `magit-todos-insert-at'")
  '(org-preview-latex-process-alist
    '((dvipng :programs
@@ -33,7 +35,7 @@
       :image-converter
       ("convert -density %D -trim -antialias %f -quality 100 %O"))))
  '(package-selected-packages
-   '(exwm vertico ivy-youtube spell-fu all-the-icons-ivy notmuch cmake-mode)))
+   '(transient exwm vertico ivy-youtube spell-fu all-the-icons-ivy notmuch cmake-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

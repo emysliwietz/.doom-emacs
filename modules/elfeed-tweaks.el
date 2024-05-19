@@ -390,11 +390,21 @@
   )
 (add-to-list 'load-path "~/.doom.d/lisp/youtube-dl-emacs")
 (load-module 'youtube-dl)
+
+(defvar youtube-dl-4k nil "Whether to download in 4k")
+;(when (string= (getenv "XFT_DPI") "192")
+;  (setq youtube-dl-4k t))
+
+(if youtube-dl-4k
+    (setq youtube-dl-format-string "bestvideo+bestaudio")
+  (setq youtube-dl-format-string "bestvideo[height<=1080]+bestaudio/best[height<=1080]")
+  )
+
 (setq youtube-dl-directory "~/elfeed-youtube"
       elfeed-enclosure-default-dir youtube-dl-directory
       youtube-dl-temp-directory "/tmp/elfeed-youtube"
       youtube-dl-program "yt-dlp"
-      youtube-dl-arguments (nconc `("-f" "bestvideo[height<=1080]+bestaudio/best[height<=1080]"
+      youtube-dl-arguments (nconc `("-f" ,youtube-dl-format-string
                "--sponsorblock-remove" "default"
                "--prefer-free-formats"
                "--embed-subs"

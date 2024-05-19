@@ -161,6 +161,8 @@
     (doom--put-modules private-init-el new-modules)
     (ediff private-init-el example-init-el)))
 
+(load-module 'dpi-scaling-tweaks)
+
 (load-module 'workarounds)
 
 (load-module 'utility-functions)
@@ -276,3 +278,5 @@
 (load-module 'calendar-tweaks)
 
 ;(load-module 'thinkpad-tweaks)
+
+(load-module 'nano-tweaks)

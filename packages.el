@@ -71,23 +71,21 @@
 (package! evil-escape :disable t)
 
 ; Auto Activating Snippets
-(package! aas :recipe (:host github :repo "ymarco/auto-activating-snippets")
-  :pin "1699bec4d244a1f62af29fe4eb8b79b6d2fccf7d")
+(package! aas :recipe (:host github :repo "ymarco/auto-activating-snippets"))
 
-(package! string-inflection :pin "fd7926ac17293e9124b31f706a4e8f38f6a9b855")
-
-(package! info-colors :pin "47ee73cc19b1049eef32c9f3e264ea7ef2aaf8a5")
-(package! modus-themes :pin "392ebb115b07f8052d512ec847619387d109edd6")
-(package! theme-magic :pin "844c4311bd26ebafd4b6a1d72ddcc65d87f074e3")
-(package! keycast :pin "04ba7519f34421c235bac458f0192c130f732f12")
+(package! string-inflection)
+(package! info-colors)
+(package! modus-themes)
+;(package! theme-magic)
+(package! keycast)
 (package! page-break-lines :recipe (:host github :repo "purcell/page-break-lines"))
-(package! spray :pin "74d9dcfa2e8b38f96a43de9ab0eb13364300cb46")
+(package! spray)
 ;(package! authinfo-color-mode
 ;  :recipe (:repo "lisp/authinfo-color-mode"))
-(package! systemd :pin "b6ae63a236605b1c5e1069f7d3afe06ae32a7bae")
+(package! systemd)
 ; Ebooks
-(package! calibredb :pin "cb93563d0ec9e0c653210bc574f9546d1e7db437")
-(package! nov :pin "b3c7cc28e95fe25ce7b443e5f49e2e45360944a3")
+(package! calibredb)
+(package! nov)
 ; Email
 (package! org-mime)
 (package! org-auto-tangle)
@@ -105,13 +103,13 @@
 (package! spell-fu)
 (package! wallpaper)
 
+
+
 ; Temporary workaround, remove at emacs 29
 (package! transient
-      :pin "c2bdf7e12c530eb85476d3aef317eb2941ab9440"
       :recipe (:host github :repo "magit/transient"))
 
 (package! with-editor
-          :pin "bbc60f68ac190f02da8a100b6fb67cf1c27c53ab"
           :recipe (:host github :repo "magit/with-editor"))
 
 (unpin! magit)
@@ -221,3 +219,9 @@
 
 
 
+
+(package! nano :recipe (:host github :repo "rougier/nano-emacs"))
+;(package! nano-theme :recipe (:host github :repo "rougier/nano-theme"))
+(package! mu4e-dashboard :recipe (:host github :repo "rougier/mu4e-dashboard"))
+(package! svg-tag-mode)
+(package! ts)

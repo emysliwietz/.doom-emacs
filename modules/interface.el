@@ -16,10 +16,28 @@
 
 ;;; Unicode emojis
 (if (>= emacs-major-version 27)
+    (progn
+      (emojify-mode nil)
     (set-fontset-font t '(#x1f000 . #x1faff)
-                      (font-spec :family "Noto Color Emoji")))
+                      (font-spec :family "Apple Color Emoji"))))
 (set-face-attribute
  'default nil :stipple nil :height 100 :width 'normal :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'normal :foundry "outline" :family "Source Code Pro for Powerline")
+
+(defvar font-garamond nil "Whether EB Garamond font is used")
+
+(defun toggle-font-eb-garamond ()
+  "Set font to EB Garamond"
+  (interactive)
+  (setq font-garamond (not font-garamond))
+  (if font-garamond
+    (set-face-attribute
+ 'default nil :stipple nil :height 100 :width 'normal :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'normal :foundry "outline" :family "EB Garamond")
+(set-face-attribute
+ 'default nil :stipple nil :height 100 :width 'normal :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant 'normal :weight 'normal :foundry "outline" :family "Source Code Pro for Powerline")))
+
+(set-fontset-font "fontset-default" 'tagalog (font-spec :family "Noto Sans Tagalog"))
+
+
 ;;;; setting up composition functions for emoji modifiers
 ;;(dolist (items `(((?🇦 . ?🇿) [".[🇦-🇿]+" 0 font-shape-gstring])
 ;                 ((?🏳 . ?🏴) [".[️‍🌈⚧☠󠀠-󠁿]*" 0 font-shape-gstring])
@@ -120,30 +138,30 @@
         :desc "Next page break" :nv "]" #'forward-page))
 
 
-(use-package! theme-magic
-  :commands theme-magic-from-emacs
-  :config
-  (defadvice! theme-magic--auto-extract-16-doom-colors ()
-    :override #'theme-magic--auto-extract-16-colors
-    (list
-     (face-attribute 'default :background)
-     (doom-color 'error)
-     (doom-color 'success)
-     (doom-color 'type)
-     (doom-color 'keywords)
-     (doom-color 'constants)
-     (doom-color 'functions)
-     (face-attribute 'default :foreground)
-     (face-attribute 'shadow :foreground)
-     (doom-blend 'base8 'error 0.1)
-     (doom-blend 'base8 'success 0.1)
-     (doom-blend 'base8 'type 0.1)
-     (doom-blend 'base8 'keywords 0.1)
-     (doom-blend 'base8 'constants 0.1)
-     (doom-blend 'base8 'functions 0.1)
-     (face-attribute 'default :foreground))))
+;; (use-package! theme-magic
+;;   :commands theme-magic-from-emacs
+;;   :config
+;;   (defadvice! theme-magic--auto-extract-16-doom-colors ()
+;;     :override #'theme-magic--auto-extract-16-colors
+;;     (list
+;;      (face-attribute 'default :background)
+;;      (doom-color 'error)
+;;      (doom-color 'success)
+;;      (doom-color 'type)
+;;      (doom-color 'keywords)
+;;      (doom-color 'constants)
+;;      (doom-color 'functions)
+;;      (face-attribute 'default :foreground)
+;;      (face-attribute 'shadow :foreground)
+;;      (doom-blend 'base8 'error 0.1)
+;;      (doom-blend 'base8 'success 0.1)
+;;      (doom-blend 'base8 'type 0.1)
+;;      (doom-blend 'base8 'keywords 0.1)
+;;      (doom-blend 'base8 'constants 0.1)
+;;      (doom-blend 'base8 'functions 0.1)
+;;      (face-attribute 'default :foreground))))
 
-(run-with-idle-timer 0.1 nil (lambda () (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)))
+;; (run-with-idle-timer 0.1 nil (lambda () (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)))
 
                                         ; Modern org mode
 (global-org-modern-mode t)
