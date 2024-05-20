@@ -49,3 +49,4 @@
 (put 'narrow-to-region 'disabled nil)
 (put 'narrow-to-page 'disabled nil)
 (put 'customize-group 'disabled nil)
+(put 'customize-set-variable 'disabled nil)
