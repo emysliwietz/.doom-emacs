@@ -7084,12 +7084,12 @@ No longer useful because of API limits
       '("Frühlingsanfang" "Sommeranfang" "Herbstanfang" "Winteranfang"))
 
 
-(setq holiday-general-holidays
+(setq holiday-german-general-holidays
       '((holiday-fixed 1 1 "Neujahr")
         (holiday-fixed 5 1 "1. Mai")
         (holiday-fixed 10 3 "Tag der Deutschen Einheit")))
 
-(setq holiday-christian-holidays
+(setq holiday-german-christian-holidays
       '((holiday-float 12 0 -4 "1. Advent" 24)
         (holiday-float 12 0 -3 "2. Advent" 24)
         (holiday-float 12 0 -2 "3. Advent" 24)
@@ -7106,40 +7106,39 @@ No longer useful because of API limits
         (holiday-easter-etc +49 "Pfingstsonntag")
         (holiday-easter-etc +50 "Pfingstmontag")
         (holiday-easter-etc +60 "Fronleichnam")
-        (holiday-fixed 8 15 "Mariae Himmelfahrt")
+        (holiday-fixed 8 15 "Mariæ Himmelfahrt")
         (holiday-fixed 11 1 "Allerheiligen")
-        (holiday-float 11 3 1 "Buss- und Bettag" 16)
+        (holiday-fixed 11 2 "Allerseelen")
+        (holiday-float 11 3 1 "Buß- und Bettag" 16)
         (holiday-float 11 0 1 "Totensonntag" 20)))
 
-(setq calendar-holidays '(
-      (solar-equinoxes-solstices)
-      (holiday-sexp calendar-daylight-savings-starts
-                    (format "Daylight Saving Time Begins %s"
-                            (solar-time-string
-                             (/ calendar-daylight-savings-starts-time
-                                (float 60))
-                             calendar-standard-time-zone-name)))
-      (holiday-sexp calendar-daylight-savings-ends
-                    (format "Daylight Saving Time Ends %s"
-                            (solar-time-string
-                             (/ calendar-daylight-savings-ends-time
-                                (float 60))
-                             calendar-daylight-time-zone-name)))
-     (holiday-sexp
+(setq holiday-filipino-general-holidays
+      '((holiday-fixed 1 23 "1st Philippine Republic Day")
+        (holiday-fixed 4 9 "The Day of Valor (PH)")
+        (holiday-fixed 6 12 "Filipino Independence Day")
+        (holiday-fixed 8 21 "Ninoy Aquino Day")
+        (holiday-fixed 9 3 "Yamashita Surrender (PH)")
+        (holiday-fixed 12 30 "Jose Rizal Day")))
+
+(setq holiday-filipino-christian-holidays
+      '((holiday-fixed 9 8 "Feast of the Nativity of Mary")
+        (holiday-fixed 11 30 "Bonifacio Day")))
+
+(setq holiday-us-elections
+      '((holiday-sexp
        '(if (zerop (% year 4))
            (calendar-gregorian-from-absolute
              (1+ (calendar-dayname-on-or-before
                    1 (+ 6 (calendar-absolute-from-gregorian
                             (list 11 1 year)))))))
        "US Presidential Election")
-;(lunar-phases)
 ))
 
-(add-to-list 'calendar-holidays holiday-general-holidays)
-(add-to-list 'calendar-holidays holiday-christian-holidays)
-(add-to-list 'calendar-holidays holiday-hebrew-holidays)
-(add-to-list 'calendar-holidays holiday-islamic-holidays)
-(add-to-list 'calendar-holidays holiday-oriental-holidays)
+(setq calendar-holidays
+      (append holiday-general-holidays holiday-local-holidays holiday-other-holidays
+	      holiday-solar-holidays holiday-christian-holidays holiday-german-general-holidays holiday-german-christian-holidays holiday-us-elections holiday-hebrew-holidays holiday-islamic-holidays holiday-oriental-holidays holiday-filipino-general-holidays holiday-filipino-christian-holidays))
+
+(global-set-key (kbd "s-c") '=calendar)
 
 (provide 'calendar-tweaks)
 #+end_src
