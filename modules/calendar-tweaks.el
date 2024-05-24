@@ -45,10 +45,11 @@
 
 (setq holiday-filipino-general-holidays
       '((holiday-fixed 1 23 "1st Philippine Republic Day")
-        (holiday-fixed 4 9 "The Day of Valor (PH)")
+        (holiday-fixed 4 9 "Araw ng Kagitingan")
         (holiday-fixed 6 12 "Filipino Independence Day")
         (holiday-fixed 8 21 "Ninoy Aquino Day")
-        (holiday-fixed 9 3 "Yamashita Surrender (PH)")
+        (holiday-fixed 9 3 "Surrender of Tomoyuki Yamashita")
+        (holiday-float 8 1 -1 "National Heros of the Philippines")
         (holiday-fixed 12 30 "Jose Rizal Day")))
 
 (setq holiday-filipino-christian-holidays
@@ -65,10 +66,18 @@
        "US Presidential Election")
 ))
 
+(setq calendar-christian-all-holidays-flag t
+      calendar-islamic-all-holidays-flag t)
+
 (setq calendar-holidays
       (append holiday-general-holidays holiday-local-holidays holiday-other-holidays
 	      holiday-solar-holidays holiday-christian-holidays holiday-german-general-holidays holiday-german-christian-holidays holiday-us-elections holiday-hebrew-holidays holiday-islamic-holidays holiday-oriental-holidays holiday-filipino-general-holidays holiday-filipino-christian-holidays))
 
-(global-set-key (kbd "s-c") '=calendar)
+(defun =calendar-no-evil ()
+  (interactive)
+  (=calendar)
+  (evil-local-mode nil))
+
+(global-set-key (kbd "s-c") '=calendar-no-evil)
 
 (provide 'calendar-tweaks)

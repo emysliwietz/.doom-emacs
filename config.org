@@ -2312,8 +2312,9 @@ Return a string suitable for insertion in `dired' buffer."
              (and (string-equal exwm-class-name "KeePassXC")
                   (string-equal exwm-title "KeePassXC -  Access Request"))
              (not (progn
-                    (message (format "Class: %s" exwm-class-name))
-                    (message (format "Title: %s" exwm-instance-name)))))
+                    ;(message (format "Class: %s" exwm-class-name))
+                    %(message (format "Title: %s" exwm-instance-name))
+                    )))
            floating t
            floating-mode-line nil
 ;           width 0.4
@@ -7057,7 +7058,7 @@ No longer useful because of API limits
 (setq markdown-fontify-code-blocks-natively t)
 (provide 'ai-assistant)
 #+end_src
-** Calendar Tweaks - German Holidays
+** Calendar Tweaks
 #+begin_src emacs-lisp
 (load-module 'calendar-tweaks)
 #+end_src
@@ -7114,10 +7115,11 @@ No longer useful because of API limits
 
 (setq holiday-filipino-general-holidays
       '((holiday-fixed 1 23 "1st Philippine Republic Day")
-        (holiday-fixed 4 9 "The Day of Valor (PH)")
+        (holiday-fixed 4 9 "Araw ng Kagitingan")
         (holiday-fixed 6 12 "Filipino Independence Day")
         (holiday-fixed 8 21 "Ninoy Aquino Day")
-        (holiday-fixed 9 3 "Yamashita Surrender (PH)")
+        (holiday-fixed 9 3 "Surrender of Tomoyuki Yamashita")
+        (holiday-float 8 1 -1 "National Heros of the Philippines")
         (holiday-fixed 12 30 "Jose Rizal Day")))
 
 (setq holiday-filipino-christian-holidays
@@ -7134,15 +7136,54 @@ No longer useful because of API limits
        "US Presidential Election")
 ))
 
+(setq calendar-christian-all-holidays-flag t
+      calendar-islamic-all-holidays-flag t)
+
 (setq calendar-holidays
       (append holiday-general-holidays holiday-local-holidays holiday-other-holidays
 	      holiday-solar-holidays holiday-christian-holidays holiday-german-general-holidays holiday-german-christian-holidays holiday-us-elections holiday-hebrew-holidays holiday-islamic-holidays holiday-oriental-holidays holiday-filipino-general-holidays holiday-filipino-christian-holidays))
 
-(global-set-key (kbd "s-c") '=calendar)
+(defun =calendar-no-evil ()
+  (interactive)
+  (=calendar)
+  (evil-local-mode nil))
+
+(global-set-key (kbd "s-c") '=calendar-no-evil)
 
 (provide 'calendar-tweaks)
 #+end_src
 
+*** Org GCal tweaks
+#+begin_src emacs-lisp
+(load-module 'org-g-cal-tweaks)
+#+end_src
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! org-gcal)
+(package! request)
+(package! alert)
+(package! persist)
+(package! aio)
+(package! oauth2-auto)
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/org-g-cal-tweaks.el
+(setq org-gcal-client-id (secrets-get-secret "Passwords" "Org GCal Client ID")
+      org-gcal-client-secret (secrets-get-secret "Passwords" "Org GCal Client Secret")
+      org-gcal-fetch-file-alist `(
+                                  (,(secrets-get-secret "Passwords" "Org GCal Calendar 1") .  "~/sync/agenda/gcal.org")
+                                  (,(secrets-get-secret "Passwords" "Org GCal Calendar 2") .  "~/sync/agenda/gcal.org")
+                                  )
+      org-gcal-notify-p t
+      plstore-cache-passphrase-for-symmetric-encryption t)
+
+
+(require 'oauth2-auto)
+(require 'plstore)
+(require 'org-gcal)
+
+(provide 'org-g-cal-tweaks)
+#+end_src
 ** Thinkpad Tweaks
 #+begin_src emacs-lisp
 ;(load-module 'thinkpad-tweaks)

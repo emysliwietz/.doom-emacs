@@ -277,6 +277,8 @@
 
 (load-module 'calendar-tweaks)
 
+(load-module 'org-g-cal-tweaks)
+
 ;(load-module 'thinkpad-tweaks)
 
 (load-module 'nano-tweaks)

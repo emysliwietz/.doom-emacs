@@ -148,8 +148,9 @@
              (and (string-equal exwm-class-name "KeePassXC")
                   (string-equal exwm-title "KeePassXC -  Access Request"))
              (not (progn
-                    (message (format "Class: %s" exwm-class-name))
-                    (message (format "Title: %s" exwm-instance-name)))))
+                    ;(message (format "Class: %s" exwm-class-name))
+                    %(message (format "Title: %s" exwm-instance-name))
+                    )))
            floating t
            floating-mode-line nil
 ;           width 0.4

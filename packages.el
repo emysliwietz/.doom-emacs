@@ -218,6 +218,13 @@
 
 
 
+(package! org-gcal)
+(package! request)
+(package! alert)
+(package! persist)
+(package! aio)
+(package! oauth2-auto)
+
 
 
 (package! nano :recipe (:host github :repo "rougier/nano-emacs"))
