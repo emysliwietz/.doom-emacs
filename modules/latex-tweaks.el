@@ -6,6 +6,7 @@
           (lambda ()
             (local-set-key (kbd "<f6>")
                            (lambda () (interactive) (org-latex-export-to-pdf t)))))
+
 (defun force-compile ()
   "Set the file modification times on the current file, then call
 TeX-command-sequence.
@@ -55,6 +56,13 @@ This forces a complete recompilation of the document, even if the source
                          (file-name-with-extension (buffer-file-name) "tex")
                        (buffer-file-name)))))
   (message (shell-command-to-string (format "texcount -1 -merge -template={1} %s" file-name)))))
+
+(add-hook 'TeX-language-en-hook
+          (lambda () (ispell-change-dictionary "english")))
+
+(add-hook 'TeX-language-de-hook
+          (lambda () (ispell-change-dictionary "german")))
+
 
   ;; Latex classes
   (setq org-latex-subtitle-separate t

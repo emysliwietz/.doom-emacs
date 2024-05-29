@@ -1,6 +1,10 @@
 ;;; dired-tweaks.el -*- lexical-binding: t; -*-
 
 ;; Dired
+
+;;; Casual Dired Shortcut Menu
+(define-key dired-mode-map (kbd "C-o") 'casual-dired-tmenu)
+
 ;;; Colourful dired
 (use-package! diredfl
   :init (diredfl-global-mode 1))

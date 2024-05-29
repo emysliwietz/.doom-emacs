@@ -773,11 +773,21 @@ Return a string suitable for insertion in `dired' buffer."
 #+begin_src emacs-lisp
 (load-module 'dired-tweaks)
 #+end_src
+
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! casual-dired)
+#+end_src
+
 **** Code
 #+begin_src emacs-lisp :tangle modules/dired-tweaks.el
 ;;; dired-tweaks.el -*- lexical-binding: t; -*-
 
 ;; Dired
+
+;;; Casual Dired Shortcut Menu
+(define-key dired-mode-map (kbd "C-o") 'casual-dired-tmenu)
+
 ;;; Colourful dired
 (use-package! diredfl
   :init (diredfl-global-mode 1))
@@ -1150,6 +1160,8 @@ Return a string suitable for insertion in `dired' buffer."
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 (package! treesit-auto)
+(package! avy)
+(package! casual-avy :recipe (:host github :repo "kickingvegas/casual-avy"))
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/editing.el
@@ -1176,6 +1188,8 @@ Return a string suitable for insertion in `dired' buffer."
     (while (re-search-forward pattern nil t)
       (replace-match replacement))))
 
+; Casual Avy as menu for avy jumps
+(keymap-global-set "M-s" #'casual-avy-tmenu)
 
 (setq toggle-auto-fill-boolean nil
       which-key-idle-delay 0.5
@@ -6751,6 +6765,7 @@ account default : emysliwietz
           (lambda ()
             (local-set-key (kbd "<f6>")
                            (lambda () (interactive) (org-latex-export-to-pdf t)))))
+
 (defun force-compile ()
   "Set the file modification times on the current file, then call
 TeX-command-sequence.
@@ -6800,6 +6815,13 @@ This forces a complete recompilation of the document, even if the source
                          (file-name-with-extension (buffer-file-name) "tex")
                        (buffer-file-name)))))
   (message (shell-command-to-string (format "texcount -1 -merge -template={1} %s" file-name)))))
+
+(add-hook 'TeX-language-en-hook
+          (lambda () (ispell-change-dictionary "english")))
+
+(add-hook 'TeX-language-de-hook
+          (lambda () (ispell-change-dictionary "german")))
+
 
   ;; Latex classes
   (setq org-latex-subtitle-separate t

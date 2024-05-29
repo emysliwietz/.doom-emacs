@@ -21,6 +21,8 @@
     (while (re-search-forward pattern nil t)
       (replace-match replacement))))
 
+; Casual Avy as menu for avy jumps
+(keymap-global-set "M-s" #'casual-avy-tmenu)
 
 (setq toggle-auto-fill-boolean nil
       which-key-idle-delay 0.5

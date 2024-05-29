@@ -116,11 +116,15 @@
 
 
 
+(package! casual-dired)
+
 (package! dired-subtree)
 
 (package! dired-narrow)
 
 (package! treesit-auto)
+(package! avy)
+(package! casual-avy :recipe (:host github :repo "kickingvegas/casual-avy"))
 
 
 
