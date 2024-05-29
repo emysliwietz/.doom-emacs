@@ -257,6 +257,8 @@
 
 (load-module 'language-baybayin)
 
+(load-module 'language-arabic)
+
 (load-module-if 'mu4e 'email)
 
 (load-module-if 'mu4e 'email-config)
