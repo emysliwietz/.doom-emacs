@@ -1,7 +1,9 @@
 (setq-default
  x-stretch-cursor t)
+(xclip-mode t)
 (good-scroll-mode -1)
 (setq-default word-wrap t)
+(context-menu-mode t)
 
 (setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
       evil-want-fine-undo t                       ; By default while in insert all changes are one big blob. Be more granular

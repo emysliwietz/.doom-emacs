@@ -105,18 +105,10 @@
 
 
 
-; Temporary workaround, remove at emacs 29
-(package! transient
-      :recipe (:host github :repo "magit/transient"))
-
-(package! with-editor
-          :recipe (:host github :repo "magit/with-editor"))
-
-(unpin! magit)
-
 
 
 (package! casual-dired)
+(package! dired-open-with)
 
 (package! dired-subtree)
 
@@ -127,6 +119,8 @@
 (package! casual-avy :recipe (:host github :repo "kickingvegas/casual-avy"))
 
 
+
+(package! xclip)
 
 
 
@@ -238,3 +232,19 @@
 (package! mu4e-dashboard :recipe (:host github :repo "rougier/mu4e-dashboard"))
 (package! svg-tag-mode)
 (package! ts)
+(package! nano-sidebar :recipe (:host github :repo "rougier/nano-sidebar"))
+
+(package! eee
+      :recipe
+      (:host github
+       :repo "eval-exec/eee.el"
+       :files (:defaults "*.el" "*.sh")))
+
+; Temporary workaround, remove at emacs 29
+(package! transient
+      :recipe (:host github :repo "magit/transient"))
+
+(package! with-editor
+          :recipe (:host github :repo "magit/with-editor"))
+
+(unpin! magit)

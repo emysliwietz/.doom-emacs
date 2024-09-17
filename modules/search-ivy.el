@@ -72,11 +72,15 @@ Assuming that url is in title like in Keepass Helper extension."
              )
         (message youtube)
         (if (or (string-equal youtube "(YouTube — Mozilla Firefox)")
-                (string-equal youtube "(YouTube — Mozilla Firefox (Private Browsing))"))
+                (string-equal youtube "(YouTube — Mozilla Firefox (Private Browsing)")
+                (string-equal youtube "(YouTube — Mozilla Firefox Private Browsing")
+                )
             (propertize (nerd-icons-faicon "nf-fa-youtube") 'face '(:foreground "red" :background "white"))
           (if (or
                (string-equal browser "(Mozilla Firefox)")
-               (string-equal browser "(Mozilla Firefox (Private Browsing))"))
+               (string-equal browser "(Mozilla Firefox (Private Browsing)")
+               (string-equal browser "(Mozilla Firefox Private Browsing")
+               )
               (propertize (nerd-icons-faicon "nf-fa-firefox") 'face '(:foreground "orange red"))
 	    )))))
 

@@ -163,8 +163,6 @@
 
 (load-module 'dpi-scaling-tweaks)
 
-(load-module 'workarounds)
-
 (load-module 'utility-functions)
 
 (load-module 'auto-correct)
@@ -186,6 +184,8 @@
 (load-module 'elfeed-tweaks)
 
 (load-module 'interface)
+
+(load-module 'sync-theme-to-zathura)
 
 (load-module 'exwm-tweaks)
 
@@ -284,3 +284,7 @@
 ;(load-module 'thinkpad-tweaks)
 
 (load-module 'nano-tweaks)
+
+(load-module 'external-tui)
+
+(load-module 'workarounds)

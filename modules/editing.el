@@ -22,6 +22,7 @@
       (replace-match replacement))))
 
 ; Casual Avy as menu for avy jumps
+(setq relative nil) ; workaround for casual-avy bug, needed as long as not in melpa
 (keymap-global-set "M-s" #'casual-avy-tmenu)
 
 (setq toggle-auto-fill-boolean nil

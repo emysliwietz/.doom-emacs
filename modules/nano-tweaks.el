@@ -1,3 +1,9 @@
+(require 'nano-base-colors)
+(require 'nano-faces)
+(require 'nano-help)
+(load-module 'nano-sidebar)
+(load-module 'nano-mu4e)
+
 ;; (setq package-install-upgrade-built-in t)
 ;; (setq nano-font-size 10
 ;;       nano-font-family-monospaced "Source Code Pro Semibold"
@@ -5,8 +11,8 @@
 ;;       nano-modeline-style '(3d accented)
 ;;       doom-one-brighter-comments t)
 
-;; ;; Default layout (optional)
-;; ;(require 'nano-layout)
+;; ;;Default layout (optional)
+;; (require 'nano-layout)
 
 ;; ;; Theme
 ;; (require 'nano-faces)
@@ -23,10 +29,10 @@
 ;; (load-theme doom-theme)
 
 ;; ;; Nano session saving (optional)
-;; (require 'nano-session)
+;; ;(require 'nano-session)
 
 ;; ;; Nano header & mode lines (optional)
-;; (require 'nano-modeline)
+;; ;(require 'nano-modeline)
 
-;; (setq widget-image-enable nil)
+;; ;(setq widget-image-enable nil)
 (provide 'nano-tweaks)

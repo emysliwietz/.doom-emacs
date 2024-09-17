@@ -25,7 +25,7 @@
   (interactive)
   (with-temp-buffer
     (beancount-open-local)
-    (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
+    (completing-read "Account: " (beancount-collect-unique beancount-account-regexp 0))))
 
 (defun beancount-imported-transaction-change-unknown-account ()
   "Change the Unknown:account field in an imported beancount entry."

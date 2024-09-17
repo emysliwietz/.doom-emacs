@@ -4,13 +4,21 @@
   (setq mouse-autoselect-window t
         focus-follows-mouse t)
   (require 'exwm)
-  (require 'exwm-config)
+  ;(require 'exwm-config) exwm config is deprecated
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
   (exwm-enable)
   (fringe-mode -1)
   (require 'exwm-randr)
-  (setq exwm-randr-workspace-monitor-plist '(0 "eDP-1" 1 "DP-2-1" 2 "DP-2-2"))
+  ;(setq exwm-randr-workspace-monitor-plist '(0 "eDP-1" 1 "DP-2-1" 2 "DP-2-2" 3 "HDMI-2" 4 "HDMI-1"))
 
+  (defun exwm-update-monitors ()
+    "Detects connected monitors and sets exwm-randr-workspace-monitor-plist accordingly"
+    (interactive)
+    (setq exwm-randr-workspace-monitor-plist
+          (let ((monitors (mapcar (lambda (monitor) (alist-get 'name monitor)) (display-monitor-attributes-list))))
+            (apply #'append (cl-mapcar #'list (number-sequence 0 (1- (length monitors))) monitors)))))
+
+  (exwm-update-monitors)
   (exwm-randr-enable)
 
 ;; (when (string= (system-name) "astaroth")
@@ -18,12 +26,12 @@
 ;;  (when (string= (system-name) "jarvis")
 ;;    (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
 
+  (add-hook! 'exwm-randr-screen-change-hook 'exwm-update-monitors)
+
    ;; (add-hook 'exwm-randr-screen-change-hook
    ;;           (lambda ()
    ;;             (start-process-shell-command
    ;;              "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output DP-2-1 --mode 1920x1080 --pos 1920x0 --rotate normal")))
-
-
 
  ; (add-hook 'exwm-randr-screen-change-hook
  ;     (lambda ()
@@ -85,6 +93,11 @@
       (call-interactively 'exwm-layout-hide-mode-line)
       )))
 
+(defun exwm-move-window-to-workspace(workspace-number)
+  (interactive)
+  (let ((frame (exwm-workspace--workspace-from-frame-or-index workspace-number))
+        (id (exwm--buffer->id (window-buffer))))
+    (exwm-workspace-move-window frame id)))
 
   (setq exwm-workspace-number 1
         exwm-workspace-show-all-buffers t
@@ -105,7 +118,15 @@
                       (lambda ()
                         (interactive)
                         (exwm-workspace-switch-create ,i))))
-                  (number-sequence 0 8))))
+                  (number-sequence 0 8))
+        ,@(mapcar (lambda (i)
+                    `(,(kbd (format "M-s-%d" (+ i 1))) .
+                      (lambda ()
+                        (interactive)
+                        (exwm-move-window-to-workspace ,i))))
+                  (number-sequence 0 8))
+
+        ))
 
 
   (add-hook 'exwm-manage-finish-hook
@@ -408,7 +429,12 @@
 (exwm-input-set-key (kbd "s-<left>") (lambda () (interactive) (winner-undo)))
 (exwm-input-set-key (kbd "s-<right>") (lambda () (interactive) (winner-undo)))
 (exwm-input-set-key (kbd "s-a") (lambda () (interactive) (org-agenda-list)))
-(exwm-input-set-key (kbd "s-m") (lambda () (interactive) (mu4e--goto-inbox)))
+(exwm-input-set-key (kbd "s-m") (lambda () (interactive) (mu4e t) (mu4e--goto-inbox)))
+
+(global-unset-key (kbd "S-s-1"))
+(keymap-global-set "S-s-1" #'(lambda () (interactive) ((exwm-move-window-to-workspace 1))))
+(exwm-input-set-key (kbd "S-s-1") (lambda () (interactive) ((exwm-move-window-to-workspace 1))))
+
 (exwm-input--update-global-prefix-keys)
 
 ;; Wallpaper

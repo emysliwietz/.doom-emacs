@@ -137,7 +137,7 @@
   (orderless-matching-styles
    '(orderless-literal
      orderless-prefixes
-     orderless-initialism
+     ;;orderless-initialism
      orderless-regexp
      ;;orderless-flex ;; Fuzzy finding
      ;; orderless-strict-leading-initialism

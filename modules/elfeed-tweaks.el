@@ -80,12 +80,14 @@
         elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
         shr-max-image-proportion 0.6)
 
-  (add-hook! 'elfeed-show-mode-hook '(lambda () (hide-mode-line-mode 1)))
+
 (defun elfeed-eb-garamond ()
   (buffer-face-set '(:family "EB Garamond" :height 120)))
 
-(add-hook! 'elfeed-show-mode-hook 'elfeed-eb-garamond)
-  (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+(add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+(add-hook! 'elfeed-show-mode-hook (elfeed-eb-garamond))
+
+(add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
 
   (defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.5)))
     "title face in elfeed show buffer"
@@ -564,6 +566,6 @@
   (elfeed-tube-mpv-follow-mode 1)
   (elfeed-tube-mpv (point)))
 
-(add-hook! 'elfeed-show-mode-hook '(lambda () (elfeed-tube-mpv-follow-mode 1)))
+(add-hook! 'elfeed-show-mode-hook (elfeed-tube-mpv-follow-mode 1))
 
 (provide 'elfeed-tweaks)

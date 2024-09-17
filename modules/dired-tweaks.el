@@ -3,7 +3,8 @@
 ;; Dired
 
 ;;; Casual Dired Shortcut Menu
-(define-key dired-mode-map (kbd "C-o") 'casual-dired-tmenu)
+(after! dired
+  (define-key dired-mode-map (kbd "C-o") 'casual-dired-tmenu))
 
 ;;; Colourful dired
 (use-package! diredfl

@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: hotel
+# uuid: hotel
+# key: hotel
+# condition: t
+# --
+  name: "$1"
+  address: "$2"
+  dates: "$3"

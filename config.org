@@ -304,25 +304,6 @@ age95IpQjrQoIy0CPDtiouDWKNrXrTSQctareltEAkkB+p48HdVkKg==
   (setq exwm-systemtray--icon-min-size 16)
   )
 #+end_src
-** Workarounds
-#+begin_src emacs-lisp
-(load-module 'workarounds)
-#+end_src
-*** Requirements
-#+begin_src emacs-lisp :tangle packages.el
-; Temporary workaround, remove at emacs 29
-(package! transient
-      :recipe (:host github :repo "magit/transient"))
-
-(package! with-editor
-          :recipe (:host github :repo "magit/with-editor"))
-
-(unpin! magit)
-#+end_src
-*** Code
-#+begin_src emacs-lisp :tangle modules/workarounds.el
-(provide 'workarounds)
-#+end_src
 ** Utility functions
 #+begin_src emacs-lisp
 (load-module 'utility-functions)
@@ -491,7 +472,7 @@ ISPELL-FUNC passed as adviced function."
   (interactive)
   (with-temp-buffer
     (beancount-open-local)
-    (completing-read "Account: " (beancount-collect beancount-account-regexp 0))))
+    (completing-read "Account: " (beancount-collect-unique beancount-account-regexp 0))))
 
 (defun beancount-imported-transaction-change-unknown-account ()
   "Change the Unknown:account field in an imported beancount entry."
@@ -777,6 +758,7 @@ Return a string suitable for insertion in `dired' buffer."
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
 (package! casual-dired)
+(package! dired-open-with)
 #+end_src
 
 **** Code
@@ -786,7 +768,8 @@ Return a string suitable for insertion in `dired' buffer."
 ;; Dired
 
 ;;; Casual Dired Shortcut Menu
-(define-key dired-mode-map (kbd "C-o") 'casual-dired-tmenu)
+(after! dired
+  (define-key dired-mode-map (kbd "C-o") 'casual-dired-tmenu))
 
 ;;; Colourful dired
 (use-package! diredfl
@@ -1189,6 +1172,7 @@ Return a string suitable for insertion in `dired' buffer."
       (replace-match replacement))))
 
 ; Casual Avy as menu for avy jumps
+(setq relative nil) ; workaround for casual-avy bug, needed as long as not in melpa
 (keymap-global-set "M-s" #'casual-avy-tmenu)
 
 (setq toggle-auto-fill-boolean nil
@@ -1405,12 +1389,14 @@ Return a string suitable for insertion in `dired' buffer."
         elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
         shr-max-image-proportion 0.6)
 
-  (add-hook! 'elfeed-show-mode-hook '(lambda () (hide-mode-line-mode 1)))
+
 (defun elfeed-eb-garamond ()
   (buffer-face-set '(:family "EB Garamond" :height 120)))
 
-(add-hook! 'elfeed-show-mode-hook 'elfeed-eb-garamond)
-  (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+(add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+(add-hook! 'elfeed-show-mode-hook (elfeed-eb-garamond))
+
+(add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
 
   (defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.5)))
     "title face in elfeed show buffer"
@@ -1889,7 +1875,7 @@ Return a string suitable for insertion in `dired' buffer."
   (elfeed-tube-mpv-follow-mode 1)
   (elfeed-tube-mpv (point)))
 
-(add-hook! 'elfeed-show-mode-hook '(lambda () (elfeed-tube-mpv-follow-mode 1)))
+(add-hook! 'elfeed-show-mode-hook (elfeed-tube-mpv-follow-mode 1))
 
 (provide 'elfeed-tweaks)
 #+end_src
@@ -1934,14 +1920,17 @@ Return a string suitable for insertion in `dired' buffer."
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
+(package! xclip)
 #+end_src
 *** Code
 **** General settings
 #+begin_src emacs-lisp :tangle modules/interface.el
 (setq-default
  x-stretch-cursor t)
+(xclip-mode t)
 (good-scroll-mode -1)
 (setq-default word-wrap t)
+(context-menu-mode t)
 
 (setq undo-limit 80000000                         ; Raise undo-limit to 80Mb
       evil-want-fine-undo t                       ; By default while in insert all changes are one big blob. Be more granular
@@ -2166,6 +2155,71 @@ Return a string suitable for insertion in `dired' buffer."
 #+RESULTS:
 : interface
 
+**** Sync Theme to Zathura
+#+begin_src emacs-lisp
+(load-module 'sync-theme-to-zathura)
+#+end_src
+***** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+***** Code
+#+begin_src emacs-lisp :tangle modules/sync-theme-to-zathura.el
+(setq zathura-set-theme-command "~/.scripts/zathura-recolor.sh")
+
+(defvar enables-sync-theme-to-zathura t)
+
+(defun sync-theme-to-zathura ()
+  (interactive)
+  (when enables-sync-theme-to-zathura
+   (let ((bg (face-attribute 'default :background))
+     (fg (face-attribute 'default :foreground))
+     (mbg (face-attribute 'mode-line :background))
+     (mfg (face-attribute 'mode-line :foreground)))
+     (call-process zathura-set-theme-command nil nil nil fg bg fg bg))))
+
+(defun consult-theme--maybe-sync-to-zathura (theme)
+  "Disable current themes and enable THEME from `consult-themes'.
+
+The command supports previewing the currently selected theme."
+  (interactive
+   (list
+    (let* ((regexp (consult--regexp-filter
+                    (mapcar (lambda (x) (if (stringp x) x (format "\\`%s\\'" x)))
+                            consult-themes)))
+           (avail-themes (seq-filter
+                          (lambda (x) (string-match-p regexp (symbol-name x)))
+                          (cons 'default (custom-available-themes))))
+           (saved-theme (car custom-enabled-themes)))
+      (consult--read
+       (mapcar #'symbol-name avail-themes)
+       :prompt "Theme: "
+       :require-match t
+       :category 'theme
+       :history 'consult--theme-history
+       :lookup (lambda (selected &rest _)
+                 (setq selected (and selected (intern-soft selected)))
+                 (or (and selected (car (memq selected avail-themes)))
+                     saved-theme))
+       :state (lambda (action theme)
+                (pcase action
+                  ('return (consult-theme (or theme saved-theme)))
+                  ((and 'preview (guard theme)) (consult-theme theme))))
+       :default (symbol-name (or saved-theme 'default))))))
+  (when (eq theme 'default) (setq theme nil))
+  (unless (eq theme (car custom-enabled-themes))
+    (mapc #'disable-theme custom-enabled-themes)
+    (when theme
+      (if (custom-theme-p theme)
+          (progn (enable-theme theme) (sync-theme-to-zathura))
+        (progn (load-theme theme :no-confirm)
+           (sync-theme-to-zathura))))))
+
+(add-function :override (symbol-function 'consult-theme) #'consult-theme--maybe-sync-to-zathura)
+
+(provide 'sync-theme-to-zathura)
+#+end_src
+
 ** EXWM Tweaks
 #+begin_src emacs-lisp
 (load-module 'exwm-tweaks)
@@ -2182,13 +2236,21 @@ Return a string suitable for insertion in `dired' buffer."
   (setq mouse-autoselect-window t
         focus-follows-mouse t)
   (require 'exwm)
-  (require 'exwm-config)
+  ;(require 'exwm-config) exwm config is deprecated
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
   (exwm-enable)
   (fringe-mode -1)
   (require 'exwm-randr)
-  (setq exwm-randr-workspace-monitor-plist '(0 "eDP-1" 1 "DP-2-1" 2 "DP-2-2"))
+  ;(setq exwm-randr-workspace-monitor-plist '(0 "eDP-1" 1 "DP-2-1" 2 "DP-2-2" 3 "HDMI-2" 4 "HDMI-1"))
 
+  (defun exwm-update-monitors ()
+    "Detects connected monitors and sets exwm-randr-workspace-monitor-plist accordingly"
+    (interactive)
+    (setq exwm-randr-workspace-monitor-plist
+          (let ((monitors (mapcar (lambda (monitor) (alist-get 'name monitor)) (display-monitor-attributes-list))))
+            (apply #'append (cl-mapcar #'list (number-sequence 0 (1- (length monitors))) monitors)))))
+
+  (exwm-update-monitors)
   (exwm-randr-enable)
 
 ;; (when (string= (system-name) "astaroth")
@@ -2196,12 +2258,12 @@ Return a string suitable for insertion in `dired' buffer."
 ;;  (when (string= (system-name) "jarvis")
 ;;    (setq exwm-randr-workspace-output-plist '(1 "DisplayPort-0" 2 "DVI-0" 3 "HDMI-0" 4 "eDP-1")))
 
+  (add-hook! 'exwm-randr-screen-change-hook 'exwm-update-monitors)
+
    ;; (add-hook 'exwm-randr-screen-change-hook
    ;;           (lambda ()
    ;;             (start-process-shell-command
    ;;              "xrandr" nil "xrandr --output eDP-1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output DP-1 --off --output HDMI-1 --off --output DP-2 --off --output DP-2-1 --mode 1920x1080 --pos 1920x0 --rotate normal")))
-
-
 
  ; (add-hook 'exwm-randr-screen-change-hook
  ;     (lambda ()
@@ -2263,6 +2325,11 @@ Return a string suitable for insertion in `dired' buffer."
       (call-interactively 'exwm-layout-hide-mode-line)
       )))
 
+(defun exwm-move-window-to-workspace(workspace-number)
+  (interactive)
+  (let ((frame (exwm-workspace--workspace-from-frame-or-index workspace-number))
+        (id (exwm--buffer->id (window-buffer))))
+    (exwm-workspace-move-window frame id)))
 
   (setq exwm-workspace-number 1
         exwm-workspace-show-all-buffers t
@@ -2283,7 +2350,15 @@ Return a string suitable for insertion in `dired' buffer."
                       (lambda ()
                         (interactive)
                         (exwm-workspace-switch-create ,i))))
-                  (number-sequence 0 8))))
+                  (number-sequence 0 8))
+        ,@(mapcar (lambda (i)
+                    `(,(kbd (format "M-s-%d" (+ i 1))) .
+                      (lambda ()
+                        (interactive)
+                        (exwm-move-window-to-workspace ,i))))
+                  (number-sequence 0 8))
+
+        ))
 
 
   (add-hook 'exwm-manage-finish-hook
@@ -2586,7 +2661,12 @@ Return a string suitable for insertion in `dired' buffer."
 (exwm-input-set-key (kbd "s-<left>") (lambda () (interactive) (winner-undo)))
 (exwm-input-set-key (kbd "s-<right>") (lambda () (interactive) (winner-undo)))
 (exwm-input-set-key (kbd "s-a") (lambda () (interactive) (org-agenda-list)))
-(exwm-input-set-key (kbd "s-m") (lambda () (interactive) (mu4e--goto-inbox)))
+(exwm-input-set-key (kbd "s-m") (lambda () (interactive) (mu4e t) (mu4e--goto-inbox)))
+
+(global-unset-key (kbd "S-s-1"))
+(keymap-global-set "S-s-1" #'(lambda () (interactive) ((exwm-move-window-to-workspace 1))))
+(exwm-input-set-key (kbd "S-s-1") (lambda () (interactive) ((exwm-move-window-to-workspace 1))))
+
 (exwm-input--update-global-prefix-keys)
 
 ;; Wallpaper
@@ -2596,6 +2676,7 @@ Return a string suitable for insertion in `dired' buffer."
 
 (provide 'exwm-tweaks)
 #+end_src
+
 ** EXWM Buffer movements
 #+begin_src emacs-lisp
 (load-module 'exwm-buffer-movements)
@@ -2610,6 +2691,13 @@ Return a string suitable for insertion in `dired' buffer."
 (exwm-input-set-key (kbd "s-l") 'buf-move-right)
 (exwm-input-set-key (kbd "s-k") 'buf-move-up)
 (exwm-input-set-key (kbd "s-j") 'buf-move-down)
+
+; Resize
+(exwm-input-set-key (kbd "s-<kp-8>") 'exwm-layout-enlarge-window)
+(exwm-input-set-key (kbd "s-<kp-2>") 'exwm-layout-shrink-window)
+(exwm-input-set-key (kbd "s-<kp-6>") 'exwm-layout-enlarge-window-horizontally)
+(exwm-input-set-key (kbd "s-<kp-2>") 'exwm-layout-shrink-window-horizontally)
+(exwm-input-set-key (kbd "s-<kp-5>") 'exwm-layout-toggle-mode-line)
 (exwm-input--update-global-prefix-keys)
 (provide 'exwm-buffer-movements)
 #+end_src
@@ -3251,11 +3339,15 @@ Assuming that url is in title like in Keepass Helper extension."
              )
         (message youtube)
         (if (or (string-equal youtube "(YouTube — Mozilla Firefox)")
-                (string-equal youtube "(YouTube — Mozilla Firefox (Private Browsing))"))
+                (string-equal youtube "(YouTube — Mozilla Firefox (Private Browsing)")
+                (string-equal youtube "(YouTube — Mozilla Firefox Private Browsing")
+                )
             (propertize (nerd-icons-faicon "nf-fa-youtube") 'face '(:foreground "red" :background "white"))
           (if (or
                (string-equal browser "(Mozilla Firefox)")
-               (string-equal browser "(Mozilla Firefox (Private Browsing))"))
+               (string-equal browser "(Mozilla Firefox (Private Browsing)")
+               (string-equal browser "(Mozilla Firefox Private Browsing")
+               )
               (propertize (nerd-icons-faicon "nf-fa-firefox") 'face '(:foreground "orange red"))
 	    )))))
 
@@ -3469,7 +3561,7 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
   (orderless-matching-styles
    '(orderless-literal
      orderless-prefixes
-     orderless-initialism
+     ;;orderless-initialism
      orderless-regexp
      ;;orderless-flex ;; Fuzzy finding
      ;; orderless-strict-leading-initialism
@@ -6776,6 +6868,19 @@ This forces a complete recompilation of the document, even if the source
   (save-buffer)
   (TeX-command-sequence t t))
 
+(defun backup-copy-pdf-after-compilation (pdf-file)
+  "Copy the newly created PDF file to the same directory as the source TeX file with a '.backup.pdf' suffix."
+  (let ((source-directory (file-name-directory pdf-file))
+        (pdf-file-name (file-name-nondirectory pdf-file))
+        (backup-pdf-file (concat (file-name-sans-extension pdf-file) ".backup.pdf")))
+        ;(message backup-pdf-file)
+    (copy-file pdf-file (concat "" backup-pdf-file) t))) ;source-directory
+
+
+; Create backup copy of pdf after successful compilation
+; This way, you can read the pfd even while the new version is compiling
+(add-hook 'TeX-after-compilation-finished-functions #'backup-copy-pdf-after-compilation)
+
 (defun auto-async-export ()
   (let ((keywords (org-collect-keywords '("auto_async_export"))))
     (when (and keywords
@@ -6817,10 +6922,12 @@ This forces a complete recompilation of the document, even if the source
   (message (shell-command-to-string (format "texcount -1 -merge -template={1} %s" file-name)))))
 
 (add-hook 'TeX-language-en-hook
-          (lambda () (ispell-change-dictionary "english")))
+          (lambda () (ispell-change-dictionary "english")
+            (setq TeX-quote-language `("german" "\\enquote{" "}" ,TeX-quote-after-quote))))
 
 (add-hook 'TeX-language-de-hook
-          (lambda () (ispell-change-dictionary "german")))
+          (lambda () (ispell-change-dictionary "german")
+            (setq TeX-quote-language `("german" "\\enquote{" "}" ,TeX-quote-after-quote))))
 
 
   ;; Latex classes
@@ -7337,9 +7444,16 @@ Charges battery to 100% full by undoing service, active until restart
 (package! mu4e-dashboard :recipe (:host github :repo "rougier/mu4e-dashboard"))
 (package! svg-tag-mode)
 (package! ts)
+(package! nano-sidebar :recipe (:host github :repo "rougier/nano-sidebar"))
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/nano-tweaks.el
+(require 'nano-base-colors)
+(require 'nano-faces)
+(require 'nano-help)
+(load-module 'nano-sidebar)
+(load-module 'nano-mu4e)
+
 ;; (setq package-install-upgrade-built-in t)
 ;; (setq nano-font-size 10
 ;;       nano-font-family-monospaced "Source Code Pro Semibold"
@@ -7347,8 +7461,8 @@ Charges battery to 100% full by undoing service, active until restart
 ;;       nano-modeline-style '(3d accented)
 ;;       doom-one-brighter-comments t)
 
-;; ;; Default layout (optional)
-;; ;(require 'nano-layout)
+;; ;;Default layout (optional)
+;; (require 'nano-layout)
 
 ;; ;; Theme
 ;; (require 'nano-faces)
@@ -7365,11 +7479,52 @@ Charges battery to 100% full by undoing service, active until restart
 ;; (load-theme doom-theme)
 
 ;; ;; Nano session saving (optional)
-;; (require 'nano-session)
+;; ;(require 'nano-session)
 
 ;; ;; Nano header & mode lines (optional)
-;; (require 'nano-modeline)
+;; ;(require 'nano-modeline)
 
-;; (setq widget-image-enable nil)
+;; ;(setq widget-image-enable nil)
 (provide 'nano-tweaks)
+#+end_src
+** External Tui
+#+begin_src emacs-lisp
+(load-module 'external-tui)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! eee
+      :recipe
+      (:host github
+       :repo "eval-exec/eee.el"
+       :files (:defaults "*.el" "*.sh")))
+
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/external-tui.el
+;(setq ee-terminal-command "wezterm")
+(setq ee-terminal-command "kitty")
+(load-module 'eee)
+(provide 'external-tui)
+#+end_src
+** Workarounds
+#+begin_src emacs-lisp
+(load-module 'workarounds)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+; Temporary workaround, remove at emacs 29
+(package! transient
+      :recipe (:host github :repo "magit/transient"))
+
+(package! with-editor
+          :recipe (:host github :repo "magit/with-editor"))
+
+(unpin! magit)
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/workarounds.el
+(global-diff-hl-mode -1)
+(remove-hook 'dired-mode-hook '+vc-gutter-enable-maybe-h)
+(provide 'workarounds)
 #+end_src

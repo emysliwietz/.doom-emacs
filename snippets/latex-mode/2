@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: enquote
+# uuid:
+# key: 2
+# condition: t
+# --
+\enquote{$1}$0

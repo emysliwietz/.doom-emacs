@@ -17,6 +17,19 @@ This forces a complete recompilation of the document, even if the source
   (save-buffer)
   (TeX-command-sequence t t))
 
+(defun backup-copy-pdf-after-compilation (pdf-file)
+  "Copy the newly created PDF file to the same directory as the source TeX file with a '.backup.pdf' suffix."
+  (let ((source-directory (file-name-directory pdf-file))
+        (pdf-file-name (file-name-nondirectory pdf-file))
+        (backup-pdf-file (concat (file-name-sans-extension pdf-file) ".backup.pdf")))
+        ;(message backup-pdf-file)
+    (copy-file pdf-file (concat "" backup-pdf-file) t))) ;source-directory
+
+
+; Create backup copy of pdf after successful compilation
+; This way, you can read the pfd even while the new version is compiling
+(add-hook 'TeX-after-compilation-finished-functions #'backup-copy-pdf-after-compilation)
+
 (defun auto-async-export ()
   (let ((keywords (org-collect-keywords '("auto_async_export"))))
     (when (and keywords
@@ -58,10 +71,12 @@ This forces a complete recompilation of the document, even if the source
   (message (shell-command-to-string (format "texcount -1 -merge -template={1} %s" file-name)))))
 
 (add-hook 'TeX-language-en-hook
-          (lambda () (ispell-change-dictionary "english")))
+          (lambda () (ispell-change-dictionary "english")
+            (setq TeX-quote-language `("german" "\\enquote{" "}" ,TeX-quote-after-quote))))
 
 (add-hook 'TeX-language-de-hook
-          (lambda () (ispell-change-dictionary "german")))
+          (lambda () (ispell-change-dictionary "german")
+            (setq TeX-quote-language `("german" "\\enquote{" "}" ,TeX-quote-after-quote))))
 
 
   ;; Latex classes
