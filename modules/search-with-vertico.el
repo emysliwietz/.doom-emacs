@@ -17,7 +17,7 @@
   (interactive)
   ; consult-buffer-filter might not be loaded at startup yet
   (if (boundp 'consult-buffer-filter)
-      (let ((consult-buffer-filter    (cons "\\*"       consult-buffer-filter)))
+      (let ((consult-buffer-filter    (append (mapcar 'file-name-nondirectory org-agenda-files) (cons "\\*"       consult-buffer-filter))))
         (consult-buffer))
     (consult-buffer)))
 

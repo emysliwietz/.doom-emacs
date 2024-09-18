@@ -171,7 +171,9 @@
              (not (progn
                     ;(message (format "Class: %s" exwm-class-name))
                     %(message (format "Title: %s" exwm-instance-name))
-                    )))
+                    ))
+             (string-equal exwm-class-name "ripdrag")
+             )
            floating t
            floating-mode-line nil
 ;           width 0.4
