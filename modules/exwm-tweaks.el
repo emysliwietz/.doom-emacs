@@ -166,6 +166,8 @@
                       ))
              (and (string-equal exwm-class-name "Firefox")
                   (string-equal exwm-title "Save Image"))
+             (and (string-equal exwm-class-name "firefox")
+                  (string-equal exwm-title "Picture-in-Picture"))
              (and (string-equal exwm-class-name "KeePassXC")
                   (string-equal exwm-title "KeePassXC -  Access Request"))
              (not (progn

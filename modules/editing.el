@@ -51,6 +51,7 @@
     company-files
     company-yasnippet))
 
+
 (set-company-backend! 'ess-r-mode
   '(company-R-args company-R-objects company-dabbrev-code :separate))
 
@@ -143,6 +144,9 @@
   :demand t
   :config
   (setq treesit-auto-install 'prompt)
+  (setq treesit-font-lock-level 4) ; all the fontlock details
   (global-treesit-auto-mode))
+
+(map! :map evil-normal-state-map "t t" 'transpose-chars)
 
 (provide 'editing)

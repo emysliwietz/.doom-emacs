@@ -181,6 +181,8 @@
 
 (load-module 'editing)
 
+(load-module 'indent-guide-tweaks)
+
 (load-module 'elfeed-tweaks)
 
 (load-module 'interface)
@@ -252,6 +254,8 @@
 (load-module 'org-citations)
 
 (load-module 'org-links)
+
+(load-module 'org-capture-tweaks)
 
 (load-module 'languages)
 

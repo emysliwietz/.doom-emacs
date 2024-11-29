@@ -66,7 +66,9 @@ This function is intended for use with `ivy-ignore-buffers'."
         (b (format "%s" buffname)))
     (when (and (string-equal m "messages-buffer-mode")
                (string-equal b "*Messages*"))
-      (propertize (nerd-icons-mdicon "nf-md-message_text_outline") 'face '(:foreground "dim gray")))))
+      (propertize (nerd-icons-mdicon "nf-md-message_text_outline") 'face '(:foreground "dim gray")))
+
+        ))
 
 ;; Overwrite some stuff for exwm and icons in Firefox
 (defun nerd-icons--icon-for-firefox (mode buffname)
@@ -119,6 +121,10 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
              (propertize (nerd-icons-faicon "nf-fa-discord") 'face '(:foreground "purple")))
 	    ((string-prefix-p "OBS" buffname)
              (propertize (nerd-icons-faicon "nf-fa-video_camera") 'face '(:foreground "dark gray")))
+            ((string-prefix-p "QEMU" buffname)
+             (propertize (nerd-icons-faicon "nf-fa-desktop") 'face '(:foreground "dark gray")))
+            ((string-prefix-p "Bluetooth Devices" buffname)
+             (propertize (nerd-icons-faicon "nf-fa-bluetooth") 'face '(:foreground "deep sky blue")))
 	    ((file-directory-p buffname)
              (propertize (nerd-icons-faicon "nf-fa-folder_open") 'face '(:foreground "yellow")))
 	    ((string-suffix-p " - mpv" buffname)

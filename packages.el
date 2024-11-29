@@ -117,6 +117,9 @@
 (package! treesit-auto)
 (package! avy)
 (package! casual-avy :recipe (:host github :repo "kickingvegas/casual-avy"))
+(package! yasnippet-snippets)
+
+(package! indent-bars :recipe (:host github :repo "jdtsmith/indent-bars"))
 
 
 
@@ -189,6 +192,8 @@
 
 
 
+
+
 (package! org-appear :recipe (:host github :repo "awth13/org-appear"))
 
 
@@ -248,3 +253,5 @@
           :recipe (:host github :repo "magit/with-editor"))
 
 (unpin! magit)
+
+(package! diff-hl :disable t)

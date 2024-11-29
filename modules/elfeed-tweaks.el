@@ -10,7 +10,7 @@
                                         ;[remap kill-this-buffer] "q"
                                         ;[remap kill-buffer] "q"
       :n doom-leader-key nil
-      :n "DEL" #'elfeed-summary
+      :n "DEL" #'elfeed-load-summary
       :n "q" #'elfeed-save-summary
       :n "e" #'elfeed-update
       :n "r" #'elfeed-search-untag-all-unread
@@ -70,24 +70,24 @@
   (use-package! elfeed-link)
   (elfeed-db-load)
   (setq ;elfeed-search-filter "@1-week-ago +unread"
-        elfeed-search-filter "@3-days-ago unread"
-        flycheck-global-modes '(not . (elfeed-search-mode))
-        elfeed-summary--only-unread t
-        elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
-        elfeed-search-title-min-width 80
-        elfeed-show-entry-switch #'pop-to-buffer
-        elfeed-show-entry-delete #'+rss/delete-pane
-        elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
-        shr-max-image-proportion 0.6)
+   elfeed-search-filter "@3-days-ago unread"
+   flycheck-global-modes '(not . (elfeed-search-mode))
+   elfeed-summary--only-unread t
+   elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
+   elfeed-search-title-min-width 80
+   elfeed-show-entry-switch #'pop-to-buffer
+   elfeed-show-entry-delete #'+rss/delete-pane
+   elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
+   shr-max-image-proportion 0.6)
 
 
-(defun elfeed-eb-garamond ()
-  (buffer-face-set '(:family "EB Garamond" :height 120)))
+  (defun elfeed-eb-garamond ()
+    (buffer-face-set '(:family "EB Garamond" :height 120)))
 
-(add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
-(add-hook! 'elfeed-show-mode-hook (elfeed-eb-garamond))
+  (add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+  (add-hook! 'elfeed-show-mode-hook (elfeed-eb-garamond))
 
-(add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+  (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
 
   (defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.5)))
     "title face in elfeed show buffer"
@@ -215,8 +215,8 @@
     "Download the enclosure to yt-dlp directory"
     (interactive)
     (let*
-         ((url-enclosure (car (elt (elfeed-entry-enclosures elfeed-show-entry) 0)))
-          (filename (concat elfeed-enclosure-default-dir "/" (elfeed-entry-title elfeed-show-entry) ".mp3")))
+        ((url-enclosure (car (elt (elfeed-entry-enclosures elfeed-show-entry) 0)))
+         (filename (concat elfeed-enclosure-default-dir "/" (elfeed-entry-title elfeed-show-entry) ".mp3")))
       (elfeed--download-enclosure url-enclosure filename)
       (message (format "Downloading %s" filename))))
 
@@ -274,10 +274,11 @@
   "Save database and go to summary"
   (interactive)
   (elfeed-db-save-safe)
-  (kill-this-buffer)
+  ;(kill-this-buffer)
   (elfeed-summary)
   (when (boundp 'elfeed-summary--current-pos)
-    (goto-char elfeed-summary--current-pos)))
+    (set-window-point (get-buffer-window "*elfeed-summary*") elfeed-summary--current-pos)
+        ))
 
 (defun elfeed-save-close ()
   "Save database and close rss"
@@ -293,16 +294,70 @@
   (elfeed-summary)
   (when (boundp 'elfeed-summary--current-pos)
     (progn
-      (goto-char elfeed-summary--current-pos)
-      (recenter-top-bottom))))
+      (set-window-point (get-buffer-window "*elfeed-summary*") elfeed-summary--current-pos)
+      (recenter-top-bottom)))
+  (buf-move-up)
+  )
 
 (defun elfeed-summary-load-update ()
   "Loads the database again before updating"
   (interactive)
   (elfeed-db-load)
   (message "Refreshing db...")
+  (ap/elfeed-search-update-save-filter)
   (elfeed-update)
-  (elfeed-summary-update))
+  )
+
+                                        ; Workaround for slowness while updating. See
+                                        ; https://github.com/skeeto/elfeed/issues/293
+
+(defvar ap/elfeed-update-complete-hook nil
+  "Functions called with no arguments when `elfeed-update' is finished.")
+
+(defvar ap/elfeed-updates-in-progress 0
+  "Number of feed updates in-progress.")
+
+(defvar ap/elfeed-search-update-filter nil
+  "The filter when `elfeed-update' is called.")
+
+(defun ap/elfeed-update-complete-hook (&rest ignore)
+  "When update queue is empty, run `ap/elfeed-update-complete-hook' functions."
+  (when (= 0 ap/elfeed-updates-in-progress)
+    (run-hooks 'ap/elfeed-update-complete-hook)))
+
+(add-hook 'elfeed-update-hooks #'ap/elfeed-update-complete-hook)
+
+(defun ap/elfeed-update-message-completed (&rest _ignore)
+  (message "Feeds updated"))
+
+(add-hook 'ap/elfeed-update-complete-hook #'ap/elfeed-update-message-completed)
+
+(defun ap/elfeed-search-update-restore-filter (&rest ignore)
+  "Restore filter after feeds update."
+  (when ap/elfeed-search-update-filter
+    (elfeed-search-set-filter ap/elfeed-search-update-filter)
+    (setq ap/elfeed-search-update-filter nil)))
+
+(add-hook 'ap/elfeed-update-complete-hook #'ap/elfeed-search-update-restore-filter)
+
+(defun ap/elfeed-search-update-save-filter (&rest ignore)
+  "Save and change the filter while updating."
+  (setq ap/elfeed-search-update-filter elfeed-search-filter)
+  (setq elfeed-search-filter "#0"))
+
+
+(defun ap/elfeed-update-counter-inc (&rest ignore)
+  (cl-incf ap/elfeed-updates-in-progress))
+
+(advice-add #'elfeed-update-feed :before #'ap/elfeed-update-counter-inc)
+
+(defun ap/elfeed-update-counter-dec (&rest ignore)
+  (cl-decf ap/elfeed-updates-in-progress)
+  (when (< ap/elfeed-updates-in-progress 0)
+    ;; Just in case
+    (setq ap/elfeed-updates-in-progress 0)))
+
+(add-hook 'elfeed-update-hooks #'ap/elfeed-update-counter-dec)
 
 (setq elfeed-summary-settings
       '(
@@ -394,8 +449,8 @@
 (load-module 'youtube-dl)
 
 (defvar youtube-dl-4k nil "Whether to download in 4k")
-;(when (string= (getenv "XFT_DPI") "192")
-;  (setq youtube-dl-4k t))
+                                        ;(when (string= (getenv "XFT_DPI") "192")
+                                        ;  (setq youtube-dl-4k t))
 
 (if youtube-dl-4k
     (setq youtube-dl-format-string "bestvideo+bestaudio")
@@ -407,14 +462,14 @@
       youtube-dl-temp-directory "/tmp/elfeed-youtube"
       youtube-dl-program "yt-dlp"
       youtube-dl-arguments (nconc `("-f" ,youtube-dl-format-string
-               "--sponsorblock-remove" "default"
-               "--prefer-free-formats"
-               "--embed-subs"
-               "--embed-metadata"
-               "--embed-chapters"
-               "--ffmpeg-location" "/home/user/.doom.d/ext/bin/"
-               "--no-colors")
-             youtube-dl-arguments))
+                                    "--sponsorblock-remove" "default"
+                                    "--prefer-free-formats"
+                                    "--embed-subs"
+                                    "--embed-metadata"
+                                    "--embed-chapters"
+                                    "--ffmpeg-location" "/home/user/.doom.d/ext/bin/"
+                                    "--no-colors")
+                                  youtube-dl-arguments))
                                         ; (setq youtube-dl-arguments nil)
 
 (global-set-key (kbd "s-v") 'open-yt-dl-videos)
@@ -479,20 +534,20 @@
         (set-process-sentinel process (lambda (_process _event) (funcall callback output-path)))))))
 
 (defun get-max-minibuffer-height-px ()
-    "Return maximum height of echo area and minibuffer in pixels"
-    (if (floatp max-mini-window-height) ;height is percentage of frame height if float, else number of lines
-        (truncate (* max-mini-window-height (frame-pixel-height)))
-      (* max-mini-window-height (frame-char-height))
-      ))
+  "Return maximum height of echo area and minibuffer in pixels"
+  (if (floatp max-mini-window-height) ;height is percentage of frame height if float, else number of lines
+      (truncate (* max-mini-window-height (frame-pixel-height)))
+    (* max-mini-window-height (frame-char-height))
+    ))
 
 (defun image-popup (img-path)
   "Display image at output-path as popup"
   (tooltip-mode 1) ;; tooltip-show doesn't always work
   (image-shrink img-path (format "x%s" (get-max-minibuffer-height-px))
-  '(lambda (img-path) (message
-   (propertize "Look in minbuffer"
-               'display (create-image img-path))))
-                             ))
+                '(lambda (img-path) (message
+                                     (propertize "Look in minbuffer"
+                                                 'display (create-image img-path))))
+                ))
 
 (defun elfeed-search-thumbnail ()
   "Display the thumbnail of the currently selected video"
@@ -532,9 +587,9 @@
    (let* ((n (1- (line-number-at-pos))))
      (list (nth n youtube-dl-items))))
   (when item
-        (setf (youtube-dl-item-failures item) 0))
-          (youtube-dl--redisplay)
-          (youtube-dl--run))
+    (setf (youtube-dl-item-failures item) 0))
+  (youtube-dl--redisplay)
+  (youtube-dl--run))
 
 (use-package! elfeed-tube
   :after elfeed
@@ -567,5 +622,6 @@
   (elfeed-tube-mpv (point)))
 
 (add-hook! 'elfeed-show-mode-hook (elfeed-tube-mpv-follow-mode 1))
+(set-popup-rule! "^\\*elfeed" :side 'left :size (/ 1.0 3))
 
 (provide 'elfeed-tweaks)

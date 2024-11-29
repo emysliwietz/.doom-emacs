@@ -32,7 +32,7 @@
            :unnarrowed t))))
 
 ;; Actually start using templates
-(after! org-capture
+;(after! org-capture
   ;; For browser capture
   (add-to-list 'org-capture-templates
                '("P" "Protocol" entry ; key, name, type
@@ -46,7 +46,25 @@
                  "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
                  :prepend t
                  :kill-buffer t))
-  )
+
+;  )
+(map! :map evil-org-mode-map
+        :leader
+        (:prefix ("R")
+         :desc "Insert node"
+         "i" #'org-roam-node-insert
+         :desc "Find node"
+         "f" #'org-roam-node-find
+         :desc "Capture to node"
+         "c" #'org-roam-capture
+         :desc "Toggle roam buffer"
+         "b" #'org-roam-buffer-toggle
+         :desc "Open random note"
+         "r" #'org-roam-node-random
+         :desc "Visit node"
+         "v" #'org-roam-node-visit
+         :desc "Open ORUI"
+         "u" #'org-roam-ui-open))
 
 (use-package! org-roam-bibtex
   :after org-roam)

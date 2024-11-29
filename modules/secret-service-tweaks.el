@@ -1,4 +1,4 @@
-;; Load and patch secrets
+  ;; Load and patch secrets
   (use-package! secrets
     :commands (secrets-search-items
                secrets-get-secret
@@ -31,4 +31,20 @@
                 (dbus-call-method
                  :session secrets-service item-path secrets-interface-item
                  "GetSecret" :object-path secrets-session-path)))))))
+
+(require 'async)
+(defun secrets-get-secret-async (db-name password-name variable)
+  (async-start
+   ; Async function
+   `(lambda ()
+      (require 'secrets)
+      (secrets-get-secret ,db-name ,password-name)
+      )
+
+   ; Callback
+   `(lambda (result)
+      (setq ,variable result)))
+  )
+
+
 (provide 'secret-service-tweaks)

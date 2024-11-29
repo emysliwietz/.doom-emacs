@@ -1,7 +1,7 @@
 (use-package! gptel
   :defer t
   :config
-    (setq gptel-api-key (secrets-get-secret "Passwords" "ChatGPT API Key")
-       gptel--system-message "")
+    (secrets-get-secret-async "Passwords" "ChatGPT API Key" 'gptel-api-key)
+    (setq gptel--system-message "")
   )
 (provide 'chat-gpt)

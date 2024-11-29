@@ -1,6 +1,18 @@
 ;;; latex.el -*- lexical-binding: t; -*-
 
 (setq TeX-command-extra-options "--shell-escape")
+(setq TeX-view-program-selection
+      '((output-pdf "Zathura")
+        (output-pdf "Evince")
+        (output-pdf "PDF Tools")
+        ((output-dvi has-no-display-manager)
+         "dvi2tty")
+        ((output-dvi style-pstricks)
+         "dvips and gv")
+        (output-dvi "xdvi")
+        (output-html "xdg-open")
+        (output-pdf "preview-pane")))
+
 (setq TeX-engine 'luatex)
 (add-hook 'org-mode-hook
           (lambda ()

@@ -1145,6 +1145,7 @@ Return a string suitable for insertion in `dired' buffer."
 (package! treesit-auto)
 (package! avy)
 (package! casual-avy :recipe (:host github :repo "kickingvegas/casual-avy"))
+(package! yasnippet-snippets)
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/editing.el
@@ -1200,6 +1201,7 @@ Return a string suitable for insertion in `dired' buffer."
     company-ispell
     company-files
     company-yasnippet))
+
 
 (set-company-backend! 'ess-r-mode
   '(company-R-args company-R-objects company-dabbrev-code :separate))
@@ -1293,11 +1295,42 @@ Return a string suitable for insertion in `dired' buffer."
   :demand t
   :config
   (setq treesit-auto-install 'prompt)
+  (setq treesit-font-lock-level 4) ; all the fontlock details
   (global-treesit-auto-mode))
+
+(map! :map evil-normal-state-map "t t" 'transpose-chars)
 
 (provide 'editing)
 #+end_src
 
+*** Indent Guides
+#+begin_src emacs-lisp
+(load-module 'indent-guide-tweaks)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+(package! indent-bars :recipe (:host github :repo "jdtsmith/indent-bars"))
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/indent-guide-tweaks.el
+(use-package! indent-bars
+  :config
+  (require 'indent-bars-ts) 		; not needed with straight
+  :custom
+  (indent-bars-treesit-support t)
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  ;; Add other languages as needed
+  (indent-bars-treesit-scope '((python function_definition class_definition for_statement
+	  if_statement with_statement while_statement)))
+  ;; Note: wrap may not be needed if no-descend-list is enough
+  ;;(indent-bars-treesit-wrap '((python argument_list parameters ; for python, as an example
+  ;;				      list list_comprehension
+  ;;				      dictionary dictionary_comprehension
+  ;;				      parenthesized_expression subscript)))
+  :hook ((python-base-mode yaml-mode) . indent-bars-mode))
+
+(provide 'indent-guide-tweaks)
+#+end_src
 ** Elfeed Tweaks
 #+begin_src emacs-lisp
 (load-module 'elfeed-tweaks)
@@ -1319,7 +1352,7 @@ Return a string suitable for insertion in `dired' buffer."
                                         ;[remap kill-this-buffer] "q"
                                         ;[remap kill-buffer] "q"
       :n doom-leader-key nil
-      :n "DEL" #'elfeed-summary
+      :n "DEL" #'elfeed-load-summary
       :n "q" #'elfeed-save-summary
       :n "e" #'elfeed-update
       :n "r" #'elfeed-search-untag-all-unread
@@ -1379,24 +1412,24 @@ Return a string suitable for insertion in `dired' buffer."
   (use-package! elfeed-link)
   (elfeed-db-load)
   (setq ;elfeed-search-filter "@1-week-ago +unread"
-        elfeed-search-filter "@3-days-ago unread"
-        flycheck-global-modes '(not . (elfeed-search-mode))
-        elfeed-summary--only-unread t
-        elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
-        elfeed-search-title-min-width 80
-        elfeed-show-entry-switch #'pop-to-buffer
-        elfeed-show-entry-delete #'+rss/delete-pane
-        elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
-        shr-max-image-proportion 0.6)
+   elfeed-search-filter "@3-days-ago unread"
+   flycheck-global-modes '(not . (elfeed-search-mode))
+   elfeed-summary--only-unread t
+   elfeed-search-print-entry-function '+rss/elfeed-search-print-entry
+   elfeed-search-title-min-width 80
+   elfeed-show-entry-switch #'pop-to-buffer
+   elfeed-show-entry-delete #'+rss/delete-pane
+   elfeed-show-refresh-function #'+rss/elfeed-show-refresh--better-style
+   shr-max-image-proportion 0.6)
 
 
-(defun elfeed-eb-garamond ()
-  (buffer-face-set '(:family "EB Garamond" :height 120)))
+  (defun elfeed-eb-garamond ()
+    (buffer-face-set '(:family "EB Garamond" :height 120)))
 
-(add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
-(add-hook! 'elfeed-show-mode-hook (elfeed-eb-garamond))
+  (add-hook! 'elfeed-show-mode-hook (hide-mode-line-mode 1))
+  (add-hook! 'elfeed-show-mode-hook (elfeed-eb-garamond))
 
-(add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
+  (add-hook! 'elfeed-search-update-hook #'hide-mode-line-mode)
 
   (defface elfeed-show-title-face '((t (:weight ultrabold :slant italic :height 1.5)))
     "title face in elfeed show buffer"
@@ -1524,8 +1557,8 @@ Return a string suitable for insertion in `dired' buffer."
     "Download the enclosure to yt-dlp directory"
     (interactive)
     (let*
-         ((url-enclosure (car (elt (elfeed-entry-enclosures elfeed-show-entry) 0)))
-          (filename (concat elfeed-enclosure-default-dir "/" (elfeed-entry-title elfeed-show-entry) ".mp3")))
+        ((url-enclosure (car (elt (elfeed-entry-enclosures elfeed-show-entry) 0)))
+         (filename (concat elfeed-enclosure-default-dir "/" (elfeed-entry-title elfeed-show-entry) ".mp3")))
       (elfeed--download-enclosure url-enclosure filename)
       (message (format "Downloading %s" filename))))
 
@@ -1583,10 +1616,11 @@ Return a string suitable for insertion in `dired' buffer."
   "Save database and go to summary"
   (interactive)
   (elfeed-db-save-safe)
-  (kill-this-buffer)
+  ;(kill-this-buffer)
   (elfeed-summary)
   (when (boundp 'elfeed-summary--current-pos)
-    (goto-char elfeed-summary--current-pos)))
+    (set-window-point (get-buffer-window "*elfeed-summary*") elfeed-summary--current-pos)
+        ))
 
 (defun elfeed-save-close ()
   "Save database and close rss"
@@ -1602,16 +1636,70 @@ Return a string suitable for insertion in `dired' buffer."
   (elfeed-summary)
   (when (boundp 'elfeed-summary--current-pos)
     (progn
-      (goto-char elfeed-summary--current-pos)
-      (recenter-top-bottom))))
+      (set-window-point (get-buffer-window "*elfeed-summary*") elfeed-summary--current-pos)
+      (recenter-top-bottom)))
+  (buf-move-up)
+  )
 
 (defun elfeed-summary-load-update ()
   "Loads the database again before updating"
   (interactive)
   (elfeed-db-load)
   (message "Refreshing db...")
+  (ap/elfeed-search-update-save-filter)
   (elfeed-update)
-  (elfeed-summary-update))
+  )
+
+                                        ; Workaround for slowness while updating. See
+                                        ; https://github.com/skeeto/elfeed/issues/293
+
+(defvar ap/elfeed-update-complete-hook nil
+  "Functions called with no arguments when `elfeed-update' is finished.")
+
+(defvar ap/elfeed-updates-in-progress 0
+  "Number of feed updates in-progress.")
+
+(defvar ap/elfeed-search-update-filter nil
+  "The filter when `elfeed-update' is called.")
+
+(defun ap/elfeed-update-complete-hook (&rest ignore)
+  "When update queue is empty, run `ap/elfeed-update-complete-hook' functions."
+  (when (= 0 ap/elfeed-updates-in-progress)
+    (run-hooks 'ap/elfeed-update-complete-hook)))
+
+(add-hook 'elfeed-update-hooks #'ap/elfeed-update-complete-hook)
+
+(defun ap/elfeed-update-message-completed (&rest _ignore)
+  (message "Feeds updated"))
+
+(add-hook 'ap/elfeed-update-complete-hook #'ap/elfeed-update-message-completed)
+
+(defun ap/elfeed-search-update-restore-filter (&rest ignore)
+  "Restore filter after feeds update."
+  (when ap/elfeed-search-update-filter
+    (elfeed-search-set-filter ap/elfeed-search-update-filter)
+    (setq ap/elfeed-search-update-filter nil)))
+
+(add-hook 'ap/elfeed-update-complete-hook #'ap/elfeed-search-update-restore-filter)
+
+(defun ap/elfeed-search-update-save-filter (&rest ignore)
+  "Save and change the filter while updating."
+  (setq ap/elfeed-search-update-filter elfeed-search-filter)
+  (setq elfeed-search-filter "#0"))
+
+
+(defun ap/elfeed-update-counter-inc (&rest ignore)
+  (cl-incf ap/elfeed-updates-in-progress))
+
+(advice-add #'elfeed-update-feed :before #'ap/elfeed-update-counter-inc)
+
+(defun ap/elfeed-update-counter-dec (&rest ignore)
+  (cl-decf ap/elfeed-updates-in-progress)
+  (when (< ap/elfeed-updates-in-progress 0)
+    ;; Just in case
+    (setq ap/elfeed-updates-in-progress 0)))
+
+(add-hook 'elfeed-update-hooks #'ap/elfeed-update-counter-dec)
 
 (setq elfeed-summary-settings
       '(
@@ -1703,8 +1791,8 @@ Return a string suitable for insertion in `dired' buffer."
 (load-module 'youtube-dl)
 
 (defvar youtube-dl-4k nil "Whether to download in 4k")
-;(when (string= (getenv "XFT_DPI") "192")
-;  (setq youtube-dl-4k t))
+                                        ;(when (string= (getenv "XFT_DPI") "192")
+                                        ;  (setq youtube-dl-4k t))
 
 (if youtube-dl-4k
     (setq youtube-dl-format-string "bestvideo+bestaudio")
@@ -1716,14 +1804,14 @@ Return a string suitable for insertion in `dired' buffer."
       youtube-dl-temp-directory "/tmp/elfeed-youtube"
       youtube-dl-program "yt-dlp"
       youtube-dl-arguments (nconc `("-f" ,youtube-dl-format-string
-               "--sponsorblock-remove" "default"
-               "--prefer-free-formats"
-               "--embed-subs"
-               "--embed-metadata"
-               "--embed-chapters"
-               "--ffmpeg-location" "/home/user/.doom.d/ext/bin/"
-               "--no-colors")
-             youtube-dl-arguments))
+                                    "--sponsorblock-remove" "default"
+                                    "--prefer-free-formats"
+                                    "--embed-subs"
+                                    "--embed-metadata"
+                                    "--embed-chapters"
+                                    "--ffmpeg-location" "/home/user/.doom.d/ext/bin/"
+                                    "--no-colors")
+                                  youtube-dl-arguments))
                                         ; (setq youtube-dl-arguments nil)
 
 (global-set-key (kbd "s-v") 'open-yt-dl-videos)
@@ -1788,20 +1876,20 @@ Return a string suitable for insertion in `dired' buffer."
         (set-process-sentinel process (lambda (_process _event) (funcall callback output-path)))))))
 
 (defun get-max-minibuffer-height-px ()
-    "Return maximum height of echo area and minibuffer in pixels"
-    (if (floatp max-mini-window-height) ;height is percentage of frame height if float, else number of lines
-        (truncate (* max-mini-window-height (frame-pixel-height)))
-      (* max-mini-window-height (frame-char-height))
-      ))
+  "Return maximum height of echo area and minibuffer in pixels"
+  (if (floatp max-mini-window-height) ;height is percentage of frame height if float, else number of lines
+      (truncate (* max-mini-window-height (frame-pixel-height)))
+    (* max-mini-window-height (frame-char-height))
+    ))
 
 (defun image-popup (img-path)
   "Display image at output-path as popup"
   (tooltip-mode 1) ;; tooltip-show doesn't always work
   (image-shrink img-path (format "x%s" (get-max-minibuffer-height-px))
-  '(lambda (img-path) (message
-   (propertize "Look in minbuffer"
-               'display (create-image img-path))))
-                             ))
+                '(lambda (img-path) (message
+                                     (propertize "Look in minbuffer"
+                                                 'display (create-image img-path))))
+                ))
 
 (defun elfeed-search-thumbnail ()
   "Display the thumbnail of the currently selected video"
@@ -1841,9 +1929,9 @@ Return a string suitable for insertion in `dired' buffer."
    (let* ((n (1- (line-number-at-pos))))
      (list (nth n youtube-dl-items))))
   (when item
-        (setf (youtube-dl-item-failures item) 0))
-          (youtube-dl--redisplay)
-          (youtube-dl--run))
+    (setf (youtube-dl-item-failures item) 0))
+  (youtube-dl--redisplay)
+  (youtube-dl--run))
 
 (use-package! elfeed-tube
   :after elfeed
@@ -1876,6 +1964,7 @@ Return a string suitable for insertion in `dired' buffer."
   (elfeed-tube-mpv (point)))
 
 (add-hook! 'elfeed-show-mode-hook (elfeed-tube-mpv-follow-mode 1))
+(set-popup-rule! "^\\*elfeed" :side 'left :size (/ 1.0 3))
 
 (provide 'elfeed-tweaks)
 #+end_src
@@ -2398,6 +2487,8 @@ The command supports previewing the currently selected theme."
                       ))
              (and (string-equal exwm-class-name "Firefox")
                   (string-equal exwm-title "Save Image"))
+             (and (string-equal exwm-class-name "firefox")
+                  (string-equal exwm-title "Picture-in-Picture"))
              (and (string-equal exwm-class-name "KeePassXC")
                   (string-equal exwm-title "KeePassXC -  Access Request"))
              (not (progn
@@ -3335,7 +3426,9 @@ This function is intended for use with `ivy-ignore-buffers'."
         (b (format "%s" buffname)))
     (when (and (string-equal m "messages-buffer-mode")
                (string-equal b "*Messages*"))
-      (propertize (nerd-icons-mdicon "nf-md-message_text_outline") 'face '(:foreground "dim gray")))))
+      (propertize (nerd-icons-mdicon "nf-md-message_text_outline") 'face '(:foreground "dim gray")))
+
+        ))
 
 ;; Overwrite some stuff for exwm and icons in Firefox
 (defun nerd-icons--icon-for-firefox (mode buffname)
@@ -3388,6 +3481,10 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
              (propertize (nerd-icons-faicon "nf-fa-discord") 'face '(:foreground "purple")))
 	    ((string-prefix-p "OBS" buffname)
              (propertize (nerd-icons-faicon "nf-fa-video_camera") 'face '(:foreground "dark gray")))
+            ((string-prefix-p "QEMU" buffname)
+             (propertize (nerd-icons-faicon "nf-fa-desktop") 'face '(:foreground "dark gray")))
+            ((string-prefix-p "Bluetooth Devices" buffname)
+             (propertize (nerd-icons-faicon "nf-fa-bluetooth") 'face '(:foreground "deep sky blue")))
 	    ((file-directory-p buffname)
              (propertize (nerd-icons-faicon "nf-fa-folder_open") 'face '(:foreground "yellow")))
 	    ((string-suffix-p " - mpv" buffname)
@@ -5718,7 +5815,7 @@ javascript:location.href='org-protocol://capture?' +
            :unnarrowed t))))
 
 ;; Actually start using templates
-(after! org-capture
+;(after! org-capture
   ;; For browser capture
   (add-to-list 'org-capture-templates
                '("P" "Protocol" entry ; key, name, type
@@ -5732,7 +5829,25 @@ javascript:location.href='org-protocol://capture?' +
                  "* %? [[%:link][%(transform-square-brackets-to-round-ones \"%:description\")]]\n"
                  :prepend t
                  :kill-buffer t))
-  )
+
+;  )
+(map! :map evil-org-mode-map
+        :leader
+        (:prefix ("R")
+         :desc "Insert node"
+         "i" #'org-roam-node-insert
+         :desc "Find node"
+         "f" #'org-roam-node-find
+         :desc "Capture to node"
+         "c" #'org-roam-capture
+         :desc "Toggle roam buffer"
+         "b" #'org-roam-buffer-toggle
+         :desc "Open random note"
+         "r" #'org-roam-node-random
+         :desc "Visit node"
+         "v" #'org-roam-node-visit
+         :desc "Open ORUI"
+         "u" #'org-roam-ui-open))
 
 (use-package! org-roam-bibtex
   :after org-roam)
@@ -5813,11 +5928,11 @@ javascript:location.href='org-protocol://capture?' +
 
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
-(setq org-capture-templates
+(add-to-list 'org-capture-templates
       '(("b" "Beancount Entry" plain
          (file beancount-local-file)
          ;"%(progn (yas-expand-snippet (yas-lookup-snippet \"beancount\" 'org-mode)) nil)")))
-         "bc")))
+         "bc%?")))
 
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"
@@ -6044,6 +6159,36 @@ javascript:location.href='org-protocol://capture?' +
 (provide 'org-links)
 #+end_src
 
+*** Org Capture
+#+begin_src emacs-lisp
+(load-module 'org-capture-tweaks)
+#+end_src
+**** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+**** Code
+#+begin_src emacs-lisp :tangle modules/org-capture-tweaks.el
+(setq +org-capture-todo-file "/home/user/sync/agenda/todo.org"
+      +org-capture-notes-file "/home/user/sync/agenda/notes.org")
+
+  (add-to-list 'org-capture-templates
+               '("t" "Todo" entry ; key, name, type
+                 (file+olp+datetree +org-capture-todo-file) ; target
+                 "* TODO %^{Title}\n%T %?"
+                 :prepend t ; properties
+                 :kill-buffer t))
+
+  (add-to-list 'org-capture-templates
+               '("n" "Note" entry ; key, name, type
+                 (file+olp+datetree +org-capture-notes-file) ; target
+                 "* %^{Title} %^G\n%T %?"
+                 :prepend t ; properties
+                 :kill-buffer t))
+
+
+(provide 'org-capture-tweaks)
+#+end_src
 ** Org Appear
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
@@ -6865,6 +7010,18 @@ account default : emysliwietz
 ;;; latex.el -*- lexical-binding: t; -*-
 
 (setq TeX-command-extra-options "--shell-escape")
+(setq TeX-view-program-selection
+      '((output-pdf "Zathura")
+        (output-pdf "Evince")
+        (output-pdf "PDF Tools")
+        ((output-dvi has-no-display-manager)
+         "dvi2tty")
+        ((output-dvi style-pstricks)
+         "dvips and gv")
+        (output-dvi "xdvi")
+        (output-html "xdg-open")
+        (output-pdf "preview-pane")))
+
 (setq TeX-engine 'luatex)
 (add-hook 'org-mode-hook
           (lambda ()
@@ -7237,6 +7394,22 @@ I'm not sure why pdf-view-resize-factor isn't consistent in both directions, so 
                 (dbus-call-method
                  :session secrets-service item-path secrets-interface-item
                  "GetSecret" :object-path secrets-session-path)))))))
+
+(require 'async)
+(defun secrets-get-secret-async (db-name password-name variable)
+  (async-start
+   ; Async function
+   `(lambda ()
+      (require 'secrets)
+      (secrets-get-secret ,db-name ,password-name)
+      )
+
+   ; Callback
+   `(lambda (result)
+      (setq ,variable result)))
+  )
+
+
 (provide 'secret-service-tweaks)
 #+end_src
 ** AI Assistants
@@ -7254,8 +7427,8 @@ No longer useful because of API limits
 (use-package! gptel
   :defer t
   :config
-    (setq gptel-api-key (secrets-get-secret "Passwords" "ChatGPT API Key")
-       gptel--system-message "")
+    (secrets-get-secret-async "Passwords" "ChatGPT API Key" 'gptel-api-key)
+    (setq gptel--system-message "")
   )
 (provide 'chat-gpt)
 #+end_src
@@ -7384,19 +7557,41 @@ No longer useful because of API limits
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/org-g-cal-tweaks.el
-(setq org-gcal-client-id (secrets-get-secret "Passwords" "Org GCal Client ID")
-      org-gcal-client-secret (secrets-get-secret "Passwords" "Org GCal Client Secret")
-      org-gcal-fetch-file-alist `(
-                                  (,(secrets-get-secret "Passwords" "Org GCal Calendar 1") .  "~/sync/agenda/gcal.org")
-                                  (,(secrets-get-secret "Passwords" "Org GCal Calendar 2") .  "~/sync/agenda/gcal.org")
-                                  )
-      org-gcal-notify-p t
+(require 'async)
+
+(async-start
+ (lambda ()
+   (require 'secrets)
+   (let ((cal1 (secrets-get-secret "Passwords" "Org GCal Calendar 1"))
+         (cal2 (secrets-get-secret "Passwords" "Org GCal Calendar 2")))
+     `(
+       (,cal1 .  "~/sync/agenda/gcal.org")
+       (,cal2 .  "~/sync/agenda/gcal.org")
+       )))
+ (lambda (result)
+   (setq org-gcal-fetch-file-alist result)))
+
+(setq org-gcal-notify-p t
       plstore-cache-passphrase-for-symmetric-encryption t)
 
 
-(require 'oauth2-auto)
-(require 'plstore)
-(require 'org-gcal)
+(async-start
+ (lambda ()
+   (require 'secrets)
+   `(,(secrets-get-secret "Passwords" "Org GCal Client ID")
+     ,(secrets-get-secret "Passwords" "Org GCal Client Secret"))
+   )
+ (lambda (result)
+   (let ((id (nth 0 result))
+         (sc (nth 1 result))
+         )
+     (setq org-gcal-client-id id
+           org-gcal-client-secret sc)
+     (org-gcal-reload-client-id-secret)
+     (require 'oauth2-auto)
+     (require 'plstore)
+     (require 'org-gcal)
+     )))
 
 (provide 'org-g-cal-tweaks)
 #+end_src
@@ -7616,6 +7811,9 @@ Charges battery to 100% full by undoing service, active until restart
 ;(setq ee-terminal-command "wezterm")
 (require 'eee)
 (setq ee-terminal-command "kitty")
+(exwm-input-set-key (kbd "s-S-SPC")
+                    'ee-yazi
+                    )
 (provide 'external-tui)
 #+end_src
 ** Workarounds
@@ -7632,10 +7830,12 @@ Charges battery to 100% full by undoing service, active until restart
           :recipe (:host github :repo "magit/with-editor"))
 
 (unpin! magit)
+
+(package! diff-hl :disable t)
 #+end_src
 *** Code
 #+begin_src emacs-lisp :tangle modules/workarounds.el
-(global-diff-hl-mode -1)
-(remove-hook 'dired-mode-hook '+vc-gutter-enable-maybe-h)
+;(global-diff-hl-mode -1)
+;(remove-hook 'dired-mode-hook '+vc-gutter-enable-maybe-h)
 (provide 'workarounds)
 #+end_src
