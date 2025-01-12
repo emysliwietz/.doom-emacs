@@ -4,4 +4,5 @@
 (exwm-input-set-key (kbd "s-S-SPC")
                     'ee-yazi
                     )
+;(exwm-input--update-global-prefix-keys)
 (provide 'external-tui)

@@ -40,10 +40,9 @@
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (add-to-list 'org-capture-templates
-      '(("b" "Beancount Entry" plain
-         (file beancount-local-file)
-         ;"%(progn (yas-expand-snippet (yas-lookup-snippet \"beancount\" 'org-mode)) nil)")))
-         "bc%?")))
+             '("b" "Beancount Entry" plain
+               (file beancount-local-file)
+               "bc%?" :empty-lines-before 1))
 
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"

@@ -107,7 +107,7 @@
 
 
 
-(package! casual-dired)
+;(package! casual-dired)
 (package! dired-open-with)
 
 (package! dired-subtree)
@@ -177,7 +177,8 @@
 
 
 
-(package! org-roam)
+(unpin! org-roam)
+(unpin! websocket)
 (package! org-roam-ui)
 (package! org-roam-timestamps)
 (package! org-roam-bibtex)
@@ -244,6 +245,10 @@
       (:host github
        :repo "eval-exec/eee.el"
        :files (:defaults "*.el" "*.sh")))
+
+
+
+
 
 ; Temporary workaround, remove at emacs 29
 (package! transient

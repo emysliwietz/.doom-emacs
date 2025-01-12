@@ -65,8 +65,8 @@
      ;; (if (= level 0)
          (propertize subject 'face 'nano-face-default)))))
 
-(keymapp mu4e-headers-mode-map)
-(keymapp "f")
+;(keymapp mu4e-headers-mode-map)
+;(keymapp "f")
 
 
 (defun mu4e-headers-button (text face help query)

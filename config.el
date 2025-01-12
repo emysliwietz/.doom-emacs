@@ -120,9 +120,11 @@
 `(when (require ,dependency nil 'noerror)
    (load-module ,module)))
 
+
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'private-config)
-;(load-module '(require 'bible))
+(load-module 'exwm)
+(load-module 'exwm-randr)
 
 ; Unsorted
 (setq doom-modeline-enable-word-count t)
@@ -287,8 +289,12 @@
 
 ;(load-module 'thinkpad-tweaks)
 
-(load-module 'nano-tweaks)
+;(load-module 'nano-tweaks)
 
 (load-module 'external-tui)
+
+(load-module 'bible)
+
+(load-module 'ol-bible)
 
 (load-module 'workarounds)
