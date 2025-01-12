@@ -28,12 +28,11 @@
 
 (defun bible-select (binary)
   "Ask user to select bible verse using kjv-like binary"
- (let* ((pair (bible-select-internal binary))
-       (book (car pair))
-       (chapter-and-verse (car (cdr pair)))
-       )
+  (let* ((pair (bible-select-internal binary))
+         (book (car pair))
+         (chapter-and-verse (car (cdr pair)))
+         )
     (format "%s %s" book chapter-and-verse)))
-
 
 
 (defun bible-insert (&optional verse)

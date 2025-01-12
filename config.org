@@ -7883,7 +7883,11 @@ Charges battery to 100% full by undoing service, active until restart
 
 #+end_src
 *** Code
+<<<<<<< HEAD
 #+begin_src emacs-lisp :tangle modules/bible.el
+=======
+#+begin_src emacs-lisp :tangle modules/name.el
+>>>>>>> refs/remotes/origin/main
 ;;; bible.el -*- lexical-binding: t; -*-
 
 (defun bible-books-long (binary)
