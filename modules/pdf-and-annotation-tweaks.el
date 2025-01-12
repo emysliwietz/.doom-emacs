@@ -61,6 +61,31 @@
           (pdf-view-themed-minor-mode 1)
           )))))
 
+(defun org-noter-new-heading ()
+  "DOES NOT WORK: Copy the current heading and the next visible heading."
+  (interactive)
+  (org-noter--with-valid-session
+  (let ((headline (completing-read "New chapter title: " nil))
+        (page (format "%s" (org-noter--get-location-page (org-noter--doc-approx-location))))
+        )
+   (save-excursion
+     (switch-to-buffer (org-noter--session-notes-buffer session))
+    (save-excursion
+      ;; Move up to the top-level heading
+      (org-up-heading-all 10)
+      (let ((start (point)))
+        ;; Move to the next visible heading
+        (org-next-visible-heading 1)
+        (let ((end (point)))
+          ;; Copy the region from start to end
+          (kill-ring-save start end)
+          )))
+    (yank)
+    (save-excursion
+      (org-edit-headline headline)
+      (org-set-property "NOTER_PAGE" page)
+    )))))
+
 (defun pdf-view-noter-keymap-load ()
   "Load org noter keymap for pdf-view"
   (interactive)
@@ -70,6 +95,8 @@
        :n "N" 'org-noter-insert-note
        :n "r" 'pdf-view-rotate
        :n "i" 'pdf-view-theme-cycle
+       :n "I" 'pdf-view-high-contrast-theme
+       :n "c" 'org-noter-new-heading
        :ne "<down-mouse-1>" 'ignore ; Because marking would reset rotation
        :n "+" 'pdf-view-enlarge
        :n "-" 'pdf-view-shrink))

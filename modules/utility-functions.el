@@ -14,6 +14,7 @@
   (message (format "Class: %s" exwm-class-name))
   (message (format "Instance: %s" exwm-instance-name))
   (message (format "Title: %s" exwm-title))
+  (message (format "Type: %s" exwm-window-type))
   ;(message "%s" (exwm-class-name (selected-window)))
   (switch-to-buffer "*scratch*"))
 

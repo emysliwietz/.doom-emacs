@@ -6,7 +6,14 @@
   (require 'exwm)
   ;(require 'exwm-config) exwm config is deprecated
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
-  (exwm-enable)
+
+  (advice-add 'exwm-init-remove-error :around #'exwm-init)
+
+  (defun exwm-init-remove-error (orig-function)
+   (condition-case nil
+      (funcall original-function)
+    (error (message "EXWM retires: Other DE/WM running"))))
+
   (fringe-mode -1)
   (require 'exwm-randr)
   ;(setq exwm-randr-workspace-monitor-plist '(0 "eDP-1" 1 "DP-2-1" 2 "DP-2-2" 3 "HDMI-2" 4 "HDMI-1"))
@@ -19,7 +26,8 @@
             (apply #'append (cl-mapcar #'list (number-sequence 0 (1- (length monitors))) monitors)))))
 
   (exwm-update-monitors)
-  (exwm-randr-enable)
+  ;(exwm-randr-enable)
+  ; TODO FIX THIS
 
 ;; (when (string= (system-name) "astaroth")
 ;;    (setq exwm-randr-workspace-monitor-plist '(1 "eDP-1" 2 "DP-2-1" 3 "HDMI-2" 3 "DP-2-2")))
@@ -175,15 +183,15 @@
                     %(message (format "Title: %s" exwm-instance-name))
                     ))
              (string-equal exwm-class-name "ripdrag")
+             (equal exwm-window-type `(,xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG))
+             (equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
+             (member xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG exwm-window-type)
              )
            floating t
            floating-mode-line nil
 ;           width 0.4
 ;           height 0.4
            )
-        ((equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
-         floating t
-         floating-mode-line nil)
        ((or (string-equal exwm-class-name "kdeconnect.daemon"))
         floating t
         fullscreen t
@@ -427,7 +435,7 @@
 (exwm-input-set-key (kbd "s-v") (lambda () (interactive) (open-yt-dl-videos)))
 (exwm-input-set-key (kbd "s-r") (lambda () (interactive) (progn
   (+vterm/here t)
-  (vterm-send-string "cd /home/user/dox/install/rosarium && cargo run\n")
+  (vterm-send-string "cd /home/user/dox/install/rosarium && /home/user/dox/install/rosarium/target/release/rosarium \n")
 )))
 (exwm-input-set-key (kbd "s-<f4>") (lambda () (interactive) (go-to-scratch)))
 (exwm-input-set-key (kbd "s-<left>") (lambda () (interactive) (winner-undo)))
@@ -446,4 +454,5 @@
              (setq wallpaper-cycle-directory dir)
              (wallpaper-set-wallpaper))
 
+(exwm-init)
 (provide 'exwm-tweaks)

@@ -211,7 +211,7 @@
 (global-set-key (kbd "C-c a a") 'agenda-folder)
 (global-set-key (kbd "C-c a u") 'agenda-uni)
 (global-set-key (kbd "C-c a p") 'agenda-personal)
-(global-set-key (kbd "s-t") 'agenda-show-daily-habits)
+;(global-set-key (kbd "s-t") 'agenda-show-daily-habits)
 
                                         ; Books
 

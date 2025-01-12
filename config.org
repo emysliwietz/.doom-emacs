@@ -125,9 +125,11 @@
 `(when (require ,dependency nil 'noerror)
    (load-module ,module)))
 
+
 (load-module 'cl) ; Still a requirement for ivy
 (load-module 'private-config)
-;(load-module '(require 'bible))
+(load-module 'exwm)
+(load-module 'exwm-randr)
 
 ; Unsorted
 (setq doom-modeline-enable-word-count t)
@@ -327,6 +329,7 @@ age95IpQjrQoIy0CPDtiouDWKNrXrTSQctareltEAkkB+p48HdVkKg==
   (message (format "Class: %s" exwm-class-name))
   (message (format "Instance: %s" exwm-instance-name))
   (message (format "Title: %s" exwm-title))
+  (message (format "Type: %s" exwm-window-type))
   ;(message "%s" (exwm-class-name (selected-window)))
   (switch-to-buffer "*scratch*"))
 
@@ -757,7 +760,7 @@ Return a string suitable for insertion in `dired' buffer."
 
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(package! casual-dired)
+;(package! casual-dired)
 (package! dired-open-with)
 #+end_src
 
@@ -2327,7 +2330,14 @@ The command supports previewing the currently selected theme."
   (require 'exwm)
   ;(require 'exwm-config) exwm config is deprecated
   ; no need for (exwm-config-example), has unwanted defaults and uses ido
-  (exwm-enable)
+
+  (advice-add 'exwm-init-remove-error :around #'exwm-init)
+
+  (defun exwm-init-remove-error (orig-function)
+   (condition-case nil
+      (funcall original-function)
+    (error (message "EXWM retires: Other DE/WM running"))))
+
   (fringe-mode -1)
   (require 'exwm-randr)
   ;(setq exwm-randr-workspace-monitor-plist '(0 "eDP-1" 1 "DP-2-1" 2 "DP-2-2" 3 "HDMI-2" 4 "HDMI-1"))
@@ -2340,7 +2350,8 @@ The command supports previewing the currently selected theme."
             (apply #'append (cl-mapcar #'list (number-sequence 0 (1- (length monitors))) monitors)))))
 
   (exwm-update-monitors)
-  (exwm-randr-enable)
+  ;(exwm-randr-enable)
+  ; TODO FIX THIS
 
 ;; (when (string= (system-name) "astaroth")
 ;;    (setq exwm-randr-workspace-monitor-plist '(1 "eDP-1" 2 "DP-2-1" 3 "HDMI-2" 3 "DP-2-2")))
@@ -2496,15 +2507,15 @@ The command supports previewing the currently selected theme."
                     %(message (format "Title: %s" exwm-instance-name))
                     ))
              (string-equal exwm-class-name "ripdrag")
+             (equal exwm-window-type `(,xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG))
+             (equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
+             (member xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG exwm-window-type)
              )
            floating t
            floating-mode-line nil
 ;           width 0.4
 ;           height 0.4
            )
-        ((equal exwm-window-type xcb:Atom:_NET_WM_WINDOW_TYPE_DIALOG)
-         floating t
-         floating-mode-line nil)
        ((or (string-equal exwm-class-name "kdeconnect.daemon"))
         floating t
         fullscreen t
@@ -2748,7 +2759,7 @@ The command supports previewing the currently selected theme."
 (exwm-input-set-key (kbd "s-v") (lambda () (interactive) (open-yt-dl-videos)))
 (exwm-input-set-key (kbd "s-r") (lambda () (interactive) (progn
   (+vterm/here t)
-  (vterm-send-string "cd /home/user/dox/install/rosarium && cargo run\n")
+  (vterm-send-string "cd /home/user/dox/install/rosarium && /home/user/dox/install/rosarium/target/release/rosarium \n")
 )))
 (exwm-input-set-key (kbd "s-<f4>") (lambda () (interactive) (go-to-scratch)))
 (exwm-input-set-key (kbd "s-<left>") (lambda () (interactive) (winner-undo)))
@@ -2767,6 +2778,7 @@ The command supports previewing the currently selected theme."
              (setq wallpaper-cycle-directory dir)
              (wallpaper-set-wallpaper))
 
+(exwm-init)
 (provide 'exwm-tweaks)
 #+end_src
 
@@ -3281,7 +3293,7 @@ The command supports previewing the currently selected theme."
 (global-set-key (kbd "C-c a a") 'agenda-folder)
 (global-set-key (kbd "C-c a u") 'agenda-uni)
 (global-set-key (kbd "C-c a p") 'agenda-personal)
-(global-set-key (kbd "s-t") 'agenda-show-daily-habits)
+;(global-set-key (kbd "s-t") 'agenda-show-daily-habits)
 
                                         ; Books
 
@@ -5773,7 +5785,8 @@ javascript:location.href='org-protocol://capture?' +
 #+end_src
 **** Requirements
 #+begin_src emacs-lisp :tangle packages.el
-(package! org-roam)
+(unpin! org-roam)
+(unpin! websocket)
 (package! org-roam-ui)
 (package! org-roam-timestamps)
 (package! org-roam-bibtex)
@@ -5781,6 +5794,21 @@ javascript:location.href='org-protocol://capture?' +
 #+end_src
 **** Code
 #+begin_src emacs-lisp :tangle modules/org-roam-tweaks.el
+(use-package! websocket
+    :after org-roam)
+
+(use-package! org-roam-ui
+    :after org-roam ;; or :after org
+;;         normally we'd recommend hooking orui after org-roam, but since org-roam does not have
+;;         a hookable mode anymore, you're advised to pick something yourself
+;;         if you don't care about startup time, use
+;;  :hook (after-init . org-roam-ui-mode)
+    :config
+    (setq org-roam-ui-sync-theme t
+          org-roam-ui-follow t
+          org-roam-ui-update-on-save t
+          org-roam-ui-open-on-start t))
+
 (setq org-roam-directory "~/sync/org/roam")
 (mkdir org-roam-directory t)
 (org-roam-db-autosync-mode 1)
@@ -5867,7 +5895,8 @@ javascript:location.href='org-protocol://capture?' +
     (citar-insert-citation
      (list ref))
     (newline)
-    (insert "* Notes")
+    (insert "* ")
+    (insert (citar-get-value "title" ref))
     (newline)
     (org-roam-ref-add
      (concat "@" ref))
@@ -5929,10 +5958,9 @@ javascript:location.href='org-protocol://capture?' +
 ;; Capture
 (setq org-default-notes-file "~/dox/notes/notes.org")
 (add-to-list 'org-capture-templates
-      '(("b" "Beancount Entry" plain
-         (file beancount-local-file)
-         ;"%(progn (yas-expand-snippet (yas-lookup-snippet \"beancount\" 'org-mode)) nil)")))
-         "bc%?")))
+             '("b" "Beancount Entry" plain
+               (file beancount-local-file)
+               "bc%?" :empty-lines-before 1))
 
 (defun org-agenda-export-to-ics ()
   "Exports current org agenda buffer to ics, treating DEADLINES as dates"
@@ -6170,21 +6198,23 @@ javascript:location.href='org-protocol://capture?' +
 **** Code
 #+begin_src emacs-lisp :tangle modules/org-capture-tweaks.el
 (setq +org-capture-todo-file "/home/user/sync/agenda/todo.org"
-      +org-capture-notes-file "/home/user/sync/agenda/notes.org")
+      +org-capture-notes-file "/home/user/sync/agenda/notes.org"
+      +org-capture-journal-file "/home/user/sync/agenda/journal.org")
 
-  (add-to-list 'org-capture-templates
-               '("t" "Todo" entry ; key, name, type
-                 (file+olp+datetree +org-capture-todo-file) ; target
-                 "* TODO %^{Title}\n%T %?"
-                 :prepend t ; properties
-                 :kill-buffer t))
+; Handled by Doom Emacs
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("Ö" "Todo" entry ; key, name, type
+  ;;                (file+olp+datetree +org-capture-todo-file) ; target
+  ;;                "* TODO %^{Title}\n%T %?"
+  ;;                :prepend t ; properties
+  ;;                :kill-buffer t))
 
-  (add-to-list 'org-capture-templates
-               '("n" "Note" entry ; key, name, type
-                 (file+olp+datetree +org-capture-notes-file) ; target
-                 "* %^{Title} %^G\n%T %?"
-                 :prepend t ; properties
-                 :kill-buffer t))
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("Ä" "Note" entry ; key, name, type
+  ;;                (file+olp+datetree +org-capture-notes-file) ; target
+  ;;                "* %^{Title} %^G\n%T %?"
+  ;;                :prepend t ; properties
+  ;;                :kill-buffer t))
 
 
 (provide 'org-capture-tweaks)
@@ -7288,6 +7318,31 @@ This forces a complete recompilation of the document, even if the source
           (pdf-view-themed-minor-mode 1)
           )))))
 
+(defun org-noter-new-heading ()
+  "DOES NOT WORK: Copy the current heading and the next visible heading."
+  (interactive)
+  (org-noter--with-valid-session
+  (let ((headline (completing-read "New chapter title: " nil))
+        (page (format "%s" (org-noter--get-location-page (org-noter--doc-approx-location))))
+        )
+   (save-excursion
+     (switch-to-buffer (org-noter--session-notes-buffer session))
+    (save-excursion
+      ;; Move up to the top-level heading
+      (org-up-heading-all 10)
+      (let ((start (point)))
+        ;; Move to the next visible heading
+        (org-next-visible-heading 1)
+        (let ((end (point)))
+          ;; Copy the region from start to end
+          (kill-ring-save start end)
+          )))
+    (yank)
+    (save-excursion
+      (org-edit-headline headline)
+      (org-set-property "NOTER_PAGE" page)
+    )))))
+
 (defun pdf-view-noter-keymap-load ()
   "Load org noter keymap for pdf-view"
   (interactive)
@@ -7297,6 +7352,8 @@ This forces a complete recompilation of the document, even if the source
        :n "N" 'org-noter-insert-note
        :n "r" 'pdf-view-rotate
        :n "i" 'pdf-view-theme-cycle
+       :n "I" 'pdf-view-high-contrast-theme
+       :n "c" 'org-noter-new-heading
        :ne "<down-mouse-1>" 'ignore ; Because marking would reset rotation
        :n "+" 'pdf-view-enlarge
        :n "-" 'pdf-view-shrink))
@@ -7643,7 +7700,7 @@ Charges battery to 100% full by undoing service, active until restart
 
 ** Nano Tweaks
 #+begin_src emacs-lisp
-(load-module 'nano-tweaks)
+;(load-module 'nano-tweaks)
 #+end_src
 *** Requirements
 #+begin_src emacs-lisp :tangle packages.el
@@ -7723,8 +7780,8 @@ Charges battery to 100% full by undoing service, active until restart
      ;; (if (= level 0)
          (propertize subject 'face 'nano-face-default)))))
 
-(keymapp mu4e-headers-mode-map)
-(keymapp "f")
+;(keymapp mu4e-headers-mode-map)
+;(keymapp "f")
 
 
 (defun mu4e-headers-button (text face help query)
@@ -7814,7 +7871,314 @@ Charges battery to 100% full by undoing service, active until restart
 (exwm-input-set-key (kbd "s-S-SPC")
                     'ee-yazi
                     )
+;(exwm-input--update-global-prefix-keys)
 (provide 'external-tui)
+#+end_src
+** Bible
+#+begin_src emacs-lisp
+(load-module 'bible)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/name.el
+;;; bible.el -*- lexical-binding: t; -*-
+
+(defun bible-books-long (binary)
+  "Return list of books of the Bible"
+  (split-string-and-unquote (shell-command-to-string (format "%s -l | awk 'NF{NF--}; 1' | sed '1s/^\xEF\xBB\xBF//'" binary)) "\n"))
+
+(defun bible-books-short (binary)
+  "Return list of abbreviated books of the Bible"
+  (split-string-and-unquote (shell-command-to-string (format "%s -l | awk '{print $(NF)}' | sed 's/^\(//;s/\)$//;1s/^\xEF\xBB\xBF//'" binary)) "\n"))
+
+(defun bible-text (binary book-chapter-and-verse)
+  "Return text of Bible binary at specified book, chapter and verse"
+  (let* ((bcv1 (string-replace "." "" book-chapter-and-verse))
+         (bcv (string-replace "," ":" bcv1)))
+    (shell-command-to-string (format "%s %s | sed 's/\r//g'" binary (replace-regexp-in-string "\n" "" bcv)))))
+
+(setq bible-minor-mode--last-book ""
+      bible-minor-mode--last-chapter-and-verse "")
+
+(defun bible-select-internal (binary)
+  "Ask user to select bible verse using kjv-like binary"
+  (let* ((book (ivy-read "Select Book: " (bible-books-long binary) :preselect bible-minor-mode--last-book))
+         (chapter-and-verse (ivy-read (format "Choose Chapter and Verse of %s: " book) '() :initial-input bible-minor-mode--last-chapter-and-verse)))
+    (setq bible-minor-mode--last-book book
+          bible-minor-mode--last-chapter-and-verse chapter-and-verse)
+    `(,book ,chapter-and-verse)))
+
+
+(defun bible-select (binary)
+  "Ask user to select bible verse using kjv-like binary"
+ (let* ((pair (bible-select-internal binary))
+       (book (car pair))
+       (chapter-and-verse (car (cdr pair)))
+       )
+    (format "%s %s" book chapter-and-verse)))
+
+
+
+(defun bible-insert (&optional verse)
+  "Inserts text of the Bible of selected verse"
+  (interactive)
+  (if verse
+      (insert (bible-text (bible-minor-mode--default-bible-binary) verse))
+    (insert (bible-text (bible-minor-mode--default-bible-binary) (bible-select (bible-minor-mode--default-bible-binary))))))
+
+(defun bible-buffer-update (verse)
+  "Updates the Bible buffer with verse"
+  (switch-to-buffer "*Bible*")
+  (erase-buffer)
+  (bible-insert verse)
+  (bible-mode))
+
+(defun bible ()
+  "Open the Bible at selected verse"
+  (interactive)
+  (let ((bible-verse (bible-select (bible-minor-mode--default-bible-binary))))
+    (bible-buffer-update bible-verse)
+    (goto-char 0)))
+
+(defun kjv ()
+  "Insert Bible Verse from the King James Version"
+  (interactive)
+  (let ((bin "kjv"))
+    (insert (bible-text bin (bible-select bin)))))
+
+(defun menge ()
+  "Insert Bible Verse from the Menge Bible"
+  (interactive)
+  (let ((bin "menge"))
+    (insert (bible-text bin (bible-select bin)))))
+
+(defun vul ()
+  "Insert Bible Verse from the Vulgate"
+  (interactive)
+  (let ((bin "vul"))
+    (insert (bible-text bin (bible-select bin)))))
+
+(defun sxx ()
+  "Insert Bible Verse from the Septuagint"
+  (interactive)
+  (let ((bin "grb"))
+    (insert (bible-text bin (bible-select bin)))))
+
+(defun grb ()
+  "Insert Bible Verse from the Septuagint"
+  (interactive)
+  (sxx))
+
+(setq bible-minor-mode--bible-binary-list '("menge" "kjv" "vul" "grb"))
+
+(defun bible-minor-mode--default-bible-binary ()
+  "Default bible binary to use"
+  (car bible-minor-mode--bible-binary-list))
+
+(defun set-bible-version ()
+  "Change the version of the bible"
+  (interactive)
+  (let ((s
+         (ivy-read "Select bible version: " bible-minor-mode--bible-binary-list :require-match t :preselect (bible-minor-mode--default-bible-binary))))
+    (setq bible-minor-mode--bible-binary-list (append `(,s) (delete s bible-minor-mode--bible-binary-list)))
+    (message (bible-minor-mode--default-bible-binary))))
+
+(defun cycle-bible-version ()
+  (setq bible-minor-mode--bible-binary-list (append (cdr-safe bible-minor-mode--bible-binary-list) `(,(car bible-minor-mode--bible-binary-list)))))
+
+;;; Bible Mode
+
+(defun bible-mode--cycle-version ()
+  "Cycles Bible Version used for currently displayed text"
+  (cycle-bible-version)
+  (let ((v (bible-mode--current-verse)))
+    (message (format "-> %s" v))
+    (bible-buffer-update (format "%s %s" bible-minor-mode--last-book
+                                 bible-minor-mode--last-chapter-and-verse))
+    (bible-mode--goto-verse v)))
+
+(defun bible-mode--current-verse ()
+  "Current Verse at point"
+  (message
+   (save-excursion
+     (car (s-split-up-to "\t" (thing-at-point 'line) 1))
+     )))
+
+(defun bible-mode--goto-verse (verse)
+  (goto-char 0)
+  (search-forward verse))
+
+(define-derived-mode bible-mode text-mode (bible-minor-mode--default-bible-binary) "Major mode for reading the Bible.")
+
+(map! :map bible-mode-map
+      :n "x" #'bible-mode--cycle-version)
+
+;;; Bible Minor Mode
+(defun bible-tooltip (window object pos)
+  (let ((verse (bible-mode--current-verse)))
+    (tooltip-mode 1)
+    (setq bible-minor-mode--last-verse verse)
+    (let ((bible-verse (bible-text (bible-minor-mode--default-bible-binary) verse)))
+                                        ;(message bible-verse)
+      (if (> (length bible-verse) 2000)
+          (substring bible-verse 0 2000)
+        bible-verse))
+    ))
+
+(defun bible-show-verse ()
+  "Shows tooltip for verse at point"
+  (interactive)
+  (setq bible-minor-mode--last-verse nil)
+  (tooltip-show (bible-tooltip nil nil (point))))
+
+(defun bible-minor-mode-highlight ()
+  "Highlight bible verses"
+  (font-lock-add-keywords nil `((,bible-minor-mode--bible-verse-regex 0 '(face font-lock-keyword-face help-echo bible-tooltip))))
+  (font-lock-flush))
+
+(defun bible-minor-mode-revert ()
+  "Undo highlight bible verses"
+  (font-lock-remove-keywords nil `((,bible-minor-mode--bible-verse-regex 0 '(face font-lock-keyword-face help-echo bible-tooltip))))
+  (font-lock-flush))
+
+;;;###autoload
+(define-minor-mode bible-minor-mode
+  "Highlight bible verses and provide tooltips for them"
+  :lighter " ✝"
+  :global nil
+  (if bible-minor-mode
+      (bible-minor-mode-highlight)
+    (bible-minor-mode-revert)))
+
+(add-hook 'org-mode-hook 'bible-minor-mode)
+
+(setq bible-books-short-manual-additions '("Gen"))
+
+(defun bible-books-regex ()
+  "Combines all bible books into a partial regex"
+  (string-join (append (bible-books-short "kjv")
+                       (bible-books-long "kjv")
+                       (bible-books-short "menge")
+                       (bible-books-long "menge")
+                       bible-books-short-manual-additions)
+               "\\|"))
+
+
+"Creates a regex for verses of all bible books"
+(when (not (boundp 'bible-minor-mode--bible-verse-regex))
+  (setq bible-minor-mode--bible-verse-regex
+        (format
+         "\\(%s\\) \\([[:digit:]]+\\(\\(\\:\\|\\,\\)[[:digit:]]+\\)?\\)\\(-[[:digit:]]+\\(\\(\\:\\|\\,\\)[[:digit:]]+\\)?\\)?"
+         (bible-books-regex))))
+                                        ;bible-minor-mode--bible-verse-regex)
+
+(provide 'bible)
+#+end_src
+*** org-link-bible
+#+begin_src emacs-lisp
+(load-module 'ol-bible)
+#+end_src
+*** Requirements
+#+begin_src emacs-lisp :tangle packages.el
+
+#+end_src
+*** Code
+#+begin_src emacs-lisp :tangle modules/ol-bible.el
+                                        ; Implements a link to a bible section or verse
+                                        ; [[bible:Gen ̄1:1][Genesis 1:1]]
+(load-module 'bible)
+(load-module 'ol)
+
+(org-link-set-parameters "bible"
+                         :follow #'org-bible-open
+                         :export #'org-bible-export
+                         :store #'org-bible-store-link)
+
+
+(define-derived-mode bible-view-mode org-mode "Bible View"
+  "A mode to view the bible in.")
+
+(map! :map bible-view-mode-map
+      :nvi "ö" #'bible-view-cycle-language
+      :nvi "x" #'bible-view-cycle-language)
+
+(defun bible-view-cycle-language ()
+  "Cycle the language in a bible view buffer."
+  (interactive)
+  (cycle-bible-version)
+  (erase-buffer)
+  (bible-insert (org-bible-get-chapter-verse)))
+
+
+
+(defun org-bible-open (chapter-verse _)
+  "Visit the bible page on CHAPTER-VERSE."
+  (let ((buf (get-buffer-create (format "*Bible: %s*" chapter-verse))))
+    (with-current-buffer buf
+      (erase-buffer)
+      (bible-view-mode)
+      (bible-insert chapter-verse)
+                                        ;(bible-mode 1)
+      )
+    (display-buffer buf '((display-buffer-pop-up-window))))
+  )
+
+;; (defun org-man-store-link (&optional _interactive?)
+;;   "Store a link to a bible page."
+;;   (when (memq major-mode '(bible-mode))
+;;     ;; This is a man page, we do make this link.
+;;     (let* ((page (org-man-get-page-name))
+;;            (link (concat "man:" page))
+;;            (description (format "Man page for %s" page)))
+;;       (org-link-store-props
+;;        :type "man"
+;;        :link link
+;;        :description description))))
+
+(defun org-bible-get-chapter-verse ()
+  "Extract the bible chapter and verse from the buffer name."
+  ;; This works for `bible-view-mode'.
+  (if
+      (string-match "\\*Bible: \\(.*\\)\\*" (buffer-name))
+      (match-string 1 (buffer-name))
+    (error "Cannot find bible chapter"))
+  )
+
+(defun org-bible-export (link description format _)
+  "Export a bible link from Org files."
+  (let ((path (format "http://man.he.net/?topic=%s&section=all" link))
+        (desc (or description link)))
+    (pcase format
+      (`html (format "<a target=\"_blank\" href=\"%s\">%s</a>" path desc))
+      (`latex (format "\\href{%s}{%s}" path desc))
+      (`texinfo (format "@uref{%s,%s}" path desc))
+      (`ascii (format "%s (%s)" desc path))
+      (_ path))))
+
+(defun get-corresponding-element (element list1 list2)
+  "Return the corresponding element in LIST2 for ELEMENT in LIST1."
+  (let ((index (cl-position element list1 :test 'equal)))  ; Find the index of ELEMENT in LIST1
+    (if index
+        (nth index list2)  ; Return the corresponding element from LIST2
+      nil)))  ; Return nil if ELEMENT is not found
+
+
+
+(defun org-bible-insert ()
+  "Insert a link to a bible chapter and verse."
+  (interactive)
+
+  (let* ((bb (bible-minor-mode--default-bible-binary))
+         (pair (bible-select-internal bb))
+         (book-long (car pair))
+         (cv (car (cdr pair)))
+         (book-short (get-corresponding-element book-long (bible-books-long bb) (bible-books-short bb))))
+    (insert (format "[[bible:%s %s][%s %s]]" book-short cv book-long cv))))
+
+(provide 'ol-bible)
 #+end_src
 ** Workarounds
 #+begin_src emacs-lisp
