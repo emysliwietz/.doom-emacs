@@ -165,7 +165,9 @@
 (setq exwm-manage-configurations
       '(((or (string-equal exwm-class-name "Nm-applet")
              (string-equal exwm-class-name "Surf")
-             (string-equal exwm-class-name "Steam")
+             (string-equal exwm-class-name "Connected Banks / Repo
+Data Import
+Custom FormsSteam")
              (string-equal exwm-class-name "SshAskpass")
              (string-equal exwm-instance-name "Toplevel")
              (and (string-equal exwm-class-name "Thunar")

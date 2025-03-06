@@ -1,3 +1,6 @@
+=======
+#+begin_src emacs-lisp :tangle modules/name.el
+>>>>>>> refs/remotes/origin/main
 ;;; bible.el -*- lexical-binding: t; -*-
 
 (defun bible-books-long (binary)
@@ -28,11 +31,12 @@
 
 (defun bible-select (binary)
   "Ask user to select bible verse using kjv-like binary"
-  (let* ((pair (bible-select-internal binary))
-         (book (car pair))
-         (chapter-and-verse (car (cdr pair)))
-         )
+ (let* ((pair (bible-select-internal binary))
+       (book (car pair))
+       (chapter-and-verse (car (cdr pair)))
+       )
     (format "%s %s" book chapter-and-verse)))
+
 
 
 (defun bible-insert (&optional verse)
