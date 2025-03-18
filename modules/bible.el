@@ -1,6 +1,3 @@
-=======
-#+begin_src emacs-lisp :tangle modules/name.el
->>>>>>> refs/remotes/origin/main
 ;;; bible.el -*- lexical-binding: t; -*-
 
 (defun bible-books-long (binary)

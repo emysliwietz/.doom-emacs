@@ -118,6 +118,7 @@
 (package! avy)
 (package! casual-avy :recipe (:host github :repo "kickingvegas/casual-avy"))
 (package! yasnippet-snippets)
+(package! move-text)
 
 (package! indent-bars :recipe (:host github :repo "jdtsmith/indent-bars"))
 
@@ -218,9 +219,7 @@
 
 
 (package! gptel :recipe (:host github :repo "karthink/gptel"))
-
 (package! async-await)
-(package! aichat :recipe (:host github :repo "xhcoding/emacs-aichat"))
 
 
 

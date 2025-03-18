@@ -9,7 +9,7 @@
   (marginalia-mode))
 
 
-(global-set-key (kbd "C-ö") 'embark-act)
+(global-set-key (kbd "C-ä") 'embark-act)
 
 (require 'vertico)
 (defun consult-buffer-no-auxiliary ()
@@ -46,7 +46,7 @@
             "M-R" #'vertico-multiform-reverse
             "M-U" #'vertico-multiform-unobtrusive
             "C-l" #'kb/vertico-multiform-indexed-toggle
-            "C-ö" #'embark-act
+            "C-ä" #'embark-act
             )
   :bind (
          ("C-s" . consult-line)

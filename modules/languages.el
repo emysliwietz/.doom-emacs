@@ -10,6 +10,8 @@
 (setq rustic-format-trigger 'on-save
       rustic-format-on-save t)
 
+(add-hook! 'prog-mode-hook 'which-function-mode)
+(setq which-func-display 'header)
 ;; Latin
 ;;
 

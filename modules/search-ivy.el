@@ -123,6 +123,8 @@ Not assuming that url is in title like in Keepass Helper extension, for privacy.
              (propertize (nerd-icons-faicon "nf-fa-video_camera") 'face '(:foreground "dark gray")))
 	    ((string-equal "Steam" buffname)
              (propertize (nerd-icons-faicon "nf-fa-steam_square") 'face '(:foreground "dark gray")))
+            ((string-equal "bash" buffname)
+             (propertize (nerd-icons-devicon "nf-dev-terminal") 'face '(:foreground "green")))
             ((string-prefix-p "Yazi:" buffname)
              (propertize (nerd-icons-mdicon "nf-md-folder_open") 'face '(:foreground "purple")))
             ((string-prefix-p "QEMU" buffname)

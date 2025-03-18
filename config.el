@@ -281,8 +281,6 @@
 
 (load-module 'chat-gpt)
 
-(load-module 'ai-assistant)
-
 (load-module 'calendar-tweaks)
 
 (load-module 'org-g-cal-tweaks)

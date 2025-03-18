@@ -1,4 +1,4 @@
-                                        ; Implements a link to a bible section or verse
+; Implements a link to a bible section or verse
                                         ; [[bible:Gen ̄1:1][Genesis 1:1]]
 (load-module 'bible)
 (load-module 'ol)
